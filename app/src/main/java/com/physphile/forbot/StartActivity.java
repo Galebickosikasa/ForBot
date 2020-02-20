@@ -8,15 +8,15 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CalendarView;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -28,11 +28,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.IgnoreExtraProperties;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.annotations.NotNull;
 
 import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Date;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -48,41 +45,52 @@ public class StartActivity extends AppCompatActivity {
     @IgnoreExtraProperties
     static class Item implements Serializable{
         public String name;
-        public String foam;
+        public String level;
 
         public Item(){
 
         }
 
-        Item(String _name, String _foam){
-            this.foam = _foam;
+        Item(String _name, String _level){
+            this.level = _level;
             this.name = _name;
         }
 
         public String getFoam() {
-            return foam;
+            return level;
         }
 
         public String getName() {
             return name;
         }
     }
+
+    //определяем штуки баз данных
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ChooseActivity();
         //что-то с базами данных
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("items");
+        myRef = database.getReference("physics");
 
         final TextView ChooseFoamTxt = (TextView) findViewById(R.id.ChooseFoamTxt);
+        final ListView OlympsList = (ListView)findViewById(R.id.OlympsList);
+        final OlympsAdapter adapter = new OlympsAdapter();
+        OlympsList.setAdapter(adapter);
+
+
         //реализуем возможность читать БД
         Query myQuery = myRef;
         myQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Item i = dataSnapshot.getValue(Item.class);//берем элементик из БД
-                ChooseFoamTxt.setText(i.getFoam());
+                adapter.add(i);
 
             }
 
@@ -108,11 +116,11 @@ public class StartActivity extends AppCompatActivity {
         });
 
 
+
+
     }
 
-    //определяем штуки баз данных
-    private FirebaseDatabase database;
-    private DatabaseReference myRef;
+
 
 
     //метод, который запускает нужные активити
@@ -162,7 +170,7 @@ public class StartActivity extends AppCompatActivity {
             TextView ChooseFoamTxt = (TextView) findViewById(R.id.ChooseFoamTxt);
             ChooseFoamTxt.setText(String.valueOf(progress + 5) + " класс");
 
-            myRef.push().setValue(new Item("student", ChooseFoamTxt.getText().toString()));//создаём элемент в бд
+//            myRef.push().setValue(new Item("student", ChooseFoamTxt.getText().toString()));//создаём элемент в бд
         }
 
         @Override
@@ -175,4 +183,20 @@ public class StartActivity extends AppCompatActivity {
 
         }
     };
+
+    private class OlympsAdapter extends ArrayAdapter<Item> {
+        public OlympsAdapter() {
+            super(StartActivity.this, R.layout.olympitem);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            final View OlympItemInflate = getLayoutInflater().inflate(R.layout.olympitem, null);
+            final Item item = getItem(position);
+            ((TextView)OlympItemInflate.findViewById(R.id.olympName)).setText(item.name);
+            ((TextView)OlympItemInflate.findViewById(R.id.olympLevel)).setText(item.level);
+            return OlympItemInflate;
+        }
+    }
 }
