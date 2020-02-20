@@ -10,6 +10,7 @@ import android.widget.CalendarView;
 import android.widget.ImageButton;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.physphile.forbot.ui.dashboard.DashboardFragment;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -20,11 +21,11 @@ import androidx.navigation.ui.NavigationUI;
 import java.util.Calendar;
 import java.util.Date;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity {
 
-
-    private CalendarView cal = (CalendarView) findViewById(R.id.calendarView2);
-    private Date currentDate = Calendar.getInstance().getTime();
 
 
     @Override
@@ -45,9 +46,6 @@ public class MainActivity extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
-
-        cal.setDate(currentDate.getTime());
-
     }
 }
 
