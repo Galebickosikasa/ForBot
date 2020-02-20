@@ -13,10 +13,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -36,53 +40,32 @@ import java.util.Date;
 
 public class StartActivity extends AppCompatActivity {
 
-
     //SharedPreferences это штука, которая сохраняет значения нужных переменных в файлике
     SharedPreferences sp;
     SeekBar seekBar;
 
-
-
-
-    //наш класс элементов, которые мы будем пушить в БД
-    @IgnoreExtraProperties
-    static class Item implements Serializable{
-        public String name;
-        public String foam;
-
-        public Item(){
-
-        }
-
-        Item(String _name, String _foam){
-            this.foam = _foam;
-            this.name = _name;
-        }
-
-        public String getFoam() {
-            return foam;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ChooseActivity();
+
         //что-то с базами данных
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("items");
+        myRef = database.getReference("physics");
 
         final TextView ChooseFoamTxt = (TextView) findViewById(R.id.ChooseFoamTxt);
+        final ListView OlympsList = (ListView)findViewById(R.id.OlympsList);
+        final OlympsAdapter adapter = new OlympsAdapter();
+        OlympsList.setAdapter(adapter);
+
+
         //реализуем возможность читать БД
         Query myQuery = myRef;
         myQuery.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Item i = dataSnapshot.getValue(Item.class);//берем элементик из БД
-                ChooseFoamTxt.setText(i.getFoam());
+                adapter.add(i);
 
             }
 
@@ -107,25 +90,33 @@ public class StartActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
-    //определяем штуки баз данных
+
+    // определяем штуки баз данных
     private FirebaseDatabase database;
     private DatabaseReference myRef;
 
-
-    //метод, который запускает нужные активити
+    // метод, который запускает нужные активити
     protected void ChooseActivity() {
         boolean isClick;
-        sp = getSharedPreferences("isClick", Context.MODE_PRIVATE); //создаём атрибут isClick, Context.MODE_PRIVATE значит,
-        // что доступ к этому файлику есть только у этого приложения
-        isClick = sp.getBoolean("isClick", false);//устанавливаем значение этого атрибута - false
+        sp = getSharedPreferences("isClick", Context.MODE_PRIVATE);
+
+        /*
+        создаём атрибут isClick, Context.MODE_PRIVATE значит,
+        что доступ к этому файлику есть только у этого приложения
+        */
+
+        isClick = sp.getBoolean("isClick", false); //устанавливаем значение этого атрибута - false
 
         if (isClick) {
             setContentView(R.layout.activity_main);
-            // Passing each menu ID as a set of Ids because each
-            // menu should be considered as top level destinations.
+
+            /*
+            Passing each menu ID as a set of Ids because each
+            menu should be considered as top level destinations.
+            */
+
             BottomNavigationView navView = findViewById(R.id.nav_view);
             AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                     R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
@@ -133,7 +124,8 @@ public class StartActivity extends AppCompatActivity {
             NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
             NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
             NavigationUI.setupWithNavController(navView, navController);
-        } else {
+        }
+        else {
             setContentView(R.layout.activity_start);
             ImageButton StartContinueBtn = (ImageButton) findViewById(R.id.StartContinueBtn);
             SeekBar ChooseFoamBar = (SeekBar)findViewById(R.id.ChooseFoamBar);
@@ -146,23 +138,26 @@ public class StartActivity extends AppCompatActivity {
 
     //просто листенер для кнопки
     View.OnClickListener OnStartContinueBtnListener = new View.OnClickListener() {
+
         @Override
         public void onClick(View v) {
             startActivity(new Intent("com.physphile.forbot.MainActivity"));
-            SharedPreferences.Editor e = sp.edit();//чтобы менять этот файлик надо создать эдитор
-            e.putBoolean("isClick", true);//устанавливаем значение этого атрибута - true
-            e.apply();//закрываем эдитор
+            SharedPreferences.Editor e = sp.edit(); // чтобы менять этот файлик надо создать эдитор
+            e.putBoolean("isClick", true); // устанавливаем значение этого атрибута - true
+            e.apply(); // закрываем эдитор
         }
+
     };
 
     //листенер для сикбара
     SeekBar.OnSeekBarChangeListener ChooseFoamBarListener = new SeekBar.OnSeekBarChangeListener() {
+
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             TextView ChooseFoamTxt = (TextView) findViewById(R.id.ChooseFoamTxt);
             ChooseFoamTxt.setText(String.valueOf(progress + 5) + " класс");
 
-            myRef.push().setValue(new Item("student", ChooseFoamTxt.getText().toString()));//создаём элемент в бд
+//            myRef.push().setValue(new Item("student", ChooseFoamTxt.getText().toString())); //создаём элемент в бд
         }
 
         @Override
@@ -175,4 +170,22 @@ public class StartActivity extends AppCompatActivity {
 
         }
     };
+
+    private class OlympsAdapter extends ArrayAdapter<Item> {
+
+        public OlympsAdapter() {
+            super(StartActivity.this, R.layout.olympitem);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            final View OlympItemInflate = getLayoutInflater().inflate(R.layout.olympitem, null);
+            final Item item = getItem(position);
+            ((TextView)OlympItemInflate.findViewById(R.id.olympName)).setText(item.name);
+            ((TextView)OlympItemInflate.findViewById(R.id.olympLevel)).setText(item.level);
+            return OlympItemInflate;
+        }
+    }
+
 }
