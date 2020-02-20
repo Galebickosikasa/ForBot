@@ -40,9 +40,12 @@ import java.util.Date;
 
 public class StartActivity extends AppCompatActivity {
 
+
     //SharedPreferences это штука, которая сохраняет значения нужных переменных в файлике
     SharedPreferences sp;
-    SeekBar seekBar;
+    // определяем штуки баз данных
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,51 +54,33 @@ public class StartActivity extends AppCompatActivity {
 
         //что-то с базами данных
         database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("physics");
+        myRef = database.getReference("2019/feb/15/10/physics");
 
-        final TextView ChooseFoamTxt = (TextView) findViewById(R.id.ChooseFoamTxt);
-        final ListView OlympsList = (ListView)findViewById(R.id.OlympsList);
-        final OlympsAdapter adapter = new OlympsAdapter();
-        OlympsList.setAdapter(adapter);
+//        final ListView OlympsList = findViewById(R.id.OlympsList);
+//        final OlympsAdapter adapter = new OlympsAdapter();
+//        OlympsList.setAdapter(adapter);
 
 
         //реализуем возможность читать БД
-        Query myQuery = myRef;
-        myQuery.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Item i = dataSnapshot.getValue(Item.class);//берем элементик из БД
-                adapter.add(i);
-
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+//        Query myQuery = myRef;
+//        myQuery.addChildEventListener(new ChildEventListener() {
+//            @Override
+//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+//                Item i = dataSnapshot.getValue(Item.class);//берем элементик из БД
+//                adapter.add(i);
+//
+//            }
+//            @Override
+//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+//            @Override
+//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
+//            @Override
+//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError databaseError) {}
+//        });
 
     }
-
-
-    // определяем штуки баз данных
-    private FirebaseDatabase database;
-    private DatabaseReference myRef;
 
     // метод, который запускает нужные активити
     protected void ChooseActivity() {
@@ -110,13 +95,8 @@ public class StartActivity extends AppCompatActivity {
         isClick = sp.getBoolean("isClick", false); //устанавливаем значение этого атрибута - false
 
         if (isClick) {
+
             setContentView(R.layout.activity_main);
-
-            /*
-            Passing each menu ID as a set of Ids because each
-            menu should be considered as top level destinations.
-            */
-
             BottomNavigationView navView = findViewById(R.id.nav_view);
             AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                     R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
@@ -124,6 +104,7 @@ public class StartActivity extends AppCompatActivity {
             NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
             NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
             NavigationUI.setupWithNavController(navView, navController);
+
         }
         else {
             setContentView(R.layout.activity_start);
@@ -132,7 +113,6 @@ public class StartActivity extends AppCompatActivity {
 
             StartContinueBtn.setOnClickListener(OnStartContinueBtnListener);
             ChooseFoamBar.setOnSeekBarChangeListener(ChooseFoamBarListener);
-
         }
     }
 
@@ -154,22 +134,16 @@ public class StartActivity extends AppCompatActivity {
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            TextView ChooseFoamTxt = (TextView) findViewById(R.id.ChooseFoamTxt);
-            ChooseFoamTxt.setText(String.valueOf(progress + 5) + " класс");
-
-//            myRef.push().setValue(new Item("student", ChooseFoamTxt.getText().toString())); //создаём элемент в бд
+            TextView ChooseFoamTxt = findViewById(R.id.ChooseFoamTxt);
+            String s = progress + 5 + " класс";
+            ChooseFoamTxt.setText(s);
         }
-
         @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-
-        }
-
+        public void onStartTrackingTouch(SeekBar seekBar) {}
         @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-
-        }
+        public void onStopTrackingTouch(SeekBar seekBar) {}
     };
+
 
     private class OlympsAdapter extends ArrayAdapter<Item> {
 
@@ -187,5 +161,4 @@ public class StartActivity extends AppCompatActivity {
             return OlympItemInflate;
         }
     }
-
 }

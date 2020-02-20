@@ -22,8 +22,10 @@ import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
-    public CalendarView cal = (CalendarView)findViewById(R.id.calendarView2);
+
+    private CalendarView cal = (CalendarView) findViewById(R.id.calendarView2);
     private Date currentDate = Calendar.getInstance().getTime();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(navView, navController);
 
         cal.setDate(currentDate.getTime());
+
     }
 }
 
