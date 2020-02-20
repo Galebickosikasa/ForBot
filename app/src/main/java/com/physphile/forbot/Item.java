@@ -7,7 +7,7 @@ import java.io.Serializable;
 //наш класс элементов, которые мы будем пушить в БД
 
 @IgnoreExtraProperties
-class Item implements Serializable{
+public class Item implements Serializable{
     public String name;
     public String level;
 

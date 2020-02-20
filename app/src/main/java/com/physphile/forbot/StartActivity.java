@@ -43,43 +43,12 @@ public class StartActivity extends AppCompatActivity {
 
     //SharedPreferences это штука, которая сохраняет значения нужных переменных в файлике
     SharedPreferences sp;
-    // определяем штуки баз данных
-    private FirebaseDatabase database;
-    private DatabaseReference myRef;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ChooseActivity();
-
-        //что-то с базами данных
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("2019/feb/15/10/physics");
-
-//        final ListView OlympsList = findViewById(R.id.OlympsList);
-//        final OlympsAdapter adapter = new OlympsAdapter();
-//        OlympsList.setAdapter(adapter);
-
-
-        //реализуем возможность читать БД
-//        Query myQuery = myRef;
-//        myQuery.addChildEventListener(new ChildEventListener() {
-//            @Override
-//            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-//                Item i = dataSnapshot.getValue(Item.class);//берем элементик из БД
-//                adapter.add(i);
-//
-//            }
-//            @Override
-//            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
-//            @Override
-//            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
-//            @Override
-//            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {}
-//        });
-
     }
 
     // метод, который запускает нужные активити
@@ -145,20 +114,5 @@ public class StartActivity extends AppCompatActivity {
     };
 
 
-    private class OlympsAdapter extends ArrayAdapter<Item> {
 
-        public OlympsAdapter() {
-            super(StartActivity.this, R.layout.olympitem);
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-            final View OlympItemInflate = getLayoutInflater().inflate(R.layout.olympitem, null);
-            final Item item = getItem(position);
-            ((TextView)OlympItemInflate.findViewById(R.id.olympName)).setText(item.name);
-            ((TextView)OlympItemInflate.findViewById(R.id.olympLevel)).setText(item.level);
-            return OlympItemInflate;
-        }
-    }
 }
