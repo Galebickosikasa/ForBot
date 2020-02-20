@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "604937706455",
+    "firebase_url": "https://forbot-20468.firebaseio.com",
+    "project_id": "forbot-20468",
+    "storage_bucket": "forbot-20468.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:604937706455:android:8fa2b6276a5c0d95efc992",
+        "android_client_info": {
+          "package_name": "com.physphile.forbot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "604937706455-mn4lpij82u7dp78uoi88h74cprg75h59.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.physphile.forbot",
+            "certificate_hash": "5ce08313e1a4a5f2d5212f11bb23f1982e9aebcc"
+          }
+        },
+        {
+          "client_id": "604937706455-0gbkttvj5lq63r1h75rbeit30emdppbc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.physphile.forbot",
+            "certificate_hash": "dfc179799cf8ac9925a90b52b1fe48bb42d3dee1"
+          }
+        },
+        {
+          "client_id": "604937706455-th8qjkqfovkb8gl5418do3impkihqbtd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKKmigsu4zVCaN7VMgeAs2r3iUT2Qlihk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "604937706455-th8qjkqfovkb8gl5418do3impkihqbtd.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
