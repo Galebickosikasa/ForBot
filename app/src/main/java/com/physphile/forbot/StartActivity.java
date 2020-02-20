@@ -1,11 +1,14 @@
 package com.physphile.forbot;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -17,6 +20,16 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.annotations.NotNull;
+
+import java.io.Serializable;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -25,11 +38,73 @@ public class StartActivity extends AppCompatActivity {
     SharedPreferences sp;
     SeekBar seekBar;
 
+    //наш класс элементов, которые мы будем пушить в БД
+    @IgnoreExtraProperties
+    static class Item implements Serializable{
+        public String name;
+        public String foam;
+
+        public Item(){
+
+        }
+
+        Item(String _name, String _foam){
+            this.foam = _foam;
+            this.name = _name;
+        }
+
+        public String getFoam() {
+            return foam;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ChooseActivity();
+        //что-то с базами данных
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("items");
+
+        final TextView ChooseFoamTxt = (TextView) findViewById(R.id.ChooseFoamTxt);
+        //реализуем возможность читать БД
+        Query myQuery = myRef;
+        myQuery.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Item i = dataSnapshot.getValue(Item.class);//берем элементик из БД
+                ChooseFoamTxt.setText(i.getFoam());
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
+
+    //определяем штуки баз данных
+    private FirebaseDatabase database;
+    private DatabaseReference myRef;
 
 
     //метод, который запускает нужные активити
@@ -78,6 +153,8 @@ public class StartActivity extends AppCompatActivity {
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             TextView ChooseFoamTxt = (TextView) findViewById(R.id.ChooseFoamTxt);
             ChooseFoamTxt.setText(String.valueOf(progress + 5) + " класс");
+
+            myRef.push().setValue(new Item("student", ChooseFoamTxt.getText().toString()));//создаём элемент в бд
         }
 
         @Override

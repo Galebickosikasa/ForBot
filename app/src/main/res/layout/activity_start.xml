@@ -53,96 +53,14 @@
             android:paddingBottom="5dp">
 
             <CheckBox
-                android:id="@+id/checkBox14"
+                android:id="@+id/physicsCheck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
-                android:text="Астрономия" />
+                android:text="Физика" />
 
             <CheckBox
-                android:id="@+id/checkBox11"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Биология" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipChildren="false"
-            android:paddingBottom="5dp">
-
-            <CheckBox
-                android:id="@+id/checkBox12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="География" />
-
-            <CheckBox
-                android:id="@+id/checkBox5"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Иностранный язык" />
-
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="5dp">
-
-            <CheckBox
-                android:id="@+id/checkBox6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Информатика" />
-
-            <CheckBox
-                android:id="@+id/checkBox4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Исскуство" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="5dp">
-
-            <CheckBox
-                android:id="@+id/checkBox8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="История" />
-
-            <CheckBox
-                android:id="@+id/checkBox7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Лингвистика" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="5dp">
-
-            <CheckBox
-                android:id="@+id/checkBox10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Литература" />
-
-            <CheckBox
-                android:id="@+id/checkBox9"
+                android:id="@+id/mathCheck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
@@ -152,41 +70,23 @@
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:clipChildren="false"
             android:paddingBottom="5dp">
 
             <CheckBox
-                android:id="@+id/checkBox19"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Обществознание" />
-
-            <CheckBox
-                android:id="@+id/checkBox18"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Право" />
-        </TableRow>
-
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingBottom="5dp">
-
-            <CheckBox
-                android:id="@+id/checkBox21"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Психология" />
-
-            <CheckBox
-                android:id="@+id/checkBox20"
+                android:id="@+id/russianCheck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
                 android:text="Русский язык" />
+
+            <CheckBox
+                android:id="@+id/literatureCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-condensed"
+                android:text="Литература" />
+
         </TableRow>
 
         <TableRow
@@ -195,14 +95,14 @@
             android:paddingBottom="5dp">
 
             <CheckBox
-                android:id="@+id/checkBox23"
+                android:id="@+id/informaticsCheck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
-                android:text="Физика" />
+                android:text="Информатика" />
 
             <CheckBox
-                android:id="@+id/checkBox22"
+                android:id="@+id/chemistryCheck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
@@ -215,38 +115,20 @@
             android:paddingBottom="5dp">
 
             <CheckBox
-                android:id="@+id/checkBox24"
+                android:id="@+id/historyCheck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
-                android:text="Черчение" />
+                android:text="История" />
 
             <CheckBox
-                android:id="@+id/checkBox25"
+                android:id="@+id/astronomyCheck"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-condensed"
-                android:text="Экология" />
+                android:text="Астрономия" />
         </TableRow>
 
-        <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <CheckBox
-                android:id="@+id/checkBox26"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Экономика" />
-
-            <CheckBox
-                android:id="@+id/checkBox27"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-condensed"
-                android:text="Остальные" />
-        </TableRow>
     </TableLayout>
 
     <TextView
