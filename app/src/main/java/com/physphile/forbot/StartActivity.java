@@ -15,6 +15,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CalendarView;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -30,6 +31,8 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.annotations.NotNull;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -37,6 +40,9 @@ public class StartActivity extends AppCompatActivity {
     //SharedPreferences это штука, которая сохраняет значения нужных переменных в файлике
     SharedPreferences sp;
     SeekBar seekBar;
+
+
+
 
     //наш класс элементов, которые мы будем пушить в БД
     @IgnoreExtraProperties
@@ -100,6 +106,8 @@ public class StartActivity extends AppCompatActivity {
 
             }
         });
+
+
     }
 
     //определяем штуки баз данных
