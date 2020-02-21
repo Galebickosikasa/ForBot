@@ -1,5 +1,8 @@
 package com.physphile.forbot;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
@@ -21,7 +24,6 @@ import androidx.navigation.ui.NavigationUI;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-
     /*
     Очень важная фигня!
     На данный момент все нормально работает только если переустанавливать каждый раз приложение
@@ -47,13 +49,9 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-//        Log.e ("kek", "start");
 
-        //что-то с базами данных
-        final FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = database.getReference();
 
-        final ArrayList<Item> items = new ArrayList<>();
+
 
         // Именно тут добавление новых данных, сейчас уже добавлять не надо, но код пусть останется
 
@@ -79,38 +77,10 @@ public class MainActivity extends AppCompatActivity {
         databaseReference.child("SomDir").push().setValue(it9);
          */
 
-        final ListView OlympsList = findViewById(R.id.OlympsList);
-        final OlympAdapter adapter = new OlympAdapter(MainActivity.this, R.layout.olympitem, items);
-        OlympsList.setAdapter(adapter);
 
-        databaseReference.child("SomDir").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Item item = dataSnapshot.getValue(Item.class);
-                items.add (item);
-                adapter.add(item);
-            }
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
 
     }
 }

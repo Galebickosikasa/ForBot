@@ -12,13 +12,13 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
-class OlympAdapter extends ArrayAdapter<Item> {
+public class OlympAdapter extends ArrayAdapter<Item> {
 
     private Context mContext;
     private int mResource;
 
-    public OlympAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Item> objects) {
-        super(context, resource, objects);
+    public OlympAdapter(@NonNull Context context, int resource) {
+        super(context, resource);
         mContext = context;
         mResource = resource;
     }
