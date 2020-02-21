@@ -44,14 +44,12 @@ public class StartActivity extends AppCompatActivity {
     //SharedPreferences это штука, которая сохраняет значения нужных переменных в файлике
     SharedPreferences sp;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ChooseActivity();
     }
 
-    // метод, который запускает нужные активити
     protected void ChooseActivity() {
         boolean isClick;
         sp = getSharedPreferences("isClick", Context.MODE_PRIVATE);
@@ -61,7 +59,7 @@ public class StartActivity extends AppCompatActivity {
         что доступ к этому файлику есть только у этого приложения
         */
 
-        isClick = sp.getBoolean("isClick", false); //устанавливаем значение этого атрибута - false
+        isClick = sp.getBoolean("isClick", false); // устанавливаем значение этого атрибута - false
 
         if (isClick) {
 
@@ -70,9 +68,9 @@ public class StartActivity extends AppCompatActivity {
             AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                     R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
                     .build();
-            NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-            NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-            NavigationUI.setupWithNavController(navView, navController);
+            NavController navController = Navigation.findNavController (this, R.id.nav_host_fragment);
+            NavigationUI.setupActionBarWithNavController (this, navController, appBarConfiguration);
+            NavigationUI.setupWithNavController (navView, navController);
 
         }
         else {
@@ -80,8 +78,8 @@ public class StartActivity extends AppCompatActivity {
             ImageButton StartContinueBtn = (ImageButton) findViewById(R.id.StartContinueBtn);
             SeekBar ChooseFoamBar = (SeekBar)findViewById(R.id.ChooseFoamBar);
 
-            StartContinueBtn.setOnClickListener(OnStartContinueBtnListener);
-            ChooseFoamBar.setOnSeekBarChangeListener(ChooseFoamBarListener);
+            StartContinueBtn.setOnClickListener (OnStartContinueBtnListener);
+            ChooseFoamBar.setOnSeekBarChangeListener (ChooseFoamBarListener);
         }
     }
 
