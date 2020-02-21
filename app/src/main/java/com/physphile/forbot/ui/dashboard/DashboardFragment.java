@@ -34,7 +34,6 @@ public class DashboardFragment extends Fragment {
     private DatabaseReference databaseReference;
     private OlympAdapter adapter;
     private CalendarView calendarView;
-    private HashMap<Integer, Integer> cnt;
     private SharedPreferences sp;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -49,7 +48,6 @@ public class DashboardFragment extends Fragment {
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
 
-//        cnt = new HashMap<>();
         adapter = new OlympAdapter(getContext(), R.layout.olympitem);
         OlympsList.setAdapter(adapter);
 
@@ -70,7 +68,7 @@ public class DashboardFragment extends Fragment {
 //        if (ans == -1) return 0;
 //        else return ans;
 //    }
-
+//
 //    private void incrementChildrenOnDirectory (DatabaseReference ref) {
 //        int hash = ref.hashCode();
 //        int t = sp.getInt(""+hash, -1);
@@ -79,7 +77,7 @@ public class DashboardFragment extends Fragment {
 //        else e.putInt(""+hash, t + 1);
 //        e.apply();
 //    }
-
+//
 //    private void addItemToDay (int year, int month, int dayOfMonth, Item item) {
 //        String curDate = makePath(year, month, dayOfMonth);
 //        DatabaseReference newRef = databaseReference.child(curDate);
@@ -93,25 +91,22 @@ public class DashboardFragment extends Fragment {
         adapter.clear();
         String curDate = makePath(year, month, dayOfMonth);
         DatabaseReference newRef = database.getReference(curDate);
-//        int c = countChildrenOnDirectory(newRef);
-//        for (int i = 0; i < c; ++i) {
-//            DatabaseReference tmpRef = newRef.child(""+i);
-            newRef.addChildEventListener(new ChildEventListener() {
-                @Override
-                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    Item item = dataSnapshot.getValue(Item.class);
-                    adapter.add(item);
-                }
+        newRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Item item = dataSnapshot.getValue(Item.class);
+                adapter.add(item);
+            }
 
-                @Override
-                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
-                @Override
-                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
-                @Override
-                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s){}
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {}
-                });
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s){}
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {}
+        });
     }
 
     private CalendarView.OnDateChangeListener onDateChangeListener= new CalendarView.OnDateChangeListener() {

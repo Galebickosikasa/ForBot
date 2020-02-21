@@ -31,11 +31,12 @@ public class AuthActivity extends AppCompatActivity {
         setContentView(R.layout.activity_auth);
 
         mAuth = FirebaseAuth.getInstance();
+
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null){
+                if (user != null) {
 
                 } else {
 
@@ -56,13 +57,13 @@ public class AuthActivity extends AppCompatActivity {
     View.OnClickListener OnSignBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            signing(MailField.toString(), PwdField.toString());
+            signing(MailField.getText().toString(), PwdField.getText().toString());
         }
     };
     View.OnClickListener OnRegBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            register(MailField.toString(), PwdField.toString());
+            register(MailField.getText().toString(), PwdField.getText().toString());
         }
     };
 
