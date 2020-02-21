@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -12,6 +13,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 
 import java.util.ArrayList;
 
@@ -30,19 +35,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.fragment_dashboard);
+        setContentView(R.layout.activity_main);
 
         // из-за этой штуки все вылетает
 
-//        BottomNavigationView navView = findViewById(R.id.nav_view);
-//        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-//                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
-//                .build();
-//        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-//        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-//        NavigationUI.setupWithNavController(navView, navController);
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
+                .build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+        NavigationUI.setupWithNavController(navView, navController);
 
-        Log.e ("kek", "start");
+//        Log.e ("kek", "start");
 
         //что-то с базами данных
         final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -75,14 +80,15 @@ public class MainActivity extends AppCompatActivity {
          */
 
         final ListView OlympsList = findViewById(R.id.OlympsList);
+        final OlympAdapter adapter = new OlympAdapter(MainActivity.this, R.layout.olympitem, items);
+        OlympsList.setAdapter(adapter);
 
         databaseReference.child("SomDir").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Item item = dataSnapshot.getValue(Item.class);
                 items.add (item);
-                OlympAdapter adapter = new OlympAdapter(MainActivity.this, R.layout.olympitem, items);
-                OlympsList.setAdapter(adapter);
+                adapter.add(item);
             }
 
             @Override
