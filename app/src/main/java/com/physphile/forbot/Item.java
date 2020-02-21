@@ -1,6 +1,7 @@
 package com.physphile.forbot;
 
 import com.google.firebase.database.IgnoreExtraProperties;
+import com.google.firebase.database.annotations.NotNull;
 
 import java.io.Serializable;
 
@@ -8,8 +9,8 @@ import java.io.Serializable;
 
 @IgnoreExtraProperties
 public class Item implements Serializable{
-    public String name;
-    public String level;
+    private String name;
+    private String level;
 
     public Item(){
 
@@ -20,12 +21,20 @@ public class Item implements Serializable{
         this.name = _name;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public String getLevel() {
         return level;
     }
 
-    public String getName() {
-        return name;
+    public void setName (String name) {
+        this.name = name;
+    }
+
+    public void setLevel(String level) {
+        this.level = level;
     }
 
 }
