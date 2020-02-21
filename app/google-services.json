@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "604937706455-5rhp12qrp2l8vrjnjjcjldbl9vismokp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.physphile.forbot",
+            "certificate_hash": "45e7192074b721c79ba771926a3ff068d86d904f"
+          }
+        },
+        {
           "client_id": "604937706455-mn4lpij82u7dp78uoi88h74cprg75h59.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
