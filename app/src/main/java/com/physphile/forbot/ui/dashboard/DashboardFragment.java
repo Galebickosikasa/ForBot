@@ -1,5 +1,6 @@
 package com.physphile.forbot.ui.dashboard;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +35,7 @@ public class DashboardFragment extends Fragment {
     private OlympAdapter adapter;
     private CalendarView calendarView;
     private HashMap<Integer, Integer> cnt;
+    private SharedPreferences sp;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -98,19 +100,18 @@ public class DashboardFragment extends Fragment {
 
     private int countChildrenOnDirectory (DatabaseReference ref) {
         int hash = ref.hashCode();
-        int ans;
-        if (!cnt.containsKey(hash)) ans = 0;
-        else ans = cnt.get(hash);
-        return ans;
+        int ans = sp.getInt(""+hash, -1);
+        if (ans == -1) return 0;
+        else return ans;
     }
 
     private void incrementChildrenOnDirectory (DatabaseReference ref) {
         int hash = ref.hashCode();
-        if (!cnt.containsKey(hash)) cnt.put(hash, 1);
-        else {
-            int t = cnt.get (hash);
-            cnt.put (hash, t + 1);
-        }
+        int t = sp.getInt(""+hash, -1);
+        SharedPreferences.Editor e = sp.edit();
+        if (t == -1) e.putInt(""+hash, 1);
+        else e.putInt(""+hash, t + 1);
+        e.apply();
     }
 
     private void addItemToDay (int year, int month, int dayOfMonth, Item item) {
