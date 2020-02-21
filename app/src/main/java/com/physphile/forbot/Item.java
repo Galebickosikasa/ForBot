@@ -16,7 +16,7 @@ public class Item implements Serializable{
 
     }
 
-    Item (String _name, String _level) {
+    public Item (String _name, String _level) {
         this.level = _level;
         this.name = _name;
     }
