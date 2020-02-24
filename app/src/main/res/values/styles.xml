@@ -10,4 +10,9 @@
     <item name="android:fontFamily">@font/comfortaa_bold</item>
 
 </style>
+
+    <style name="StartActivityTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:fontFamily">@font/comfortaa_bold</item>
+    </style>
 </resources>
