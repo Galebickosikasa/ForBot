@@ -6,47 +6,92 @@
     android:layout_height="match_parent"
     tools:context=".AuthActivity">
 
-    <Button
-        android:id="@+id/SignBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="60dp"
-        android:text="Войти"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PwdField" />
 
-    <EditText
-        android:id="@+id/MailField"
-        android:layout_width="320dp"
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/MailFieldLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="400dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="200dp"
+        android:layout_marginEnd="40dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:errorEnabled="true"
         android:ems="10"
+        app:endIconMode="clear_text"
+        android:fontFamily="@font/comfortaa_bold"
         android:hint="Адрес электронной почты"
-        android:inputType="textEmailAddress"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <EditText
-        android:id="@+id/PwdField"
-        android:layout_width="320dp"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/MailField"
+            android:inputType="textEmailAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/PwdFieldLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="30dp"
-        android:ems="10"
+        android:layout_marginEnd="40dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:fontFamily="@font/comfortaa_bold"
         android:hint="Пароль"
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/MailField" />
+        app:layout_constraintTop_toBottomOf="@+id/MailFieldLayout"
+        app:endIconMode="password_toggle">
 
-    <Button
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/PwdField"
+            android:inputType="textPassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+<!--    -->
+<!--    <com.google.android.material.textfield.TextInputEditText-->
+<!--        android:id="@+id/PwdField"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="40dp"-->
+<!--        android:layout_marginTop="30dp"-->
+<!--        android:layout_marginEnd="40dp"-->
+<!--        android:ems="10"-->
+<!--        android:fontFamily="@font/comfortaa_bold"-->
+<!--        android:hint="Пароль"-->
+<!--        android:inputType="textPassword"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/MailFieldLayout" />-->
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/RegBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="60dp"
+        android:fontFamily="@font/comfortaa_bold"
         android:text="Зарегестироваться"
+        app:backgroundTint="@color/colorPrimaryLight"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/PwdField" />
+        app:layout_constraintTop_toBottomOf="@+id/PwdFieldLayout" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/SignBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="40dp"
+        android:fontFamily="@font/comfortaa_bold"
+        android:text="Войти"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/PwdFieldLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>
