@@ -3,6 +3,8 @@ package com.physphile.forbot;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -21,6 +23,7 @@ public class AuthActivity extends AppCompatActivity {
     private EditText MailField;
     private EditText PwdField;
     private Button RegBtn;
+
     private Button SignBtn;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -30,7 +33,11 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
+
+
         mAuth = FirebaseAuth.getInstance();
+
+
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -64,6 +71,7 @@ public class AuthActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             register(MailField.getText().toString(), PwdField.getText().toString());
+            signing(MailField.getText().toString(), PwdField.getText().toString());
         }
     };
 
@@ -75,14 +83,13 @@ public class AuthActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-
+                            Toast.makeText(AuthActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
 
                         } else {
                             // If sign in fails, display a message to the user.
 
-                            Toast.makeText(AuthActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AuthActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
 
                         }
 
@@ -99,11 +106,11 @@ public class AuthActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Toast.makeText(AuthActivity.this, "Register success.", Toast.LENGTH_SHORT).show();
 
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(AuthActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+                            Toast.makeText(AuthActivity.this, "Register failed.", Toast.LENGTH_SHORT).show();
 
                         }
 
