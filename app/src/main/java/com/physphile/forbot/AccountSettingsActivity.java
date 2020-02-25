@@ -43,7 +43,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
         if(getSharedPreferences("math", Context.MODE_PRIVATE).getBoolean("math", false)){
             mathCheck.setChecked(true);
         }
-
+        ChooseFoamSeek.setProgress(getSharedPreferences("foam", Context.MODE_PRIVATE).getInt("foam", 0));
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -57,32 +57,24 @@ public class AccountSettingsActivity extends AppCompatActivity {
     }
 
 
-
     //листенер для сикбара
-    OnSeekChangeListener ChooseFoamSeekListener;
-
-    {
-        ChooseFoamSeekListener = new OnSeekChangeListener() {
-
-            @Override
-            public void onSeeking(SeekParams seekParams) {
-                TextView ChooseFoamTxt = findViewById(R.id.ChooseFoamTxt);
-                String s = ChooseFoamSeek.getProgress() + " класс";
-                ChooseFoamTxt.setText(s);
-            }
-
-            @Override
-            public void onStartTrackingTouch(IndicatorSeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(IndicatorSeekBar seekBar) {
-
-            }
-
-        };
-    }
+    OnSeekChangeListener ChooseFoamSeekListener = new OnSeekChangeListener() {
+        @Override
+        public void onSeeking(SeekParams seekParams) {
+            TextView ChooseFoamTxt = findViewById(R.id.ChooseFoamTxt);
+            String s = ChooseFoamSeek.getProgress() + " класс";
+            ChooseFoamTxt.setText(s);
+        }
+        @Override
+        public void onStartTrackingTouch(IndicatorSeekBar seekBar) {}
+        @Override
+        public void onStopTrackingTouch(IndicatorSeekBar seekBar) {
+            SharedPreferences sp = getSharedPreferences("foam", Context.MODE_PRIVATE);
+            SharedPreferences.Editor e = sp.edit();
+            e.putInt("foam", ChooseFoamSeek.getProgress());
+            e.apply();
+        }
+    };
 
     private CheckBox.OnCheckedChangeListener OnCheckBoxClick (final String name){
         final CheckBox.OnCheckedChangeListener onCheckBoxClick = new CheckBox.OnCheckedChangeListener() {
@@ -96,7 +88,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
                     e.putBoolean(name, false);
                 }
                 e.apply();
-
             }
         };
         return onCheckBoxClick;
