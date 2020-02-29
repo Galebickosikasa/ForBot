@@ -27,6 +27,9 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.theartofdev.edmodo.cropper.CropImage;
+import com.theartofdev.edmodo.cropper.CropImageView;
+
 import java.io.IOException;
 import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
@@ -35,9 +38,9 @@ public class NotificationsFragment extends Fragment {
     private View v;
     private FirebaseStorage storage;
     private StorageReference storageReference;
-    private Uri filePath;
     private ImageView Avatar;
     private final int PICK_IMAGE_REQUEST = 71;
+    private final int PIC_CROP = 57;
     private TextView AccountField;
     private FirebaseAuth mAuth;
     @SuppressLint("InflateParams")
@@ -86,47 +89,42 @@ public class NotificationsFragment extends Fragment {
             startActivity(new Intent("com.physphile.forbot.AccountSettingsActivity"));
         }
     };
-    private void chooseImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
-    }
+
     private View.OnClickListener OnAvatarClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            chooseImage();
+            CropImage.activity()
+                    .setCropShape(CropImageView.CropShape.OVAL)
+                    .setAspectRatio(1, 1)
+                    .start(getContext(), NotificationsFragment.this);
         }
     };
     @Override
      public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null )
-        {
-            filePath = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(getContext()).getContentResolver(), filePath);
-                Avatar.setImageBitmap(bitmap);
-                uploadImage();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                try {
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(getContext()).getContentResolver(), resultUri);
+                    Avatar.setImageBitmap(bitmap);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                uploadImage(resultUri);
+            } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+                Exception error = result.getError();
             }
         }
     }
 
-    private void uploadImage() {
-
-        if(filePath != null)
-        {
-            final ProgressDialog progressDialog = new ProgressDialog(getContext());
+    private void uploadImage(Uri filePath) {
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
 
-            StorageReference ref = storage.getReference("images/"+ Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-            ref.putFile(filePath)
+            storageReference.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -149,7 +147,6 @@ public class NotificationsFragment extends Fragment {
                             progressDialog.setMessage("Uploaded "+(int)progress+"%");
                         }
                     });
-        }
     }
 
     @SuppressLint("SetTextI18n")
