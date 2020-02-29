@@ -2,17 +2,14 @@ package com.physphile.forbot;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.SeekBar;
 import android.widget.TextView;
-
 import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
@@ -28,6 +25,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account_settings);
         ChooseFoamSeek = findViewById(R.id.ChooseFoamSeek);
         ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         ChooseFoamSeek.setOnSeekChangeListener(ChooseFoamSeekListener);
@@ -43,17 +41,19 @@ public class AccountSettingsActivity extends AppCompatActivity {
         if(getSharedPreferences("math", Context.MODE_PRIVATE).getBoolean("math", false)){
             mathCheck.setChecked(true);
         }
-        ChooseFoamSeek.setProgress(getSharedPreferences("foam", Context.MODE_PRIVATE).getInt("foam", 0));
+        int foam = getSharedPreferences("foam", Context.MODE_PRIVATE).getInt("foam", -1);
+
+        if (foam != -1){
+            ChooseFoamSeek.setProgress(foam);
+        }
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -77,7 +77,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
     };
 
     private CheckBox.OnCheckedChangeListener OnCheckBoxClick (final String name){
-        final CheckBox.OnCheckedChangeListener onCheckBoxClick = new CheckBox.OnCheckedChangeListener() {
+        return new CheckBox.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences sp = getSharedPreferences(name, Context.MODE_PRIVATE);
@@ -90,6 +90,5 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 e.apply();
             }
         };
-        return onCheckBoxClick;
     }
 }

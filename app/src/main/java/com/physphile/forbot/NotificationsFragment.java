@@ -1,5 +1,6 @@
 package com.physphile.forbot;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -14,11 +15,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,74 +27,36 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.physphile.forbot.MainActivity;
-import com.physphile.forbot.R;
-
 import java.io.IOException;
 import java.util.Objects;
-import java.util.UUID;
-
 import static android.app.Activity.RESULT_OK;
 
 public class NotificationsFragment extends Fragment {
-    View v;
-    FirebaseStorage storage;
-    StorageReference storageReference;
+    private View v;
+    private FirebaseStorage storage;
+    private StorageReference storageReference;
     private Uri filePath;
-    ImageView Avatar;
+    private ImageView Avatar;
     private final int PICK_IMAGE_REQUEST = 71;
-    TextView AccoutField;
-    private FirebaseAuth.AuthStateListener mAuthListener;
+    private TextView AccountField;
     private FirebaseAuth mAuth;
+    @SuppressLint("InflateParams")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         v = inflater.inflate(R.layout.fragment_notifications, null);
-        AccoutField = v.findViewById(R.id.AccountField);
+        AccountField = v.findViewById(R.id.AccountField);
         mAuth = FirebaseAuth.getInstance();
         Avatar = v.findViewById(R.id.Avatar);
         Avatar.setOnClickListener(OnAvatarClick);
         storage = FirebaseStorage.getInstance();
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+        FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @SuppressLint("SetTextI18n")
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    LinearLayout LL = v.findViewById(R.id.LL);
-                    LL.removeAllViews();
-                    AccoutField.setText("Вы вошли как: " + '\n' + mAuth.getCurrentUser().getEmail());
-                    MaterialButton AccoutSettingsBtn = new MaterialButton(getContext());
-                    AccoutSettingsBtn.setText("Настройки аккаунта");
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    params.weight = 1.0f;
-                    params.gravity = Gravity.CENTER;
-                    params.bottomMargin = 30;
-                    params.topMargin = 30;
-                    AccoutSettingsBtn.setLayoutParams(params);
-                    AccoutSettingsBtn.setOnClickListener(OnAccountSettingsBtnClick);
-                    LL.addView(AccoutSettingsBtn);
-                    storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            String url = uri.toString();
-                            Glide.with(getContext()).load(url).into(Avatar);
-                        }
-                    });
+                    updateProfile(true);
                 } else {
-                    LinearLayout LL = v.findViewById(R.id.LL);
-                    LL.removeAllViews();
-                    AccoutField.setText("Вы еще не авторизованы");
-                    MaterialButton NotAuthBtn = new MaterialButton(getContext());
-                    NotAuthBtn.setText("Авторизация");
-                    LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    params.weight = 1.0f;
-                    params.gravity = Gravity.CENTER;
-                    params.bottomMargin = 30;
-                    params.topMargin = 30;
-                    NotAuthBtn.setLayoutParams(params);
-                    NotAuthBtn.setOnClickListener(OnNotAuthBtnClick);
-
-                    LL.addView(NotAuthBtn);
+                    updateProfile(false);
                 }
             }
         };
@@ -106,23 +66,21 @@ public class NotificationsFragment extends Fragment {
                 @Override
                 public void onSuccess(Uri uri) {
                     String url = uri.toString();
-                    Glide.with(getContext()).load(url).into(Avatar);
+                    Glide.with(Objects.requireNonNull(getContext())).load(url).into(Avatar);
                 }
             });
         }
-
         mAuth.addAuthStateListener(mAuthListener);
         return v;
     }
 
-    View.OnClickListener OnNotAuthBtnClick = new View.OnClickListener() {
+    private View.OnClickListener OnNotAuthBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             startActivity(new Intent("com.physphile.forbot.AuthActivity"));
         }
     };
-    View.OnClickListener OnAccountSettingsBtnClick = new View.OnClickListener() {
+    private View.OnClickListener OnAccountSettingsBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             startActivity(new Intent("com.physphile.forbot.AccountSettingsActivity"));
@@ -134,7 +92,7 @@ public class NotificationsFragment extends Fragment {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
-    View.OnClickListener OnAvatarClick = new View.OnClickListener() {
+    private View.OnClickListener OnAvatarClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             chooseImage();
@@ -148,7 +106,7 @@ public class NotificationsFragment extends Fragment {
         {
             filePath = data.getData();
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), filePath);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(getContext()).getContentResolver(), filePath);
                 Avatar.setImageBitmap(bitmap);
                 uploadImage();
             }
@@ -185,12 +143,44 @@ public class NotificationsFragment extends Fragment {
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
                         @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                        public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
                             double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
                                     .getTotalByteCount());
                             progressDialog.setMessage("Uploaded "+(int)progress+"%");
                         }
                     });
         }
+    }
+
+    @SuppressLint("SetTextI18n")
+    private void updateProfile(boolean isUser){
+        LinearLayout LL = v.findViewById(R.id.LL);
+        LL.removeAllViews();
+        final MaterialButton dynamicBtn = new MaterialButton(Objects.requireNonNull(getContext()));
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.weight = 1.0f;
+        params.gravity = Gravity.CENTER;
+        params.bottomMargin = 30;
+        params.topMargin = 30;
+        dynamicBtn.setLayoutParams(params);
+        LL.addView(dynamicBtn);
+        if (isUser){
+            AccountField.setText("Вы вошли как: " + '\n' + Objects.requireNonNull(mAuth.getCurrentUser()).getEmail());
+            dynamicBtn.setText("Настройки аккаунта");
+            storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+            storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    String url = uri.toString();
+                    Glide.with(Objects.requireNonNull(getContext())).load(url).into(Avatar);
+                    dynamicBtn.setOnClickListener(OnAccountSettingsBtnClick);
+                }
+            });
+        } else {
+            AccountField.setText("Вы еще не авторизованы");
+            dynamicBtn.setText("Авторизация");
+            dynamicBtn.setOnClickListener(OnNotAuthBtnClick);
+        }
+
     }
 }
