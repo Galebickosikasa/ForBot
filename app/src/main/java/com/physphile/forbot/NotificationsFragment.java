@@ -29,7 +29,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
 import java.io.IOException;
 import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
@@ -39,8 +38,6 @@ public class NotificationsFragment extends Fragment {
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private ImageView Avatar;
-    private final int PICK_IMAGE_REQUEST = 71;
-    private final int PIC_CROP = 57;
     private TextView AccountField;
     private FirebaseAuth mAuth;
     @SuppressLint("InflateParams")

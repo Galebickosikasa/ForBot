@@ -4,9 +4,13 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -21,6 +25,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        updateTheme();
         setTitle("Настройки аккаунта");
         setContentView(R.layout.activity_account_settings);
         ChooseFoamSeek = findViewById(R.id.ChooseFoamSeek);
@@ -90,5 +95,16 @@ public class AccountSettingsActivity extends AppCompatActivity {
                 e.apply();
             }
         };
+    }
+    public void updateTheme() {
+        switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+            case Configuration.UI_MODE_NIGHT_YES:
+
+                break;
+            case Configuration.UI_MODE_NIGHT_NO:
+                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+                break;
+        }
     }
 }

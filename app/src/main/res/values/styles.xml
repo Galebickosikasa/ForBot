@@ -4,12 +4,13 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@font/comfortaa_bold</item>
+        <item name="android:navigationBarColor">#00000000</item>
+        <item name="android:statusBarColor">#00000000</item>
     </style>
 
-<style name="CalendarCustomText" parent="android:TextAppearance">
-    <item name="android:fontFamily">@font/comfortaa_bold</item>
-
-</style>
+    <style name="CalendarCustomText" parent="android:TextAppearance">
+        <item name="android:fontFamily">@font/comfortaa_bold</item>
+    </style>
 
     <style name="StartActivityTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:windowTranslucentStatus">true</item>
