@@ -1,4 +1,4 @@
-package com.physphile.forbot.ui.notifications;
+package com.physphile.forbot;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.button.MaterialButton;
@@ -32,6 +33,7 @@ import com.physphile.forbot.MainActivity;
 import com.physphile.forbot.R;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 import static android.app.Activity.RESULT_OK;
@@ -54,7 +56,6 @@ public class NotificationsFragment extends Fragment {
         Avatar = v.findViewById(R.id.Avatar);
         Avatar.setOnClickListener(OnAvatarClick);
         storage = FirebaseStorage.getInstance();
-        storageReference = storage.getReference();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -72,8 +73,15 @@ public class NotificationsFragment extends Fragment {
                     params.topMargin = 30;
                     AccoutSettingsBtn.setLayoutParams(params);
                     AccoutSettingsBtn.setOnClickListener(OnAccountSettingsBtnClick);
-
                     LL.addView(AccoutSettingsBtn);
+                    storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+                    storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String url = uri.toString();
+                            Glide.with(getContext()).load(url).into(Avatar);
+                        }
+                    });
                 } else {
                     LinearLayout LL = v.findViewById(R.id.LL);
                     LL.removeAllViews();
@@ -92,6 +100,17 @@ public class NotificationsFragment extends Fragment {
                 }
             }
         };
+        if (mAuth.getCurrentUser() !=  null) {
+            storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+            storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                @Override
+                public void onSuccess(Uri uri) {
+                    String url = uri.toString();
+                    Glide.with(getContext()).load(url).into(Avatar);
+                }
+            });
+        }
+
         mAuth.addAuthStateListener(mAuthListener);
         return v;
     }
@@ -148,7 +167,7 @@ public class NotificationsFragment extends Fragment {
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
 
-            StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
+            StorageReference ref = storage.getReference("images/"+ Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
             ref.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override

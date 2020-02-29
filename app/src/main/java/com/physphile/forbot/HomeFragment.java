@@ -1,4 +1,4 @@
-package com.physphile.forbot.ui.home;
+package com.physphile.forbot;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

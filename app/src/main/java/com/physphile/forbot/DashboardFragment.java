@@ -1,4 +1,4 @@
-package com.physphile.forbot.ui.dashboard;
+package com.physphile.forbot;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
