@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,46 +34,46 @@ import java.io.IOException;
 import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
 
-public class NotificationsFragment extends Fragment {
+public class ProfileDialog extends DialogFragment {
     private View v;
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private ImageView Avatar;
     private TextView AccountField;
     private FirebaseAuth mAuth;
+
+
     @SuppressLint("InflateParams")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.fragment_notifications, null);
+        v = inflater.inflate(R.layout.fragment_profile_dialog, null);
         AccountField = v.findViewById(R.id.AccountField);
         mAuth = FirebaseAuth.getInstance();
         Avatar = v.findViewById(R.id.Avatar);
         Avatar.setOnClickListener(OnAvatarClick);
         storage = FirebaseStorage.getInstance();
-        FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @SuppressLint("SetTextI18n")
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    updateProfile(true);
-                } else {
-                    updateProfile(false);
-                }
-            }
-        };
-        if (mAuth.getCurrentUser() !=  null) {
-            storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-            storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                @Override
-                public void onSuccess(Uri uri) {
-                    String url = uri.toString();
-                    Glide.with(Objects.requireNonNull(getContext())).load(url).into(Avatar);
-                }
-            });
-        }
         mAuth.addAuthStateListener(mAuthListener);
         return v;
     }
+    private FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
+        @SuppressLint("SetTextI18n")
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                updateProfile(true);
+                storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        String url = uri.toString();
+                        Glide.with(Objects.requireNonNull(getContext())).load(url).into(Avatar);
+                    }
+                });
+            } else {
+                updateProfile(false);
+            }
+        }
+    };
 
     private View.OnClickListener OnNotAuthBtnClick = new View.OnClickListener() {
         @Override
@@ -93,11 +94,11 @@ public class NotificationsFragment extends Fragment {
             CropImage.activity()
                     .setCropShape(CropImageView.CropShape.OVAL)
                     .setAspectRatio(1, 1)
-                    .start(getContext(), NotificationsFragment.this);
+                    .start(getContext(), ProfileDialog.this);
         }
     };
     @Override
-     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
@@ -118,46 +119,37 @@ public class NotificationsFragment extends Fragment {
 
     private void uploadImage(Uri filePath) {
         final ProgressDialog progressDialog = new ProgressDialog(getContext());
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
+        progressDialog.setTitle("Uploading...");
+        progressDialog.show();
 
-            storageReference.putFile(filePath)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
-                            Toast.makeText(getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(getContext(), "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
-                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
-                        }
-                    });
+        storageReference.putFile(filePath)
+                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(), "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
+                        double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                .getTotalByteCount());
+                        progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                    }
+                });
     }
 
     @SuppressLint("SetTextI18n")
     private void updateProfile(boolean isUser){
-        LinearLayout LL = v.findViewById(R.id.LL);
-        LL.removeAllViews();
-        final MaterialButton dynamicBtn = new MaterialButton(Objects.requireNonNull(getContext()));
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        params.weight = 1.0f;
-        params.gravity = Gravity.CENTER;
-        params.bottomMargin = 30;
-        params.topMargin = 30;
-        dynamicBtn.setLayoutParams(params);
-        LL.addView(dynamicBtn);
+        final MaterialButton dynamicBtn = v.findViewById(R.id.dynamicBtn);
         if (isUser){
             AccountField.setText("Вы вошли как: " + '\n' + Objects.requireNonNull(mAuth.getCurrentUser()).getEmail());
             dynamicBtn.setText("Настройки аккаунта");
