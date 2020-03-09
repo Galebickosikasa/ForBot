@@ -22,8 +22,7 @@
             android:id="@+id/Avatar"
             android:layout_width="110dp"
             android:layout_height="110dp"
-            android:layout_gravity="center"
-            app:srcCompat="@drawable/common_google_signin_btn_icon_dark_focused" />
+            android:layout_gravity="center" />
     </androidx.cardview.widget.CardView>
 
     <com.google.android.material.button.MaterialButton

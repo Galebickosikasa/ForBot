@@ -4,7 +4,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.database.ChildEventListener;
@@ -35,6 +35,7 @@ public class CalendarFragment extends Fragment {
     private OlympAdapter adapter;
     private CalendarView calendarView;
     private SharedPreferences sp;
+    View v;
 
     public static CalendarFragment newInstance() {
         return new CalendarFragment();
@@ -43,7 +44,7 @@ public class CalendarFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_calendar, null);
+        v = inflater.inflate(R.layout.fragment_calendar, null);
 
         calendarView = v.findViewById(R.id.calendar);
         calendarView.setDate(Calendar.getInstance().getTime().getTime());
@@ -60,8 +61,10 @@ public class CalendarFragment extends Fragment {
         setItemByDate(tmp.getYear(), tmp.getMonth(), tmp.getDay());
         setHasOptionsMenu(true);
         Toolbar toolbar = getActivity().findViewById(R.id.Toolbar);
+        toolbar.getMenu().clear();
         toolbar.inflateMenu(R.menu.toolbar_menu_calendar_fragment);
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
+
         return v;
 
     }
@@ -75,6 +78,7 @@ public class CalendarFragment extends Fragment {
         super.onPause();
         Toolbar toolbar = getActivity().findViewById(R.id.Toolbar);
         toolbar.getMenu().clear();
+        toolbar.inflateMenu(R.menu.default_toolbar_menu);
     }
 
     OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
@@ -82,8 +86,13 @@ public class CalendarFragment extends Fragment {
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()){
                 case R.id.set_today:
-                    CalendarView cal = getActivity().findViewById(R.id.calendar);
+                    CalendarView cal = v.findViewById(R.id.calendar);
                     cal.setDate(Calendar.getInstance().getTime().getTime());
+                    break;
+                case R.id.profile:
+                    DialogFragment profileDialog = new ProfileDialogFragment();
+                    profileDialog.show(getFragmentManager(), "profileDialog");
+                    break;
             }
             return false;
         }

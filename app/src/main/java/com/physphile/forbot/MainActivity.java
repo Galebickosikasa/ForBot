@@ -1,14 +1,15 @@
 package com.physphile.forbot;
 
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -18,12 +19,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,8 +77,9 @@ public class MainActivity extends AppCompatActivity {
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()){
                 case R.id.profile:
-                    DialogFragment profileDialog = new ProfileDialog();
+                    DialogFragment profileDialog = new ProfileDialogFragment();
                     profileDialog.show(getSupportFragmentManager(), "profileDialog");
+                    break;
             }
             return false;
         }
@@ -97,5 +101,20 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
+    public void saveAvatar(Bitmap bitmap) {
+        try {
+            Toast.makeText(getBaseContext(), "аватар сохранен", Toast.LENGTH_SHORT).show();
+            FileOutputStream out = openFileOutput("avatar", MODE_PRIVATE);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // ставить 85 бесполезно, PNG - это формат сжатия без потерь
+            out.close();
+
+        } catch (Exception ignored) {
+            Toast.makeText(getBaseContext(), "ошибка сохраненя", Toast.LENGTH_SHORT).show();
+        }
+    }
+    public Bitmap readAvatar() throws FileNotFoundException {
+        FileInputStream is = openFileInput("avatar");
+        return BitmapFactory.decodeStream(is);
+    }
 }
 

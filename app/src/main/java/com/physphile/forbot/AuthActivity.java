@@ -3,6 +3,8 @@ package com.physphile.forbot;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -74,8 +76,9 @@ public class AuthActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(AuthActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Intent intent = new Intent();
+                            setResult(RESULT_OK, intent);
                             finish();
-
                         } else { Toast.makeText(AuthActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show(); }
                     }
                 });
@@ -88,6 +91,7 @@ public class AuthActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(AuthActivity.this, "Register success.", Toast.LENGTH_SHORT).show();
+
 
                         } else { Toast.makeText(AuthActivity.this, "Register failed.", Toast.LENGTH_SHORT).show(); }
                     }
