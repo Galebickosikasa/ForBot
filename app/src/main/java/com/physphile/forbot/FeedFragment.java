@@ -22,8 +22,8 @@ public class FeedFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_feed, container, false);
 
-        Toolbar t = getActivity().findViewById(R.id.Toolbar);
-        t.setOnMenuItemClickListener(onMenuItemClickListener);
+
+
         return root;
     }
     Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {

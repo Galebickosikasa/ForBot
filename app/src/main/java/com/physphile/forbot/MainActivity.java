@@ -40,14 +40,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        toolbar = findViewById(R.id.Toolbar);
+
         BottomNavigationView navView = findViewById(R.id.nav_view);
         feedFragment = FeedFragment.newInstance();
         calendarFragment = CalendarFragment.newInstance();
 
 
         navView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
-        toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
+
 
         updateTheme();
     }

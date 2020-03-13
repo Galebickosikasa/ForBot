@@ -20,8 +20,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -60,11 +62,16 @@ public class ProfileDialogFragment extends DialogFragment {
         Avatar = v.findViewById(R.id.Avatar);
         if(mAuth.getCurrentUser() !=  null){
             Avatar.setOnClickListener(OnAvatarClick);
-            setAvatar();
         }
         storage = FirebaseStorage.getInstance();
         mAuth.addAuthStateListener(mAuthListener);
+        try {
+            Avatar.setImageBitmap(((MainActivity) getActivity()).readAvatar());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "filenotfound", Toast.LENGTH_LONG).show();
 
+        }
         return v;
     }
     private FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -117,6 +124,7 @@ public class ProfileDialogFragment extends DialogFragment {
                         bitmap = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(getContext()).getContentResolver(), resultUri);
                         uploadImage(resultUri);
                         ((MainActivity) getActivity()).saveAvatar(bitmap);
+                        Avatar.setImageBitmap(((MainActivity) getActivity()).readAvatar());
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -125,10 +133,12 @@ public class ProfileDialogFragment extends DialogFragment {
                 } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                     Exception error = result.getError();
                 }
+                break;
             case 50:
                 if (resultCode == RESULT_OK){
                     getFirebaseBitmap();
                 }
+                break;
         }
     }
 
@@ -154,6 +164,12 @@ public class ProfileDialogFragment extends DialogFragment {
 
                     }
                 });
+    }
+    private Bitmap downloadImage() throws IOException {
+        storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+        File localFile = File.createTempFile("images", "avatar");
+        storageReference.getFile(localFile);
+        return BitmapFactory.decodeFile(localFile.getAbsolutePath());
     }
 
     @SuppressLint("SetTextI18n")
@@ -198,8 +214,8 @@ public class ProfileDialogFragment extends DialogFragment {
             ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener< FileDownloadTask.TaskSnapshot >() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                   Bitmap my_image = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                    ((MainActivity) getActivity()).saveAvatar(my_image);
+                   Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                    ((MainActivity) getActivity()).saveAvatar(bitmap);
                     setAvatar();
                 }
             }).addOnFailureListener(new OnFailureListener() {

@@ -8,21 +8,6 @@
     android:orientation="vertical"
     >
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/Toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@drawable/toolbar_shape"
-        android:minHeight="?attr/actionBarSize"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:paddingRight="10dp"
-        app:menu="@menu/default_toolbar_menu"
-        />
-
     <FrameLayout
         android:id="@+id/nav_host_fragment"
         android:layout_width="match_parent"

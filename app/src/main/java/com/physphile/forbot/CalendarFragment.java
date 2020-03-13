@@ -29,7 +29,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class CalendarFragment extends Fragment {
-
+    private Toolbar toolbar;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private OlympAdapter adapter;
@@ -45,7 +45,7 @@ public class CalendarFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         v = inflater.inflate(R.layout.fragment_calendar, null);
-
+        toolbar = v.findViewById(R.id.calendarToolbar);
         calendarView = v.findViewById(R.id.calendar);
         calendarView.setDate(Calendar.getInstance().getTime().getTime());
         calendarView.setOnDateChangeListener(onDateChangeListener);
@@ -60,11 +60,7 @@ public class CalendarFragment extends Fragment {
         Date tmp = new Date(calendarView.getDate());
         setItemByDate(tmp.getYear(), tmp.getMonth(), tmp.getDay());
         setHasOptionsMenu(true);
-        Toolbar toolbar = getActivity().findViewById(R.id.Toolbar);
-        toolbar.getMenu().clear();
-        toolbar.inflateMenu(R.menu.toolbar_menu_calendar_fragment);
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
-
         return v;
 
     }
@@ -73,20 +69,13 @@ public class CalendarFragment extends Fragment {
         return year + "/" + month + "/" + dayOfMonth;
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Toolbar toolbar = getActivity().findViewById(R.id.Toolbar);
-        toolbar.getMenu().clear();
-        toolbar.inflateMenu(R.menu.default_toolbar_menu);
-    }
-
     OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()){
                 case R.id.set_today:
                     CalendarView cal = v.findViewById(R.id.calendar);
+                    adapter.clear();
                     cal.setDate(Calendar.getInstance().getTime().getTime());
                     break;
                 case R.id.profile:
