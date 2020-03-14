@@ -13,7 +13,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".SplashScreenActivity"
+        <activity android:name=".NewsCreateActivity">
+            <intent-filter>
+                <action android:name="com.physphile.forbot.NewsCreateActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".SplashScreenActivity"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,15 +29,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".AccountSettingsActivity"
+        <activity
+            android:name=".AccountSettingsActivity"
             android:theme="@style/DefaultActivityTheme">
             <intent-filter>
-                <action android:name="com.physphile.forbot.AccountSettingsActivity"/>
+                <action android:name="com.physphile.forbot.AccountSettingsActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".AuthActivity"
+        <activity
+            android:name=".AuthActivity"
             android:theme="@style/DefaultActivityTheme">
             <intent-filter>
                 <action android:name="com.physphile.forbot.AuthActivity" />
@@ -44,8 +54,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
-            android:theme="@style/DefaultActivityTheme"/>
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/DefaultActivityTheme" />
 
         <meta-data
             android:name="preloaded_fonts"

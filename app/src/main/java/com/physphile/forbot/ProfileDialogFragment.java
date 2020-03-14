@@ -66,7 +66,7 @@ public class ProfileDialogFragment extends DialogFragment {
         storage = FirebaseStorage.getInstance();
         mAuth.addAuthStateListener(mAuthListener);
         try {
-            Avatar.setImageBitmap(((MainActivity) getActivity()).readAvatar());
+            Avatar.setImageBitmap(((MainActivity) getActivity()).readFile("avatar"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Toast.makeText(getContext(), "filenotfound", Toast.LENGTH_LONG).show();
@@ -123,8 +123,8 @@ public class ProfileDialogFragment extends DialogFragment {
                     try {
                         bitmap = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(getContext()).getContentResolver(), resultUri);
                         uploadImage(resultUri);
-                        ((MainActivity) getActivity()).saveAvatar(bitmap);
-                        Avatar.setImageBitmap(((MainActivity) getActivity()).readAvatar());
+                        ((MainActivity) getActivity()).saveFile(bitmap, "avatar");
+                        Avatar.setImageBitmap(((MainActivity) getActivity()).readFile("avatar"));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -143,27 +143,8 @@ public class ProfileDialogFragment extends DialogFragment {
     }
 
     private void uploadImage(Uri filePath) {
-        storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-        storageReference.putFile(filePath)
-                .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                        Toast.makeText(getContext(), "Uploaded", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getContext(), "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                    @Override
-                    public void onProgress(@NonNull UploadTask.TaskSnapshot taskSnapshot) {
-
-                    }
-                });
+        storageReference = storage.getReference("avatars/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+        storageReference.putFile(filePath);
     }
     private Bitmap downloadImage() throws IOException {
         storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
@@ -199,7 +180,7 @@ public class ProfileDialogFragment extends DialogFragment {
     }
     private void setAvatar(){
         try {
-            Bitmap b = ((MainActivity) getActivity()).readAvatar();
+            Bitmap b = ((MainActivity) getActivity()).readFile("avatar");
             Avatar.setImageBitmap(b);
             Toast.makeText(getContext(), "аватар установлен", Toast.LENGTH_SHORT).show();
         } catch (FileNotFoundException e) {
@@ -208,14 +189,14 @@ public class ProfileDialogFragment extends DialogFragment {
         }
     }
     private void getFirebaseBitmap(){
-        StorageReference ref = storage.getReference().child("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
+        StorageReference ref = storage.getReference().child("avatars/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
         try {
             final File localFile = File.createTempFile("Images", "bmp");
             ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener< FileDownloadTask.TaskSnapshot >() {
                 @Override
                 public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
                    Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                    ((MainActivity) getActivity()).saveAvatar(bitmap);
+                    ((MainActivity) getActivity()).saveFile(bitmap, "avatar");
                     setAvatar();
                 }
             }).addOnFailureListener(new OnFailureListener() {

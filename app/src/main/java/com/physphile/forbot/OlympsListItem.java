@@ -8,15 +8,15 @@ import java.io.Serializable;
 //наш класс элементов, которые мы будем пушить в БД
 
 @IgnoreExtraProperties
-public class Item implements Serializable{
+public class OlympsListItem implements Serializable{
     private String name;
     private String level;
 
-    public Item(){
+    OlympsListItem(){
 
     }
 
-    public Item (String _name, String _level) {
+    public OlympsListItem(String _name, String _level) {
         this.level = _level;
         this.name = _name;
     }
@@ -25,7 +25,7 @@ public class Item implements Serializable{
         return name;
     }
 
-    public String getLevel() {
+    String getLevel() {
         return level;
     }
 
@@ -33,7 +33,7 @@ public class Item implements Serializable{
         this.name = name;
     }
 
-    public void setLevel(String level) {
+    void setLevel(String level) {
         this.level = level;
     }
 

@@ -54,7 +54,7 @@ public class CalendarFragment extends Fragment {
         database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference();
 
-        adapter = new OlympAdapter(getContext(), R.layout.olympitem);
+        adapter = new OlympAdapter(getContext(), R.layout.olymps_item);
         OlympsList.setAdapter(adapter);
 
         Date tmp = new Date(calendarView.getDate());
@@ -119,7 +119,7 @@ public class CalendarFragment extends Fragment {
         newRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Item item = dataSnapshot.getValue(Item.class);
+                OlympsListItem item = dataSnapshot.getValue(OlympsListItem.class);
                 adapter.add(item);
             }
 
@@ -140,7 +140,6 @@ public class CalendarFragment extends Fragment {
         public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
             String curDate = makePath(year, month, dayOfMonth);
             setItemByDate(year, month, dayOfMonth);
-            Log.e ("kek", curDate);
         }
 
     };

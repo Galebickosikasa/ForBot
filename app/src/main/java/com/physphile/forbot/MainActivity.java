@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.nav_view);
         feedFragment = FeedFragment.newInstance();
         calendarFragment = CalendarFragment.newInstance();
-
+        replaceFragment(feedFragment);
 
         navView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
 
@@ -72,18 +72,6 @@ public class MainActivity extends AppCompatActivity {
         ft.replace(R.id.nav_host_fragment, f);
         ft.commit();
     }
-    Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            switch (item.getItemId()){
-                case R.id.profile:
-                    DialogFragment profileDialog = new ProfileDialogFragment();
-                    profileDialog.show(getSupportFragmentManager(), "profileDialog");
-                    break;
-            }
-            return false;
-        }
-    };
 
     BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
         @Override
@@ -101,19 +89,19 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     };
-    public void saveAvatar(Bitmap bitmap) {
+    public void saveFile(Bitmap bitmap, String name) {
         try {
-            Toast.makeText(getBaseContext(), "аватар сохранен", Toast.LENGTH_SHORT).show();
-            FileOutputStream out = openFileOutput("avatar", MODE_PRIVATE);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out); // ставить 85 бесполезно, PNG - это формат сжатия без потерь
+            FileOutputStream out = openFileOutput(name, MODE_PRIVATE);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
+            Log.e("ARTEM", "файл сохранен");
             out.close();
-
         } catch (Exception ignored) {
-            Toast.makeText(getBaseContext(), "ошибка сохраненя", Toast.LENGTH_SHORT).show();
+            Log.e("ARTEM", "файл не сохранен");
         }
     }
-    public Bitmap readAvatar() throws FileNotFoundException {
-        FileInputStream is = openFileInput("avatar");
+    public Bitmap readFile(String name) throws FileNotFoundException {
+        FileInputStream is = openFileInput(name);
+        Log.e("ARTEM", "файл прочитан");
         return BitmapFactory.decodeStream(is);
     }
 }

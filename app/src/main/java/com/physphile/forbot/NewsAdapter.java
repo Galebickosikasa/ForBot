@@ -1,21 +1,23 @@
 package com.physphile.forbot;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class OlympAdapter extends ArrayAdapter<OlympsListItem> {
+public class NewsAdapter extends ArrayAdapter<NewsFeedItem> {
 
     private Context mContext;
     private int mResource;
 
-    OlympAdapter(@NonNull Context context, int resource) {
+    NewsAdapter(@NonNull Context context, int resource) {
         super(context, resource);
         mContext = context;
         mResource = resource;
@@ -24,17 +26,17 @@ public class OlympAdapter extends ArrayAdapter<OlympsListItem> {
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        String name = getItem(position).getName();
-        String level = getItem(position).getLevel();
+        String title = getItem(position).getTitle();
+        Bitmap image = getItem(position).getNewsTitleImage();
 
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate (mResource, parent, false);
 
-        TextView tvName = (TextView) convertView.findViewById(R.id.olympName);
-        TextView tvLevel = (TextView) convertView.findViewById(R.id.olympLevel);
+        TextView tvTitle = convertView.findViewById(R.id.NewsTitle);
+        ImageView iwImage = convertView.findViewById(R.id.NewsTitleImage);
 
-        tvName.setText(name);
-        tvLevel.setText(level);
+        tvTitle.setText(title);
+        iwImage.setImageBitmap(image);
 
         return convertView;
     }
