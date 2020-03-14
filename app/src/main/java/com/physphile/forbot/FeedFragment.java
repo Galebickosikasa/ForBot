@@ -107,8 +107,8 @@ public class FeedFragment extends Fragment {
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
+                    databaseReference = database.getReference("news/");
 
-                    adapter.add(nfi);
                 }
                     break;
                 }
