@@ -3,7 +3,6 @@ package com.physphile.forbot;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -18,11 +17,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class AuthActivity extends AppCompatActivity {
-
     private EditText MailField;
     private EditText PwdField;
-    private Button RegBtn;
-    private Button SignBtn;
     private FirebaseAuth mAuth;
 
     @Override
@@ -32,25 +28,22 @@ public class AuthActivity extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
-
         mAuth = FirebaseAuth.getInstance();
         MailField = findViewById(R.id.MailField);
         PwdField = findViewById(R.id.PwdField);
-        RegBtn = findViewById(R.id.RegBtn);
-        SignBtn = findViewById(R.id.SignBtn);
-        RegBtn.setOnClickListener(OnRegBtnClick);
-        SignBtn.setOnClickListener(OnSignBtnClick);
+        Button regBtn = findViewById(R.id.RegBtn);
+        Button signBtn = findViewById(R.id.SignBtn);
+        regBtn.setOnClickListener(OnRegBtnClick);
+        signBtn.setOnClickListener(OnSignBtnClick);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        if (item.getItemId() == android.R.id.home) {
+            this.finish();
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     View.OnClickListener OnSignBtnClick = new View.OnClickListener() {
@@ -75,7 +68,6 @@ public class AuthActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(AuthActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
-                            FirebaseUser user = mAuth.getCurrentUser();
                             Intent intent = new Intent();
                             setResult(RESULT_OK, intent);
                             finish();
@@ -91,8 +83,6 @@ public class AuthActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(AuthActivity.this, "Register success.", Toast.LENGTH_SHORT).show();
-
-
                         } else { Toast.makeText(AuthActivity.this, "Register failed.", Toast.LENGTH_SHORT).show(); }
                     }
                 });

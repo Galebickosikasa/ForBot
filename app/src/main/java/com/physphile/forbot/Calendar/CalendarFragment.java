@@ -1,75 +1,58 @@
-package com.physphile.forbot;
+package com.physphile.forbot.Calendar;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
 import android.widget.ListView;
-
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
+import com.physphile.forbot.ProfileDialogFragment;
+import com.physphile.forbot.R;
 
 import java.util.Calendar;
-import java.util.Date;
+
+import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
 
 public class CalendarFragment extends Fragment {
-    private Toolbar toolbar;
     private FirebaseDatabase database;
-    private DatabaseReference databaseReference;
     private OlympAdapter adapter;
-    private CalendarView calendarView;
-    private SharedPreferences sp;
-    View v;
+    private View v;
 
-    public static CalendarFragment newInstance() {
-        return new CalendarFragment();
-    }
-
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container, Bundle savedInstanceState) {
-
-        v = inflater.inflate(R.layout.fragment_calendar, null);
-        toolbar = v.findViewById(R.id.calendarToolbar);
-        calendarView = v.findViewById(R.id.calendar);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        v = inflater.inflate(R.layout.fragment_calendar, container,false);
+        Toolbar toolbar = v.findViewById(R.id.calendarToolbar);
+        CalendarView calendarView = v.findViewById(R.id.calendar);
         calendarView.setDate(Calendar.getInstance().getTime().getTime());
         calendarView.setOnDateChangeListener(onDateChangeListener);
-        ListView OlympsList = v.findViewById(R.id.OlympsList);
-
+        ListView olympsList = v.findViewById(R.id.OlympsList);
         database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference();
-
         adapter = new OlympAdapter(getContext(), R.layout.olymps_item);
-        OlympsList.setAdapter(adapter);
-
-        Date tmp = new Date(calendarView.getDate());
-        setItemByDate(tmp.getYear(), tmp.getMonth(), tmp.getDay());
-        setHasOptionsMenu(true);
+        olympsList.setAdapter(adapter);
+        Calendar calendar = Calendar.getInstance();
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
+        setItemByDate(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
         return v;
-
     }
+
+    static CalendarFragment newInstance() { return new CalendarFragment(); }
 
     private String makePath (int year, int month, int dayOfMonth) {
         return year + "/" + month + "/" + dayOfMonth;
     }
 
-    OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
+    private OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()){
@@ -80,37 +63,12 @@ public class CalendarFragment extends Fragment {
                     break;
                 case R.id.profile:
                     DialogFragment profileDialog = new ProfileDialogFragment();
-                    profileDialog.show(getFragmentManager(), "profileDialog");
+                    profileDialog.show(getChildFragmentManager(), FRAGMENT_DIALOG_PROFILE_TAG);
                     break;
             }
             return false;
         }
     };
-
-    //    private int countChildrenOnDirectory (DatabaseReference ref) {
-//        int hash = ref.hashCode();
-//        int ans = sp.getInt(""+hash, -1);
-//        if (ans == -1) return 0;
-//        else return ans;
-//    }
-//
-//    private void incrementChildrenOnDirectory (DatabaseReference ref) {
-//        int hash = ref.hashCode();
-//        int t = sp.getInt(""+hash, -1);
-//        SharedPreferences.Editor e = sp.edit();
-//        if (t == -1) e.putInt(""+hash, 1);
-//        else e.putInt(""+hash, t + 1);
-//        e.apply();
-//    }
-//
-//    private void addItemToDay (int year, int month, int dayOfMonth, Item item) {
-//        String curDate = makePath(year, month, dayOfMonth);
-//        DatabaseReference newRef = databaseReference.child(curDate);
-//        int c = countChildrenOnDirectory(newRef);
-//        newRef = newRef.child("" + c);
-//        newRef.setValue(item);
-//        incrementChildrenOnDirectory(databaseReference.child(curDate));
-//    }
 
     private void setItemByDate (int year, int month, int dayOfMonth) {
         adapter.clear();
@@ -122,7 +80,6 @@ public class CalendarFragment extends Fragment {
                 OlympsListItem item = dataSnapshot.getValue(OlympsListItem.class);
                 adapter.add(item);
             }
-
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
             @Override
@@ -135,13 +92,9 @@ public class CalendarFragment extends Fragment {
     }
 
     private CalendarView.OnDateChangeListener onDateChangeListener= new CalendarView.OnDateChangeListener() {
-
         @Override
         public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-            String curDate = makePath(year, month, dayOfMonth);
             setItemByDate(year, month, dayOfMonth);
         }
-
     };
-
 }

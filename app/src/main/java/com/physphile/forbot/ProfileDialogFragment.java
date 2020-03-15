@@ -1,8 +1,5 @@
 package com.physphile.forbot;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,104 +10,89 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
-
-import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.button.MaterialButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
-import java.util.Objects;
 import static android.app.Activity.RESULT_OK;
+import static com.physphile.forbot.Constants.ACCOUNT_SETTINGS_ACTIVITY_PATH;
+import static com.physphile.forbot.Constants.AUTH_ACTIVITY_CODE;
+import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
+import static com.physphile.forbot.Constants.FILE_IMAGE_AVATAR;
+import static com.physphile.forbot.Constants.FILE_PREFIX;
+import static com.physphile.forbot.Constants.LOG_NAME;
+import static com.physphile.forbot.Constants.STORAGE_AVATAR_PATH;
 
 public class ProfileDialogFragment extends DialogFragment {
     private View v;
     private FirebaseStorage storage;
-    private StorageReference storageReference;
     private ImageView Avatar;
     private TextView AccountField;
+    private FirebaseUser user;
     private FirebaseAuth mAuth;
 
-
-    @SuppressLint("InflateParams")
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.fragment_profile_dialog, null);
+        v = inflater.inflate(R.layout.fragment_profile_dialog, container, false);
         AccountField = v.findViewById(R.id.AccountField);
         mAuth = FirebaseAuth.getInstance();
         Avatar = v.findViewById(R.id.Avatar);
-        if(mAuth.getCurrentUser() !=  null){
-            Avatar.setOnClickListener(OnAvatarClick);
-        }
+        user = mAuth.getCurrentUser();
+        Button dynamicBtn = v.findViewById(R.id.dynamicBtn);
+        if(mAuth.getCurrentUser() !=  null){ Avatar.setOnClickListener(onClickListener); }
+        dynamicBtn.setOnClickListener(onClickListener);
         storage = FirebaseStorage.getInstance();
         mAuth.addAuthStateListener(mAuthListener);
-        try {
-            Avatar.setImageBitmap(((MainActivity) getActivity()).readFile("avatar"));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "filenotfound", Toast.LENGTH_LONG).show();
-
-        }
+        if(user != null){ setAvatar(); }
         return v;
     }
+
     private FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
-        @SuppressLint("SetTextI18n")
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
+            user = firebaseAuth.getCurrentUser();
             if (user != null) {
                 updateProfile(true);
-
+                Log.e(LOG_NAME, "onAuthStateChanged true");
             } else {
                 updateProfile(false);
+                Log.e(LOG_NAME, "onAuthStateChanged false");
             }
         }
     };
 
-    private View.OnClickListener OnNotAuthBtnClick = new View.OnClickListener() {
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            startActivityForResult(new Intent("com.physphile.forbot.AuthActivity"), 50);
+            switch(v.getId()){
+                case R.id.Avatar:
+                    CropImage.activity()
+                            .setCropShape(CropImageView.CropShape.OVAL)
+                            .setAspectRatio(1, 1)
+                            .start(getContext(), ProfileDialogFragment.this);
+                    break;
+                case R.id.dynamicBtn:
+                    startActivityForResult(new Intent(AUTH_ACTIVITY_PATH), AUTH_ACTIVITY_CODE);
+                    break;
+                case R.id.AccountSettingsBtn:
+                    startActivity(new Intent(ACCOUNT_SETTINGS_ACTIVITY_PATH));
+                    break;
+            }
         }
     };
 
-    private View.OnClickListener OnAccountSettingsBtnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            startActivity(new Intent("com.physphile.forbot.AccountSettingsActivity"));
-        }
-    };
-
-    private View.OnClickListener OnAvatarClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            CropImage.activity()
-                    .setCropShape(CropImageView.CropShape.OVAL)
-                    .setAspectRatio(1, 1)
-                    .start(getContext(), ProfileDialogFragment.this);
-        }
-    };
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -118,95 +100,76 @@ public class ProfileDialogFragment extends DialogFragment {
             case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 if (resultCode == RESULT_OK) {
-                    Uri resultUri = result.getUri();
-                    Bitmap bitmap;
+                    Bitmap bitmap = null;
                     try {
-                        bitmap = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(getContext()).getContentResolver(), resultUri);
-                        uploadImage(resultUri);
-                        ((MainActivity) getActivity()).saveFile(bitmap, "avatar");
-                        Avatar.setImageBitmap(((MainActivity) getActivity()).readFile("avatar"));
+                        bitmap = MediaStore.Images.Media.getBitmap(getContext().getContentResolver(), result.getUri());
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        Log.e(LOG_NAME, "cropActivity: изображение не найдено");
                     }
-
-
-                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                    Exception error = result.getError();
+                    Avatar.setImageBitmap(bitmap);
+                    uploadImage(result.getUri());
+                    ((MainActivity) getActivity()).saveFile(bitmap, FILE_IMAGE_AVATAR);
                 }
                 break;
-            case 50:
+
+            case AUTH_ACTIVITY_CODE:
                 if (resultCode == RESULT_OK){
-                    getFirebaseBitmap();
+                    try {
+                        setAvatarFirebase();
+                        Log.e(LOG_NAME, "автар установлен");
+                    } catch (IOException e) { Log.e(LOG_NAME, "аватар не установлен"); }
+
                 }
                 break;
         }
     }
 
     private void uploadImage(Uri filePath) {
-        storageReference = storage.getReference("avatars/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-        storageReference.putFile(filePath);
-    }
-    private Bitmap downloadImage() throws IOException {
-        storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-        File localFile = File.createTempFile("images", "avatar");
-        storageReference.getFile(localFile);
-        return BitmapFactory.decodeFile(localFile.getAbsolutePath());
+        storage.getReference(STORAGE_AVATAR_PATH + user.getUid())
+                .putFile(filePath);
     }
 
-    @SuppressLint("SetTextI18n")
+    private void setAvatarFirebase() throws IOException {
+        final File localFile = File.createTempFile(FILE_PREFIX, FILE_IMAGE_AVATAR);
+        storage.getReference(STORAGE_AVATAR_PATH + user.getUid())
+                .getFile(localFile)
+                .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                        Bitmap bmp = BitmapFactory.decodeFile(localFile.getPath());
+                        Avatar.setImageBitmap(bmp);
+                        ((MainActivity) getActivity()).saveFile(bmp, FILE_IMAGE_AVATAR);
+                        Log.e(LOG_NAME, "download image done");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(LOG_NAME, "download image failure");
+                    }
+                });
+    }
+
     private void updateProfile(boolean isUser){
-        final MaterialButton dynamicBtn = v.findViewById(R.id.dynamicBtn);
+        MaterialButton dynamicBtn = v.findViewById(R.id.dynamicBtn);
         if (isUser){
-            AccountField.setText("Вы вошли как: " + '\n' + Objects.requireNonNull(mAuth.getCurrentUser()).getEmail());
+            AccountField.setText(mAuth.getCurrentUser().getEmail());
             dynamicBtn.setText("Настройки аккаунта");
-            dynamicBtn.setOnClickListener(OnAccountSettingsBtnClick);
-
+            dynamicBtn.setId(R.id.AccountSettingsBtn);
         } else {
             AccountField.setText("Вы еще не авторизованы");
             dynamicBtn.setText("Авторизация");
-            dynamicBtn.setOnClickListener(OnNotAuthBtnClick);
         }
+    }
 
-    }
-    private void setAvatarFirebase(){
-        storageReference = storage.getReference("images/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                String url = uri.toString();
-                Glide.with(Objects.requireNonNull(getContext())).load(url).into(Avatar);
-            }
-        });
-    }
     private void setAvatar(){
         try {
-            Bitmap b = ((MainActivity) getActivity()).readFile("avatar");
+            Bitmap b = ((MainActivity) getActivity()).readFile(FILE_IMAGE_AVATAR);
             Avatar.setImageBitmap(b);
-            Toast.makeText(getContext(), "аватар установлен", Toast.LENGTH_SHORT).show();
+            Log.e(LOG_NAME, "Аватар установлен");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Toast.makeText(getContext(), "ошибка установки аватара", Toast.LENGTH_SHORT).show();
-        }
-    }
-    private void getFirebaseBitmap(){
-        StorageReference ref = storage.getReference().child("avatars/" + Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-        try {
-            final File localFile = File.createTempFile("Images", "bmp");
-            ref.getFile(localFile).addOnSuccessListener(new OnSuccessListener< FileDownloadTask.TaskSnapshot >() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                   Bitmap bitmap = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                    ((MainActivity) getActivity()).saveFile(bitmap, "avatar");
-                    setAvatar();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(getActivity(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
+            Log.e(LOG_NAME, "Аватар не установлен");
         }
     }
 }

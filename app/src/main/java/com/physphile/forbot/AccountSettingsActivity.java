@@ -4,13 +4,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
@@ -19,13 +14,12 @@ import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
 
 public class AccountSettingsActivity extends AppCompatActivity {
-
     IndicatorSeekBar ChooseFoamSeek;
     CheckBox physicsCheck, mathCheck;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        updateTheme();
+//        updateTheme();
         setTitle("Настройки аккаунта");
         setContentView(R.layout.activity_account_settings);
         ChooseFoamSeek = findViewById(R.id.ChooseFoamSeek);
@@ -34,7 +28,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
         actionBar.setHomeButtonEnabled(true);
         actionBar.setDisplayHomeAsUpEnabled(true);
         ChooseFoamSeek.setOnSeekChangeListener(ChooseFoamSeekListener);
-
         physicsCheck = findViewById(R.id.physicsCheck);
         mathCheck = findViewById(R.id.mathCheck);
         physicsCheck.setOnCheckedChangeListener(OnCheckBoxClick("physics"));
@@ -52,6 +45,7 @@ public class AccountSettingsActivity extends AppCompatActivity {
             ChooseFoamSeek.setProgress(foam);
         }
     }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
@@ -61,8 +55,6 @@ public class AccountSettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
-    //листенер для сикбара
     OnSeekChangeListener ChooseFoamSeekListener = new OnSeekChangeListener() {
         @Override
         public void onSeeking(SeekParams seekParams) {
@@ -96,15 +88,16 @@ public class AccountSettingsActivity extends AppCompatActivity {
             }
         };
     }
-    public void updateTheme() {
-        switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
-            case Configuration.UI_MODE_NIGHT_YES:
 
-                break;
-            case Configuration.UI_MODE_NIGHT_NO:
-                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
-                break;
-        }
-    }
+//    public void updateTheme() {
+//        switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
+//            case Configuration.UI_MODE_NIGHT_YES:
+//
+//                break;
+//            case Configuration.UI_MODE_NIGHT_NO:
+//                getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
+//                getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+//                break;
+//        }
+//    }
 }

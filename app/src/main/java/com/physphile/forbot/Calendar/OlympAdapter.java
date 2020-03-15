@@ -1,4 +1,4 @@
-package com.physphile.forbot;
+package com.physphile.forbot.Calendar;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -6,12 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-public class OlympAdapter extends ArrayAdapter<OlympsListItem> {
+import com.physphile.forbot.R;
 
+class OlympAdapter extends ArrayAdapter<OlympsListItem> {
     private Context mContext;
     private int mResource;
 
@@ -26,16 +26,12 @@ public class OlympAdapter extends ArrayAdapter<OlympsListItem> {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         String name = getItem(position).getName();
         String level = getItem(position).getLevel();
-
         LayoutInflater inflater = LayoutInflater.from(mContext);
         convertView = inflater.inflate (mResource, parent, false);
-
         TextView tvName = (TextView) convertView.findViewById(R.id.olympName);
         TextView tvLevel = (TextView) convertView.findViewById(R.id.olympLevel);
-
         tvName.setText(name);
         tvLevel.setText(level);
-
         return convertView;
     }
 }

@@ -2,11 +2,8 @@ package com.physphile.forbot;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -15,25 +12,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.physphile.forbot.Feed.NewsFirebaseItem;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Objects;
+import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
+import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE;
+import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE_IMAGE;
+import static com.physphile.forbot.Constants.LOG_NAME;
+import static com.physphile.forbot.Constants.STORAGE_NEWS_IMAGE_PATH;
 
 public class NewsCreateActivity extends AppCompatActivity {
-    private EditText NewsText;
-    private Button NewsDoneBtn;
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private ImageView NewsTitleImage;
@@ -46,11 +42,10 @@ public class NewsCreateActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_create);
         NewsTitleImage = findViewById(R.id.newsTitleImage);
-        NewsText = findViewById(R.id.NewsText);
         NewsTitle = findViewById(R.id.NewsTitle);
-        NewsDoneBtn = findViewById(R.id.NewsDoneBtn);
+        Button newsDoneBtn = findViewById(R.id.NewsDoneBtn);
         NewsTitleImage.setOnClickListener(onClickListener);
-        NewsDoneBtn.setOnClickListener(onClickListener);
+        newsDoneBtn.setOnClickListener(onClickListener);
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
         NewsNumber = findViewById(R.id.newsNumber);
@@ -69,7 +64,7 @@ public class NewsCreateActivity extends AppCompatActivity {
                 case R.id.NewsDoneBtn:
                     putNewsFirebase(Integer.parseInt(NewsNumber.getText().toString()), NewsTitle.getText().toString());
                     Intent intent = new Intent();
-                    intent.putExtra("NewsTitle", NewsTitle.getText().toString());
+                    intent.putExtra(INTENT_EXTRA_NEWS_TITLE, NewsTitle.getText().toString());
                     setResult(RESULT_OK, intent);
                     finish();
                     break;
@@ -77,64 +72,52 @@ public class NewsCreateActivity extends AppCompatActivity {
         }
     };
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                if (resultCode == RESULT_OK) {
-                    Uri resultUri = result.getUri();
-                    Bitmap bitmap;
-                    try {
-                        bitmap = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(this).getContentResolver(), resultUri);
-                        saveFile(bitmap, "NewsTitleImage");
-                        NewsTitleImage.setImageBitmap(bitmap);
-                        uploadImage(resultUri);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-
-                } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
-                    Exception error = result.getError();
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                Bitmap bitmap = null;
+                try {
+                    bitmap = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(this).getContentResolver(), resultUri);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                break;
+                NewsTitleImage.setImageBitmap(bitmap);
+                saveFile(bitmap, INTENT_EXTRA_NEWS_TITLE_IMAGE);
+                uploadImage(resultUri);
+            }
         }
     }
+
     public void saveFile(Bitmap bitmap, String name) {
         try {
             FileOutputStream out = openFileOutput(name, MODE_PRIVATE);
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            Log.e("ARTEM", "файл сохранен");
+            Log.e(LOG_NAME, "файл сохранен");
             out.close();
         } catch (Exception ignored) {
-            Log.e("ARTEM", "файл не сохранен");
+            Log.e(LOG_NAME, "файл не сохранен");
         }
-    }
-    public Bitmap readFile(String name) throws FileNotFoundException {
-        FileInputStream is = openFileInput(name);
-        Log.e("ARTEM", "файл прочитан");
-        return BitmapFactory.decodeStream(is);
     }
 
     private void uploadImage(Uri filePath) {
-        storageReference = storage.getReference("newsImages/" + NewsNumber.getText().toString());
+        storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + NewsNumber.getText().toString());
         storageReference.putFile(filePath);
     }
 
     public void putNewsFirebase(int num, final String title){
-        storageReference = storage.getReference("newsImages/" + num);
+        storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
         storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                Log.e("ARTEM", "SUCCES");
-                databaseReference = database.getReference("news/");
+                databaseReference = database.getReference(DATABASE_NEWS_PATH);
                 NewsFirebaseItem nfi = new NewsFirebaseItem(title, uri.toString());
                 databaseReference.push().setValue(nfi);
+                Log.e(LOG_NAME, "Новости подгружены");
             }
         });
     }
-
 }
