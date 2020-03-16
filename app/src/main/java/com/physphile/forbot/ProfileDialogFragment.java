@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
@@ -45,34 +46,36 @@ public class ProfileDialogFragment extends DialogFragment {
     private FirebaseAuth mAuth;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         v = inflater.inflate(R.layout.fragment_profile_dialog, container, false);
+        getDialog().getWindow().setBackgroundDrawableResource(R.color.transparent);
         AccountField = v.findViewById(R.id.AccountField);
         mAuth = FirebaseAuth.getInstance();
         Avatar = v.findViewById(R.id.Avatar);
         user = mAuth.getCurrentUser();
-        Button dynamicBtn = v.findViewById(R.id.dynamicBtn);
         if(mAuth.getCurrentUser() !=  null){ Avatar.setOnClickListener(onClickListener); }
-        dynamicBtn.setOnClickListener(onClickListener);
         storage = FirebaseStorage.getInstance();
-        mAuth.addAuthStateListener(mAuthListener);
+        mAuth.addAuthStateListener(authStateListener);
+        v.findViewById(R.id.SettingsField).setOnClickListener(onClickListener);
         if(user != null){ setAvatar(); }
         return v;
     }
 
-    private FirebaseAuth.AuthStateListener mAuthListener = new FirebaseAuth.AuthStateListener() {
+    FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             user = firebaseAuth.getCurrentUser();
-            if (user != null) {
-                updateProfile(true);
-                Log.e(LOG_NAME, "onAuthStateChanged true");
-            } else {
-                updateProfile(false);
-                Log.e(LOG_NAME, "onAuthStateChanged false");
+            if (user != null){
+                AccountField.setText(user.getEmail());
+                Log.e(LOG_NAME, "setText");
+                try {
+                    setAvatarFirebase();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
-
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -83,10 +86,8 @@ public class ProfileDialogFragment extends DialogFragment {
                             .setAspectRatio(1, 1)
                             .start(getContext(), ProfileDialogFragment.this);
                     break;
-                case R.id.dynamicBtn:
-                    startActivityForResult(new Intent(AUTH_ACTIVITY_PATH), AUTH_ACTIVITY_CODE);
-                    break;
                 case R.id.AccountSettingsBtn:
+                case R.id.SettingsField:
                     startActivity(new Intent(ACCOUNT_SETTINGS_ACTIVITY_PATH));
                     break;
             }
@@ -149,18 +150,6 @@ public class ProfileDialogFragment extends DialogFragment {
                         Log.e(LOG_NAME, "download image failure");
                     }
                 });
-    }
-
-    private void updateProfile(boolean isUser){
-        MaterialButton dynamicBtn = v.findViewById(R.id.dynamicBtn);
-        if (isUser){
-            AccountField.setText(mAuth.getCurrentUser().getEmail());
-            dynamicBtn.setText("Настройки аккаунта");
-            dynamicBtn.setId(R.id.AccountSettingsBtn);
-        } else {
-            AccountField.setText("Вы еще не авторизованы");
-            dynamicBtn.setText("Авторизация");
-        }
     }
 
     private void setAvatar(){

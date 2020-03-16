@@ -26,6 +26,8 @@ import com.physphile.forbot.ProfileDialogFragment;
 import com.physphile.forbot.R;
 import static android.app.Activity.RESULT_OK;
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
+import static com.physphile.forbot.Constants.AUTH_ACTIVITY_CODE;
+import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
 import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
@@ -80,8 +82,13 @@ public class FeedFragment extends Fragment {
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.profile:
-                    DialogFragment profileDialog = new ProfileDialogFragment();
-                    profileDialog.show(getChildFragmentManager(), FRAGMENT_DIALOG_PROFILE_TAG);
+                    if (FirebaseAuth.getInstance().getCurrentUser() != null){
+                        DialogFragment profileDialog = new ProfileDialogFragment();
+                        profileDialog.show(getChildFragmentManager(), FRAGMENT_DIALOG_PROFILE_TAG);
+                    } else {
+                        startActivity(new Intent(AUTH_ACTIVITY_PATH));
+                    }
+
                     break;
                 case R.id.createNews:
                     startActivityForResult(new Intent(NEWS_CREATE_ACTIVITY_PATH), NEWS_CREATE_ACTIVITY_CODE);
