@@ -1,39 +1,60 @@
 package com.physphile.forbot.Feed;
 
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import com.physphile.forbot.R;
+import java.util.ArrayList;
+import java.util.List;
 
-public class NewsAdapter extends ArrayAdapter<NewsFeedItem> {
-    private Context mContext;
-    private int mResource;
-
-    NewsAdapter(@NonNull Context context, int resource) {
-        super(context, resource);
-        mContext = context;
-        mResource = resource;
-    }
+public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
+    private List<NewsFirebaseItem> newsList = new ArrayList<>();
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
-        String title = getItem(position).getTitle();
-        Bitmap image = getItem(position).getNewsTitleImage();
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-        convertView = inflater.inflate (mResource, parent, false);
-        TextView tvTitle = convertView.findViewById(R.id.NewsTitle);
-        ImageView iwImage = convertView.findViewById(R.id.NewsTitleImage);
-        tvTitle.setText(title);
-        iwImage.setImageBitmap(image);
-        return convertView;
+    public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.news_item, parent, false);
+        return new NewsViewHolder(view);
+    }
+
+    public void setItems(NewsFirebaseItem item){
+        newsList.add(item);
+        notifyDataSetChanged();
+    }
+    public void clearItems(){
+        newsList.clear();
+        notifyDataSetChanged();
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
+        holder.bind(newsList.get(position));
+    }
+
+    @Override
+    public int getItemCount() {  return newsList.size(); }
+
+    class NewsViewHolder extends RecyclerView.ViewHolder {
+        private TextView newsTitle;
+        private ImageView newsTitleImage;
+
+        public void bind(NewsFirebaseItem item){
+            newsTitle.setText(item.getTitle());
+            Glide.with(itemView.getContext())
+                    .load(item.getUri())
+                    .into(newsTitleImage);
+        }
+
+        public NewsViewHolder(@NonNull View itemView) {
+            super(itemView);
+            newsTitle = itemView.findViewById(R.id.NewsTitle);
+            newsTitleImage = itemView.findViewById(R.id.NewsTitleImage);
+        }
     }
 }

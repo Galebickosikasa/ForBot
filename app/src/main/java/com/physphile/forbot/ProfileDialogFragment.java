@@ -34,7 +34,7 @@ import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.FILE_IMAGE_AVATAR;
 import static com.physphile.forbot.Constants.FILE_PREFIX;
 import static com.physphile.forbot.Constants.LOG_NAME;
-import static com.physphile.forbot.Constants.STORAGE_AVATAR_PATH;
+import static com.physphile.forbot.Constants.STORAGE_AVATARS_PATH;
 
 public class ProfileDialogFragment extends DialogFragment {
     private View v;
@@ -125,13 +125,14 @@ public class ProfileDialogFragment extends DialogFragment {
     }
 
     private void uploadImage(Uri filePath) {
-        storage.getReference(STORAGE_AVATAR_PATH + user.getUid())
+        storage.getReference(STORAGE_AVATARS_PATH + user.getUid())
                 .putFile(filePath);
     }
 
     private void setAvatarFirebase() throws IOException {
         final File localFile = File.createTempFile(FILE_PREFIX, FILE_IMAGE_AVATAR);
-        storage.getReference(STORAGE_AVATAR_PATH + user.getUid())
+        Log.e(LOG_NAME, STORAGE_AVATARS_PATH + user.getUid());
+        storage.getReference(STORAGE_AVATARS_PATH + user.getUid())
                 .getFile(localFile)
                 .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
                     @Override

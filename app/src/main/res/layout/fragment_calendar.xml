@@ -2,8 +2,7 @@
 xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
 android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:background="@android:color/background_light">
+android:layout_height="match_parent">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/main.appbar"
@@ -11,7 +10,7 @@ android:background="@android:color/background_light">
         android:layout_height="wrap_content"
         android:fitsSystemWindows="true"
         app:liftOnScroll="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+        android:theme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar">
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/main.collapsing"
@@ -29,11 +28,10 @@ android:background="@android:color/background_light">
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:menu="@menu/toolbar_menu_calendar_fragment"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+                app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar" />
 
             <CalendarView
                 android:id="@+id/calendar"
-
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="50dp"
@@ -49,12 +47,11 @@ android:background="@android:color/background_light">
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:id="@+id/OlympsList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="false"
         android:divider="@color/common_google_signin_btn_text_dark_default"
         android:dividerHeight="0dp" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
