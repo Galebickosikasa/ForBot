@@ -12,7 +12,7 @@
     <item
         android:id="@+id/profile"
         android:title="профиль"
-        android:icon="@drawable/ic_person_black_24dp"
+        android:icon="@drawable/ic_person_outline_black_24dp"
         app:showAsAction="always"
         />
 </menu>

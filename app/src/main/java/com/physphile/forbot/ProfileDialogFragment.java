@@ -57,22 +57,28 @@ public class ProfileDialogFragment extends DialogFragment {
         storage = FirebaseStorage.getInstance();
         mAuth.addAuthStateListener(authStateListener);
         v.findViewById(R.id.SettingsField).setOnClickListener(onClickListener);
-        if(user != null){ setAvatar(); }
+        if(user != null){
+            try {
+                setAvatar();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
         return v;
     }
 
-    FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
+    private FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             user = firebaseAuth.getCurrentUser();
             if (user != null){
                 AccountField.setText(user.getEmail());
                 Log.e(LOG_NAME, "setText");
-                try {
-                    setAvatarFirebase();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    setAvatarFirebase();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
             }
         }
     };
@@ -152,14 +158,14 @@ public class ProfileDialogFragment extends DialogFragment {
                 });
     }
 
-    private void setAvatar(){
+    private void setAvatar() throws IOException {
         try {
             Bitmap b = ((MainActivity) getActivity()).readFile(FILE_IMAGE_AVATAR);
             Avatar.setImageBitmap(b);
             Log.e(LOG_NAME, "Аватар установлен");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            Log.e(LOG_NAME, "Аватар не установлен");
+            setAvatarFirebase();
         }
     }
 }

@@ -43,7 +43,7 @@
             android:layout_marginEnd="32dp"
             android:layout_marginBottom="8dp"
             android:gravity="center"
-            android:text="TextView"
+            android:text="kJABDKJSDJABKSJBKJASKD"
             android:textSize="14sp"
             app:layout_constraintLeft_toRightOf="@id/cardView"
             app:layout_constraintRight_toRightOf="parent"
@@ -52,16 +52,80 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            app:cardBackgroundColor="@color/material_on_background_disabled"
+            android:elevation="0dp"
+            app:cardBackgroundColor="@color/common_google_signin_btn_text_light_disabled"
             app:cardCornerRadius="0dp"
             app:cardElevation="0dp">
 
         </androidx.cardview.widget.CardView>
 
         <LinearLayout
-            android:id="@+id/SettingsField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_person_outline_black_24dp" />
+
+            <TextView
+                style="daynight"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:layout_weight="4"
+                android:gravity="center_vertical"
+                android:text="Профиль"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_exit_to_app_black_24dp" />
+
+            <TextView
+                style="daynight"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="3dp"
+                android:layout_weight="4"
+                android:gravity="center_vertical"
+                android:text="Выход из аккаунта"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:elevation="0dp"
+            app:cardBackgroundColor="@color/common_google_signin_btn_text_light_disabled"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="0dp">
+
+        </androidx.cardview.widget.CardView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="3dp"
             android:orientation="horizontal">
 
@@ -70,43 +134,48 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                app:srcCompat="@drawable/ic_settings_black_24dp" />
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_invert_colors_black_24dp" />
 
             <TextView
                 android:id="@+id/textView2"
+                style="@style/Theme.MaterialComponents.DayNight"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginStart="16dp"
+                android:layout_weight="4"
                 android:gravity="center_vertical"
-                android:text="Настройки"
-                android:textColor="@android:color/white"
+                android:text="Тема"
+                android:textColor="@android:color/darker_gray"
                 android:textSize="16sp" />
+
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/SettingsField"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginBottom="3dp"
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imageView2"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_gravity="center"
-                android:layout_marginStart="10dp"
-                app:srcCompat="@drawable/ic_exit_to_app_black_24dp" />
+                android:layout_weight="1"
+                app:srcCompat="@drawable/ic_settings_black_24dp" />
 
             <TextView
-                android:id="@+id/textView3"
+                style="@style/Theme.MaterialComponents.DayNight"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:layout_gravity="center_vertical"
                 android:layout_marginStart="16dp"
+                android:layout_weight="4"
                 android:gravity="center_vertical"
-                android:text="Выход из аккаунта"
-                android:textColor="@android:color/white"
+                android:text="Настройки"
+                android:textColor="@android:color/darker_gray"
                 android:textSize="16sp" />
         </LinearLayout>
 

@@ -2,9 +2,15 @@ package com.physphile.forbot;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.physphile.forbot.Calendar.CalendarFragment;
 import com.physphile.forbot.Feed.FeedFragment;

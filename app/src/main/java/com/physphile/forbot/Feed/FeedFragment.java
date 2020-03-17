@@ -47,7 +47,6 @@ public class FeedFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getNews();
-        Log.e(LOG_NAME, "getNews()");
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -88,7 +87,6 @@ public class FeedFragment extends Fragment {
                     } else {
                         startActivity(new Intent(AUTH_ACTIVITY_PATH));
                     }
-
                     break;
                 case R.id.createNews:
                     startActivityForResult(new Intent(NEWS_CREATE_ACTIVITY_PATH), NEWS_CREATE_ACTIVITY_CODE);
@@ -102,11 +100,14 @@ public class FeedFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == NEWS_CREATE_ACTIVITY_CODE) {
-            if (resultCode == RESULT_OK) {}
+            if (resultCode == RESULT_OK) {
+
+            }
         }
     }
 
     private void getNews(){
+        Log.e(LOG_NAME, DATABASE_NEWS_PATH);
         database.getReference(DATABASE_NEWS_PATH)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
@@ -122,6 +123,7 @@ public class FeedFragment extends Fragment {
                     public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {}
+
                 });
     }
 }

@@ -1,16 +1,27 @@
 package com.physphile.forbot.Feed;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.physphile.forbot.R;
+
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import static com.physphile.forbot.Constants.LOG_NAME;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsFirebaseItem> newsList = new ArrayList<>();
@@ -20,10 +31,16 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.news_item, parent, false);
+        ImageView iw = view.findViewById(R.id.NewsTitleImage);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(parent.getWidth(),
+                parent.getWidth() * 10 / 16);
+        Log.e(LOG_NAME, String.valueOf(parent.getWidth()) + " " + String.valueOf(lp.height));
+        iw.setLayoutParams(lp);
         return new NewsViewHolder(view);
     }
 
     public void setItems(NewsFirebaseItem item){
+        Log.e(LOG_NAME, "setItems()");
         newsList.add(item);
         notifyDataSetChanged();
     }
