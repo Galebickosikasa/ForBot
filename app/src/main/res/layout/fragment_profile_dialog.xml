@@ -81,7 +81,7 @@
                 android:layout_weight="4"
                 android:gravity="center_vertical"
                 android:text="Профиль"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@android:color/primary_text_light"
                 android:textSize="16sp" />
         </LinearLayout>
 
@@ -104,11 +104,10 @@
                 android:layout_height="50dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="16dp"
-                android:layout_marginBottom="3dp"
                 android:layout_weight="4"
                 android:gravity="center_vertical"
                 android:text="Выход из аккаунта"
-                android:textColor="@android:color/darker_gray"
+                android:textColor="@android:color/primary_text_light"
                 android:textSize="16sp" />
         </LinearLayout>
 
@@ -146,7 +145,6 @@
                 android:layout_weight="4"
                 android:gravity="center_vertical"
                 android:text="Тема"
-                android:textColor="@android:color/darker_gray"
                 android:textSize="16sp" />
 
         </LinearLayout>
@@ -175,7 +173,6 @@
                 android:layout_weight="4"
                 android:gravity="center_vertical"
                 android:text="Настройки"
-                android:textColor="@android:color/darker_gray"
                 android:textSize="16sp" />
         </LinearLayout>
 

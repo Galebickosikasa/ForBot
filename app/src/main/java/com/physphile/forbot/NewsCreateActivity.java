@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -22,6 +23,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.Objects;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE;
@@ -37,6 +39,7 @@ public class NewsCreateActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
     private EditText NewsNumber;
+    private EditText newsText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,7 @@ public class NewsCreateActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
         NewsNumber = findViewById(R.id.newsNumber);
+        newsText = findViewById(R.id.newsText);
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -62,7 +66,7 @@ public class NewsCreateActivity extends AppCompatActivity {
                             .start(NewsCreateActivity.this);
                     break;
                 case R.id.NewsDoneBtn:
-                    putNewsFirebase(Integer.parseInt(NewsNumber.getText().toString()), NewsTitle.getText().toString());
+                    putNewsFirebase(Integer.parseInt(NewsNumber.getText().toString()), NewsTitle.getText().toString(), newsText.getText().toString());
                     Intent intent = new Intent();
                     intent.putExtra(INTENT_EXTRA_NEWS_TITLE, NewsTitle.getText().toString());
                     setResult(RESULT_OK, intent);
@@ -108,13 +112,19 @@ public class NewsCreateActivity extends AppCompatActivity {
         storageReference.putFile(filePath);
     }
 
-    public void putNewsFirebase(int num, final String title){
+    public void putNewsFirebase(int num, final String title, final String text){
         storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
         storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
                 databaseReference = database.getReference(DATABASE_NEWS_PATH);
-                NewsFirebaseItem nfi = new NewsFirebaseItem(title, uri.toString());
+                Calendar calendar = Calendar.getInstance();
+                NewsFirebaseItem nfi = new NewsFirebaseItem(title,
+                        uri.toString(),
+                        text,
+                        FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                        calendar.get(Calendar.DATE) + "." + calendar.get(Calendar.MONTH) + 1 + "." + calendar.get(Calendar.YEAR)
+                );
                 databaseReference.push().setValue(nfi);
                 Log.e(LOG_NAME, "Новости подгружены");
             }

@@ -1,38 +1,38 @@
 package com.physphile.forbot.Feed;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.physphile.forbot.R;
-
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import static com.physphile.forbot.Constants.LOG_NAME;
+import static com.physphile.forbot.Constants.NEWS_PAGE_ACTIVITY_PATH;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsFirebaseItem> newsList = new ArrayList<>();
+    private Context context;
 
+    NewsAdapter(Context _context){
+        this.context = _context;
+    }
     @NonNull
     @Override
     public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.news_item, parent, false);
         ImageView iw = view.findViewById(R.id.NewsTitleImage);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(parent.getWidth(),
+        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(parent.getWidth(),
                 parent.getWidth() * 10 / 16);
         Log.e(LOG_NAME, String.valueOf(parent.getWidth()) + " " + String.valueOf(lp.height));
         iw.setLayoutParams(lp);
@@ -57,21 +57,42 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public int getItemCount() {  return newsList.size(); }
 
-    class NewsViewHolder extends RecyclerView.ViewHolder {
+    class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         private TextView newsTitle;
         private ImageView newsTitleImage;
+        private TextView newsText;
+        private TextView newsAuthor;
+        private TextView newsDate;
 
+        NewsViewHolder(@NonNull View itemView) {
+            super(itemView);
+            newsTitle = itemView.findViewById(R.id.NewsTitle);
+            newsTitleImage = itemView.findViewById(R.id.NewsTitleImage);
+            newsAuthor = itemView.findViewById(R.id.newsAuthor);
+            newsDate = itemView.findViewById(R.id.newsDate);
+            newsText = itemView.findViewById(R.id.newsText);
+            itemView.setOnClickListener(this);
+        }
         public void bind(NewsFirebaseItem item){
             newsTitle.setText(item.getTitle());
             Glide.with(itemView.getContext())
                     .load(item.getUri())
                     .into(newsTitleImage);
+            newsText.setText(item.getText());
+            newsAuthor.setText(item.getAuthor());
+            newsDate.setText(item.getDate());
         }
 
-        public NewsViewHolder(@NonNull View itemView) {
-            super(itemView);
-            newsTitle = itemView.findViewById(R.id.NewsTitle);
-            newsTitleImage = itemView.findViewById(R.id.NewsTitleImage);
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                itemClick(position);
+            }
         }
+    }
+    private void itemClick(int position){
+        Log.e(LOG_NAME, position + "");
+        context.startActivity(new Intent(NEWS_PAGE_ACTIVITY_PATH));
     }
 }

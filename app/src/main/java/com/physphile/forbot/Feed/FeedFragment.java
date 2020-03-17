@@ -64,7 +64,7 @@ public class FeedFragment extends Fragment {
             } else { toolbar.inflateMenu(R.menu.default_toolbar_menu); }
         }
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
-        adapter = new NewsAdapter();
+        adapter = new NewsAdapter(getContext());
         newsList.setAdapter(adapter);
         return v;
     }

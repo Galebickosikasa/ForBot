@@ -26,4 +26,5 @@ class OlympsListItem {
     void setLevel(String level) {
         this.level = level;
     }
+
 }

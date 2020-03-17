@@ -42,15 +42,18 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
         private TextView olympName;
         private TextView olympLevel;
 
+
         public void bind(OlympsListItem item){
             olympName.setText(item.getName());
             olympLevel.setText(item.getLevel());
+
         }
 
         public OlympsViewHolder(@NonNull View itemView) {
             super(itemView);
             olympName = itemView.findViewById(R.id.olympName);
             olympLevel = itemView.findViewById(R.id.olympLevel);
+
         }
     }
 }

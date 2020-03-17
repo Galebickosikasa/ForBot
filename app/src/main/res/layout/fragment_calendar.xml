@@ -10,7 +10,7 @@ android:layout_height="match_parent">
         android:layout_height="?attr/actionBarSize"
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/toolbar_menu_calendar_fragment"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.DayNight.ActionBar" />
+        app:popupTheme="@style/Widget.AppCompat.ActionBar" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"

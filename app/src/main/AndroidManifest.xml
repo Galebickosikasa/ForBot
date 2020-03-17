@@ -13,6 +13,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".NewsPage">
+            <intent-filter>
+                <action android:name="com.physphile.forbot.NewsPage" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name=".NewsCreateActivity">
             <intent-filter>
                 <action android:name="com.physphile.forbot.NewsCreateActivity" />

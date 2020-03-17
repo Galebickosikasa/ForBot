@@ -18,4 +18,5 @@ public class Constants {
     public final static String NEWS_CREATE_ACTIVITY_PATH = "com.physphile.forbot.NewsCreateActivity";
     public final static String AUTH_ACTIVITY_PATH = "com.physphile.forbot.AuthActivity";
     public final static String ACCOUNT_SETTINGS_ACTIVITY_PATH = "com.physphile.forbot.AccountSettingsActivity";
+    public final static String NEWS_PAGE_ACTIVITY_PATH = "com.physphile.forbot.NewsPage";
 }
