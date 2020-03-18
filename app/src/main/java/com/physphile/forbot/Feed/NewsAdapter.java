@@ -2,6 +2,9 @@ package com.physphile.forbot.Feed;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +16,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.physphile.forbot.R;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +27,11 @@ import static com.physphile.forbot.Constants.NEWS_PAGE_ACTIVITY_PATH;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsFirebaseItem> newsList = new ArrayList<>();
     private Context context;
+    private TextView newsTitle;
+    private ImageView newsTitleImage;
+    private TextView newsText;
+    private TextView newsAuthor;
+    private TextView newsDate;
 
     NewsAdapter(Context _context){
         this.context = _context;
@@ -46,7 +56,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
     public void clearItems(){
         newsList.clear();
-        notifyDataSetChanged();
     }
 
     @Override
@@ -57,12 +66,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public int getItemCount() {  return newsList.size(); }
 
-    class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-        private TextView newsTitle;
-        private ImageView newsTitleImage;
-        private TextView newsText;
-        private TextView newsAuthor;
-        private TextView newsDate;
+    public class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+
 
         NewsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -93,6 +98,12 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
     private void itemClick(int position){
         Log.e(LOG_NAME, position + "");
-        context.startActivity(new Intent(NEWS_PAGE_ACTIVITY_PATH));
+        Intent intent = new Intent(NEWS_PAGE_ACTIVITY_PATH);
+        intent.putExtra("newsTitle", newsList.get(position).getTitle());
+        intent.putExtra("newsText", newsList.get(position).getText());
+
+
+        intent.putExtra("newsTitleImageUri", newsList.get(position).getUri());
+        context.startActivity(intent);
     }
 }

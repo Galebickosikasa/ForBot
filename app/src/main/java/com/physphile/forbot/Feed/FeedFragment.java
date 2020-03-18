@@ -1,6 +1,7 @@
 package com.physphile.forbot.Feed;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +15,8 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -35,13 +38,14 @@ import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_CODE;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_PATH;
 
-public class FeedFragment extends Fragment {
+public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private NewsAdapter adapter;
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private FirebaseDatabase database;
     private RecyclerView newsList;
     private View v;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -63,6 +67,9 @@ public class FeedFragment extends Fragment {
                 toolbar.inflateMenu(R.menu.admin_toolbar_menu);
             } else { toolbar.inflateMenu(R.menu.default_toolbar_menu); }
         }
+        mSwipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN);
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
         adapter = new NewsAdapter(getContext());
         newsList.setAdapter(adapter);
@@ -125,5 +132,12 @@ public class FeedFragment extends Fragment {
                     public void onCancelled(@NonNull DatabaseError databaseError) {}
 
                 });
+    }
+
+    @Override
+    public void onRefresh() {
+        adapter.clearItems();
+        getNews();
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 }
