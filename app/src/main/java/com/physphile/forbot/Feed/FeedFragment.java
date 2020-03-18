@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -54,7 +56,7 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.fragment_feed, container, false);
+        v = inflater.inflate(R.layout.feed_fragment_backdrop, container, false);
         initRecyclerView();
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
@@ -65,7 +67,7 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
             if ((user.getUid()).equals(ARTEM_ADMIN_UID) || (user.getUid()).equals(GLEB_ADMIN_ID)) {
                 toolbar.getMenu().clear();
                 toolbar.inflateMenu(R.menu.admin_toolbar_menu);
-            } else { toolbar.inflateMenu(R.menu.default_toolbar_menu); }
+            }
         }
         mSwipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(this);

@@ -5,6 +5,5 @@
         android:id="@+id/profile"
         android:icon="@drawable/ic_person_outline_black_24dp"
         android:title="profile"
-        android:visible="true"
         app:showAsAction="always" />
 </menu>

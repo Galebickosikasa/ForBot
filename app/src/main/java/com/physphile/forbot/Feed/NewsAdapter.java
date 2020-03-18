@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
+import com.physphile.forbot.MainActivity;
+import com.physphile.forbot.NewsLongTapDialog;
 import com.physphile.forbot.R;
 
 import java.io.ByteArrayOutputStream;
@@ -66,7 +68,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public int getItemCount() {  return newsList.size(); }
 
-    public class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
 
 
         NewsViewHolder(@NonNull View itemView) {
@@ -77,6 +79,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             newsDate = itemView.findViewById(R.id.newsDate);
             newsText = itemView.findViewById(R.id.newsText);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
         public void bind(NewsFirebaseItem item){
             newsTitle.setText(item.getTitle());
@@ -95,6 +98,20 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
                 itemClick(position);
             }
         }
+
+        @Override
+        public boolean onLongClick(View v) {
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                itemLongClick(position);
+            }
+            return true;
+        }
+    }
+    private void itemLongClick(int position){
+        NewsLongTapDialog profileDialog = new NewsLongTapDialog();
+        profileDialog.show(((MainActivity)context).getSupportFragmentManager(), "NewsLongTapDialog");
+
     }
     private void itemClick(int position){
         Log.e(LOG_NAME, position + "");

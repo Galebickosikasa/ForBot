@@ -123,7 +123,7 @@ public class NewsCreateActivity extends AppCompatActivity {
                         uri.toString(),
                         text,
                         FirebaseAuth.getInstance().getCurrentUser().getEmail(),
-                        calendar.get(Calendar.DATE) + "." + calendar.get(Calendar.MONTH) + 1 + "." + calendar.get(Calendar.YEAR)
+                        calendar.get(Calendar.DATE) + "." + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR)
                 );
                 databaseReference.push().setValue(nfi);
                 Log.e(LOG_NAME, "Новости подгружены");
