@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -16,7 +17,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class AuthActivity extends AppCompatActivity {
+public class AuthActivity extends BaseSwipeActivity {
     private EditText MailField;
     private EditText PwdField;
     private FirebaseAuth mAuth;
@@ -35,6 +36,11 @@ public class AuthActivity extends AppCompatActivity {
         Button signBtn = findViewById(R.id.SignBtn);
         regBtn.setOnClickListener(OnRegBtnClick);
         signBtn.setOnClickListener(OnSignBtnClick);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_auth;
     }
 
     @Override
@@ -86,5 +92,10 @@ public class AuthActivity extends AppCompatActivity {
                         } else { Toast.makeText(AuthActivity.this, "Register failed.", Toast.LENGTH_SHORT).show(); }
                     }
                 });
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
     }
 }

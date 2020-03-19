@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,7 +20,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
-public class NewsPage extends AppCompatActivity {
+public class NewsPage extends BaseSwipeActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,5 +44,15 @@ public class NewsPage extends AppCompatActivity {
             }
         });
         Glide.with(this).load(intent.getStringExtra("newsTitleImageUri")).into(newsTitleImage);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_news_page;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
     }
 }

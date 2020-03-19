@@ -10,6 +10,7 @@ import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -31,7 +32,7 @@ import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE_IMAGE;
 import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.STORAGE_NEWS_IMAGE_PATH;
 
-public class NewsCreateActivity extends AppCompatActivity {
+public class NewsCreateActivity extends BaseSwipeActivity {
     private FirebaseStorage storage;
     private StorageReference storageReference;
     private ImageView NewsTitleImage;
@@ -53,6 +54,11 @@ public class NewsCreateActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         NewsNumber = findViewById(R.id.newsNumber);
         newsText = findViewById(R.id.newsText);
+    }
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_news_create;
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -129,5 +135,10 @@ public class NewsCreateActivity extends AppCompatActivity {
                 Log.e(LOG_NAME, "Новости подгружены");
             }
         });
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
     }
 }

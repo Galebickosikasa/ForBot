@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -25,7 +26,7 @@ import java.io.FileOutputStream;
 
 import static com.physphile.forbot.Constants.LOG_NAME;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseSwipeActivity {
     FeedFragment feedFragment;
     CalendarFragment calendarFragment;
 
@@ -41,7 +42,13 @@ public class MainActivity extends AppCompatActivity {
         navView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
 //        updateTheme();
     }
-//    @RequiresApi(api = Build.VERSION_CODES.M)
+
+    @Override
+    protected int getLayoutId() {
+        return R.layout.activity_main;
+    }
+
+    //    @RequiresApi(api = Build.VERSION_CODES.M)
 //    public void updateTheme(){
 //        switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
 //            case Configuration.UI_MODE_NIGHT_YES:
@@ -94,6 +101,16 @@ public class MainActivity extends AppCompatActivity {
         FileInputStream is = openFileInput(name);
         Log.e(LOG_NAME, "файл прочитан");
         return BitmapFactory.decodeStream(is);
+    }
+
+    @Override
+    public boolean isSupportSwipeBack() {
+        return false;
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
     }
 }
 
