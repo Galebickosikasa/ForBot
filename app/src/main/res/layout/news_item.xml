@@ -34,9 +34,9 @@
                 android:background="#B3FFFFFF"
                 android:orientation="horizontal"
                 android:paddingStart="16dp"
-                android:paddingTop="3dp"
+                android:paddingTop="5dp"
                 android:paddingEnd="16dp"
-                android:paddingBottom="3dp"
+                android:paddingBottom="5dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent">
@@ -45,17 +45,18 @@
                     android:id="@+id/newsDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="17.03.20" />
+                    android:text="17.03.20"
+                    android:textSize="14sp" />
 
                 <TextView
                     android:id="@+id/newsAuthor"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:text="Артём Нецветаев" />
+                    android:paddingStart="10dp"
+                    android:text="Артём Нецветаев"
+                    android:textSize="14sp" />
             </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
 

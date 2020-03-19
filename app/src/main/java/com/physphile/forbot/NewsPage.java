@@ -34,7 +34,12 @@ public class NewsPage extends BaseSwipeActivity {
         AppBarLayout appBarLayout = findViewById(R.id.main_appbar);
         appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(width, height));
         Intent intent = getIntent();
-
+        TextView newsTitle = findViewById(R.id.newsTitle);
+        TextView newsDate = findViewById(R.id.newsDate);
+        TextView newsAuthor = findViewById(R.id.newsAuthor);
+        newsTitle.setText(intent.getStringExtra("newsTitle"));
+        newsAuthor.setText(intent.getStringExtra("newsAuthor"));
+        newsDate.setText(intent.getStringExtra("newsDate"));
         newsText.setText(intent.getStringExtra("newsText"));
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {

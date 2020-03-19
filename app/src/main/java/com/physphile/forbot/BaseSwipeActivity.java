@@ -2,13 +2,7 @@ package com.physphile.forbot;
 
 import android.os.Bundle;
 import android.widget.CompoundButton;
-import android.widget.RadioButton;
-
-import androidx.annotation.ColorInt;
-import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-
 import com.example.swipebacklib.BaseSwipeBackActivity;
 import com.example.swipebacklib.SwipeBackLayout;
 

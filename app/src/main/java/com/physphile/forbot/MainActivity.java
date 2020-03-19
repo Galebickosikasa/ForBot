@@ -2,28 +2,19 @@ package com.physphile.forbot;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.CompoundButton;
-import android.widget.ImageView;
-
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.physphile.forbot.Calendar.CalendarFragment;
 import com.physphile.forbot.Feed.FeedFragment;
-
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-
 import static com.physphile.forbot.Constants.LOG_NAME;
 
 public class MainActivity extends BaseSwipeActivity {
