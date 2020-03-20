@@ -45,7 +45,7 @@ import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_CODE;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
 
-public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class FeedFragment extends Fragment {
     private NewsAdapter adapter;
     private FirebaseStorage storage;
     private StorageReference storageReference;
@@ -75,8 +75,16 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 //                toolbar.getMenu().getItem(1).setIcon(R.drawable.common_google_signin_btn_icon_dark);
             }
         }
-        mSwipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        final View frontLayout = getLayoutInflater().inflate(R.layout.front_layout, null);
+        mSwipeRefreshLayout = frontLayout.findViewById(R.id.swipeRefreshLayout);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                adapter.clearItems();
+                getNews();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
         mSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN);
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
         adapter = new NewsAdapter(getContext());
@@ -148,12 +156,4 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
 
                 });
     }
-
-    @Override
-    public void onRefresh() {
-        adapter.clearItems();
-        getNews();
-        mSwipeRefreshLayout.setRefreshing(false);
-    }
-
 }

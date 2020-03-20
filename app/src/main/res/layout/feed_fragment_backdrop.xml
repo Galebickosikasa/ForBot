@@ -31,26 +31,26 @@
         <!--a toolbar to open/close action-->
 
         <!--The backdrop view-->
-        <com.pedromassango.ibackdrop.Backdrop
-            android:id="@+id/backdrop_view"
-            app:toolbar="@id/feedToolbar"
-            app:openIcon="@drawable/ic_filter_list_black_24dp"
-            app:closeIcon="@drawable/ic_keyboard_arrow_up_black_24dp"
-            app:animationDuration="300"
-            app:removeTopRightRadius="false"
+        <com.roacult.backdrop.BackdropLayout
+            android:id="@+id/container"
+            app:front_layout="@id/includedFront"
+            app:back_layout="@id/includedBack"
+            app:toolbarId="@id/feedToolbar"
+            app:peekHeight="56dp"
+            app:disable_when_open="true"
+            app:menuDrawable="@drawable/ic_filter_list_black_24dp"
+            app:closeDrawable="@drawable/ic_keyboard_arrow_up_black_24dp"
+            app:animationDuration="400"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+            <include
+                android:id="@+id/includedBack"
+                layout="@layout/back_layout"/>
+            <include
+                android:id="@+id/includedFront"
+                layout="@layout/front_layout"/>
 
-            <!--your back view-->
-            <include layout="@layout/back_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <!--your foldable view (front view)-->
-            <include layout="@layout/front_layout"/>
-
-        </com.pedromassango.ibackdrop.Backdrop>
-
+        </com.roacult.backdrop.BackdropLayout>
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

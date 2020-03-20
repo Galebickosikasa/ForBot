@@ -21,9 +21,10 @@
     <me.ibrahimsn.lib.SmoothBottomBar
         android:id="@+id/nav_view"
         android:elevation="12dp"
+        app:indicatorRadius="10dp"
         app:backgroundColor="@android:color/white"
         app:textColor="@color/black"
-        app:indicatorColor="#4D2D2D2D"
+        app:indicatorColor="#4DFFA06D"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:background="?android:attr/windowBackground"
