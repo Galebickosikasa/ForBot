@@ -29,11 +29,7 @@ import static com.physphile.forbot.Constants.NEWS_PAGE_ACTIVITY_PATH;
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     private List<NewsFirebaseItem> newsList = new ArrayList<>();
     private Context context;
-    private TextView newsTitle;
-    private ImageView newsTitleImage;
-    private TextView newsText;
-    private TextView newsAuthor;
-    private TextView newsDate;
+
 
     NewsAdapter(Context _context){
         this.context = _context;
@@ -46,14 +42,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         ImageView iw = view.findViewById(R.id.NewsTitleImage);
         ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(parent.getWidth(),
                 parent.getWidth() * 10 / 16);
-//        Log.e(LOG_NAME, String.valueOf(parent.getWidth()) + " " + String.valueOf(lp.height));
         iw.setLayoutParams(lp);
         return new NewsViewHolder(view);
     }
 
-    public void setItems(NewsFirebaseItem item){
+    public void addItem(NewsFirebaseItem item){
         Log.e(LOG_NAME, "setItems()" + item.getTitle());
-        newsList.add(item);
+        newsList.add(0, item);
         notifyItemChanged(getItemCount() - 1);
     }
     public void clearItems(){
@@ -72,7 +67,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public int getItemCount() {  return newsList.size(); }
 
     public class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
-
+        private TextView newsTitle;
+        private ImageView newsTitleImage;
+        private TextView newsText;
+        private TextView newsAuthor;
+        private TextView newsDate;
         NewsViewHolder(@NonNull View itemView) {
             super(itemView);
             newsTitle = itemView.findViewById(R.id.NewsTitle);
@@ -123,8 +122,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         Intent intent = new Intent(NEWS_PAGE_ACTIVITY_PATH);
         intent.putExtra("newsTitle", newsList.get(position).getTitle());
         intent.putExtra("newsText", newsList.get(position).getText());
-        intent.putExtra("newsDate", newsDate.getText().toString());
-        intent.putExtra("newsAuthor", newsAuthor.getText().toString());
+        intent.putExtra("newsDate", newsList.get(position).getDate());
+        intent.putExtra("newsAuthor", newsList.get(position).getAuthor());
         intent.putExtra("newsTitleImageUri", newsList.get(position).getUri());
         context.startActivity(intent);
     }

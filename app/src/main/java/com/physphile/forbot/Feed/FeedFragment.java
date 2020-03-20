@@ -29,6 +29,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.physphile.forbot.ProfileDialogFragment;
 import com.physphile.forbot.R;
+
+import java.util.Arrays;
+import java.util.Collection;
+
 import static android.app.Activity.RESULT_OK;
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
 import static com.physphile.forbot.Constants.AUTH_ACTIVITY_CODE;
@@ -77,6 +81,10 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
         adapter = new NewsAdapter(getContext());
         newsList.setAdapter(adapter);
+//        adapter.setItems(Arrays.asList(
+//                new NewsFirebaseItem("хард код", "https://firebasestorage.googleapis.com/v0/b/forbot-20468.appspot.com/o/newsImages%2F228?alt=media&token=9645bd31-b9fa-4adc-b681-cec34914b5b1",
+//                        "очень длинный текст статьи", "Артём", "20.03.20")
+//        ));
         getNews();
         Log.e(LOG_NAME, "getNews()");
         return v;
@@ -125,8 +133,9 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        NewsFirebaseItem nfi = dataSnapshot.getValue(NewsFirebaseItem.class);
-                        adapter.setItems(nfi);
+                        NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
+                        adapter.addItem(item);
+                        Log.e("onChildAdded", item.getTitle());
                     }
                     @Override
                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
