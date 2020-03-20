@@ -68,8 +68,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public int getItemCount() {  return newsList.size(); }
 
-    public class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
-
+    public class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         NewsViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -81,6 +80,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
+
         public void bind(NewsFirebaseItem item){
             newsTitle.setText(item.getTitle());
             Glide.with(itemView.getContext())
@@ -108,6 +108,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             return true;
         }
     }
+
     private void itemLongClick(int position){
         NewsLongTapDialog profileDialog = new NewsLongTapDialog();
         profileDialog.show(((MainActivity)context).getSupportFragmentManager(), "NewsLongTapDialog");

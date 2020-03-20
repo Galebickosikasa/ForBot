@@ -40,6 +40,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private DatabaseReference databaseReference;
     private EditText NewsNumber;
     private EditText newsText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,7 +64,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch(v.getId()){
+            switch(v.getId()) {
                 case R.id.newsTitleImage:
                     CropImage.activity()
                             .setCropShape(CropImageView.CropShape.RECTANGLE)
@@ -117,7 +118,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         storageReference.putFile(filePath);
     }
 
-    public void putNewsFirebase(int num, final String title, final String text){
+    public void putNewsFirebase(int num, final String title, final String text) {
         storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
         storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override

@@ -54,6 +54,7 @@ public class MainActivity extends BaseSwipeActivity {
 //                break;
 //        }
 //    }
+
     private void replaceFragment(Fragment f){
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.nav_host_fragment, f);

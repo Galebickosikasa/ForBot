@@ -90,7 +90,7 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.profile:
-                    if (FirebaseAuth.getInstance().getCurrentUser() != null){
+                    if (FirebaseAuth.getInstance().getCurrentUser() != null) {
                         DialogFragment profileDialog = new ProfileDialogFragment();
                         profileDialog.show(getChildFragmentManager(), FRAGMENT_DIALOG_PROFILE_TAG);
                     } else {
@@ -142,4 +142,5 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         getNews();
         mSwipeRefreshLayout.setRefreshing(false);
     }
+
 }

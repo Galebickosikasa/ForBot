@@ -15,7 +15,7 @@
         android:layout_marginTop="10dp"
         android:background="@android:color/white"
         android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar">
+        android:theme="@style/ThemeOverlay.MaterialComponents.ActionBar" >
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/main.collapsing"
@@ -59,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="0dp"
-                app:cardElevation="5dp">
+                app:cardElevation="5dp" >
 
                 <LinearLayout
                     android:layout_width="match_parent"
