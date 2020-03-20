@@ -104,8 +104,7 @@
         app:layout_anchor="@id/main.appbar"
         app:layout_anchorGravity="bottom|left|start"
         android:layout_marginStart="16dp"
-        android:elevation="8dp"
-        >
+        android:elevation="8dp" >
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/newsNumber"
@@ -115,6 +114,17 @@
             android:layout_height="match_parent"
             android:layout_width="match_parent" />
     </com.google.android.material.textfield.TextInputLayout>
+
+    <br.com.simplepass.loadingbutton.customViews.CircularProgressButton
+        android:layout_height="70dp"
+        android:layout_width="70dp"
+        android:id="@+id/ok_btn"
+        android:layout_marginEnd="16dp"
+        app:layout_anchor="@id/main.appbar"
+        app:layout_anchorGravity="bottom|right"
+        android:background="@drawable/ic_chech_24dp" >
+
+    </br.com.simplepass.loadingbutton.customViews.CircularProgressButton>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

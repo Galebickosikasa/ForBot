@@ -43,7 +43,7 @@ import java.util.Calendar;
 import java.util.Objects;
 
 import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
-import br.com.simplepass.loadingbutton.customViews.CircularProgressImageButton;
+import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
 import br.com.simplepass.loadingbutton.customViews.OnAnimationEndListener;
 
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
@@ -61,7 +61,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private DatabaseReference databaseReference;
     private EditText NewsNumber;
     private EditText newsText;
-    private CircularProgressImageButton btn;
+    private CircularProgressButton btn;
     private CoordinatorLayout parent;
 //    private Toolbar toolbar;
 
@@ -77,7 +77,10 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         NewsTitle = findViewById(R.id.newsTitle);
         NewsTitleImage.setOnClickListener(onClickListener);
         parent = findViewById(R.id.parent);
-        btn = getBtn();
+        btn = findViewById(R.id.ok_btn);
+
+        btn.startAnimation();
+
         parent.addView(btn);
         TextInputLayout newsNumberField = findViewById(R.id.newsNumberField);
 //        toolbar = findViewById(R.id.newsToolbar);
@@ -88,6 +91,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         numberParams.setAnchorId(R.id.newsTitleImage);
         newsNumberField.setLayoutParams(numberParams);
         newsText = findViewById(R.id.newsText);
+        Log.e ("kek", "oao");
 //        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
 //        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -124,23 +128,25 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         }
     };
 
-    private CircularProgressImageButton getBtn(){
-        btn = new CircularProgressImageButton(this);
-        CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(dpToPx(this, 70), dpToPx(this, 70));
-        lp.setAnchorId(R.id.newsTitleImage);
-        lp.anchorGravity = Gravity.BOTTOM | Gravity.END;
-        lp.setMarginEnd(dpToPx(this, 16));
-        btn.setLayoutParams(lp);
-        btn.setBackground(getDrawable(R.drawable.circle_shape));
-        btn.setId(R.id.newsDoneBtn);
-        btn.setOnClickListener(onClickListener);
-        btn.setElevation(dpToPx(this, 8));
-        btn.setImageResource(R.drawable.ic_block_black_24dp);
-        btn.setFinalCorner(dpToPx(this, 35));
-        btn.setInitialCorner(dpToPx(this, 35));
-        btn.setSpinningBarColor(getResources().getColor(R.color.colorSecond));
-        return btn;
-    }
+//    private CircularProgressButton getBtn(){
+//        btn = new CircularProgressButton(this);
+//        CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(dpToPx(this, 70), dpToPx(this, 70));
+//        lp.setAnchorId(R.id.newsTitleImage);
+//        lp.anchorGravity = Gravity.BOTTOM | Gravity.END;
+//        lp.setMarginEnd(dpToPx(this, 16));
+//        btn.setLayoutParams(lp);
+//        btn.setBackground(getDrawable(R.drawable.circle_shape));
+//        btn.setId(R.id.newsDoneBtn);
+//        btn.setOnClickListener(onClickListener);
+//        btn.setElevation(dpToPx(this, 8));
+////        btn.setImageResource(R.drawable.ic_block_black_24dp);
+//        btn.setFinalCorner(dpToPx(this, 35));
+//        btn.setInitialCorner(dpToPx(this, 35));
+//        btn.setSpinningBarColor(getResources().getColor(R.color.colorSecond));
+//        Log.e ("kek", "oaoao");
+//        return btn;
+//    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -156,7 +162,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                 }
                 NewsTitleImage.setImageBitmap(bitmap);
                 btn.startAnimation();
-                btn.setImageResource(R.drawable.ic_file_download_black_24dp);
+//                btn.setImageResource(R.drawable.ic_file_download_black_24dp);
                 saveFile(bitmap, INTENT_EXTRA_NEWS_TITLE_IMAGE);
                 uploadImage(resultUri);
             }
@@ -180,7 +186,8 @@ public class NewsCreateActivity extends BaseSwipeActivity {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 btn.revertAnimation();
-                btn.setImageResource(R.drawable.ic_done_black_24dp);
+
+                btn.doneLoadingAnimation(getResources().getColor(R.color.colorSecond));
             }
         });
     }
