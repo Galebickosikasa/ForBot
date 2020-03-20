@@ -46,23 +46,26 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         ImageView iw = view.findViewById(R.id.NewsTitleImage);
         ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(parent.getWidth(),
                 parent.getWidth() * 10 / 16);
-        Log.e(LOG_NAME, String.valueOf(parent.getWidth()) + " " + String.valueOf(lp.height));
+//        Log.e(LOG_NAME, String.valueOf(parent.getWidth()) + " " + String.valueOf(lp.height));
         iw.setLayoutParams(lp);
         return new NewsViewHolder(view);
     }
 
     public void setItems(NewsFirebaseItem item){
-        Log.e(LOG_NAME, "setItems()");
+        Log.e(LOG_NAME, "setItems()" + item.getTitle());
         newsList.add(item);
-        notifyDataSetChanged();
+        notifyItemChanged(getItemCount() - 1);
     }
     public void clearItems(){
         newsList.clear();
+        notifyDataSetChanged();
     }
 
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         holder.bind(newsList.get(position));
+        Log.e(LOG_NAME, "onBindViewHolder()" + position);
+
     }
 
     @Override
@@ -83,12 +86,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
         public void bind(NewsFirebaseItem item){
             newsTitle.setText(item.getTitle());
-            Glide.with(itemView.getContext())
-                    .load(item.getUri())
-                    .into(newsTitleImage);
             newsText.setText(item.getText());
             newsAuthor.setText(item.getAuthor());
             newsDate.setText(item.getDate());
+            Glide.with(itemView.getContext())
+                    .load(item.getUri())
+                    .into(newsTitleImage);
+            newsTitleImage.setVisibility(item.getUri() != null ? View.VISIBLE : View.GONE);
         }
 
         @Override

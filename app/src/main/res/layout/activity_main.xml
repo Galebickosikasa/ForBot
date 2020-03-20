@@ -18,16 +18,17 @@
     </FrameLayout>
 
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+    <me.ibrahimsn.lib.SmoothBottomBar
         android:id="@+id/nav_view"
+        android:elevation="12dp"
+        app:backgroundColor="@android:color/white"
+        app:textColor="@color/black"
+        app:indicatorColor="#4D2D2D2D"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="70dp"
         android:background="?android:attr/windowBackground"
-        android:elevation="8dp"
-        app:elevation="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:iconTint="@color/black"
+        app:iconTintActive="@color/black"
         app:menu="@menu/bottom_nav_menu" />
 
 </LinearLayout>

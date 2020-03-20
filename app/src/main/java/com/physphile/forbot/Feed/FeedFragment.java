@@ -39,6 +39,7 @@ import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
 import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_CODE;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_PATH;
+import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
 
 public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     private NewsAdapter adapter;
@@ -52,7 +53,7 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getNews();
+
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -64,9 +65,10 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         FirebaseUser user = mAuth.getCurrentUser();
         Toolbar toolbar = v.findViewById(R.id.feedToolbar);
         if (user != null){
-            if ((user.getUid()).equals(ARTEM_ADMIN_UID) || (user.getUid()).equals(GLEB_ADMIN_ID)) {
+            if (user.getUid().equals(ARTEM_ADMIN_UID) || user.getUid().equals(GLEB_ADMIN_ID) || user.getUid().equals(PAVEL_ST_ADMIN_ID)) {
                 toolbar.getMenu().clear();
                 toolbar.inflateMenu(R.menu.admin_toolbar_menu);
+//                toolbar.getMenu().getItem(1).setIcon(R.drawable.common_google_signin_btn_icon_dark);
             }
         }
         mSwipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
@@ -75,6 +77,8 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
         adapter = new NewsAdapter(getContext());
         newsList.setAdapter(adapter);
+        getNews();
+        Log.e(LOG_NAME, "getNews()");
         return v;
     }
 
@@ -116,7 +120,7 @@ public class FeedFragment extends Fragment implements SwipeRefreshLayout.OnRefre
     }
 
     private void getNews(){
-        Log.e(LOG_NAME, DATABASE_NEWS_PATH);
+//        Log.e(LOG_NAME, DATABASE_NEWS_PATH);
         database.getReference(DATABASE_NEWS_PATH)
                 .addChildEventListener(new ChildEventListener() {
                     @Override

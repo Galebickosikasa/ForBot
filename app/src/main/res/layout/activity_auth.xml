@@ -15,7 +15,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="50dp"
         android:layout_marginEnd="40dp"
-        android:fontFamily="@font/comfortaa_bold"
+        android:fontFamily="@font/ubuntu_mono"
         android:hint="Адрес электронной почты"
         app:endIconMode="clear_text"
         app:errorEnabled="true">
@@ -36,7 +36,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
-        android:fontFamily="@font/comfortaa_bold"
+        android:fontFamily="@font/ubuntu_mono"
         android:hint="Пароль"
         android:inputType="textPassword"
         app:endIconMode="password_toggle">
@@ -55,7 +55,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
-        android:fontFamily="@font/comfortaa_bold"
+        android:fontFamily="@font/ubuntu_mono"
         android:text="Зарегестироваться"
         app:backgroundTint="@color/colorPrimaryLight" />
 
@@ -65,6 +65,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="10dp"
-        android:fontFamily="@font/comfortaa_bold"
+        android:fontFamily="@font/ubuntu_mono"
         android:text="Войти" />
 </LinearLayout>

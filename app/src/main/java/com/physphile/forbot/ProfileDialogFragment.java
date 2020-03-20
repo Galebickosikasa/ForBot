@@ -1,5 +1,8 @@
 package com.physphile.forbot;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,7 +41,7 @@ import static com.physphile.forbot.Constants.FILE_PREFIX;
 import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.STORAGE_AVATARS_PATH;
 
-public class ProfileDialogFragment extends DialogFragment {
+public class ProfileDialogFragment extends DialogFragment  {
     private View v;
     private FirebaseStorage storage;
     private ImageView Avatar;
@@ -74,11 +78,6 @@ public class ProfileDialogFragment extends DialogFragment {
             if (user != null){
                 AccountField.setText(user.getEmail());
                 Log.e(LOG_NAME, "setText");
-//                try {
-//                    setAvatarFirebase();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
             }
         }
     };

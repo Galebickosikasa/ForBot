@@ -15,6 +15,10 @@ import androidx.fragment.app.FragmentTransaction;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+
+import me.ibrahimsn.lib.OnItemSelectedListener;
+import me.ibrahimsn.lib.SmoothBottomBar;
+
 import static com.physphile.forbot.Constants.LOG_NAME;
 
 public class MainActivity extends BaseSwipeActivity {
@@ -26,11 +30,23 @@ public class MainActivity extends BaseSwipeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        BottomNavigationView navView = findViewById(R.id.nav_view);
+        SmoothBottomBar navView = findViewById(R.id.nav_view);
         feedFragment = FeedFragment.newInstance();
         calendarFragment = CalendarFragment.newInstance();
         replaceFragment(feedFragment);
-        navView.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
+        navView.setOnItemSelectedListener(new OnItemSelectedListener() {
+            @Override
+            public void onItemSelect(int i) {
+                switch (i) {
+                    case 0:
+                        replaceFragment(feedFragment);
+                        break;
+                    case 1:
+                        replaceFragment(calendarFragment);
+                        break;
+                }
+            }
+        });
 //        updateTheme();
     }
 
@@ -60,23 +76,6 @@ public class MainActivity extends BaseSwipeActivity {
         ft.replace(R.id.nav_host_fragment, f);
         ft.commit();
     }
-
-    BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.nav_feed:
-                    replaceFragment(feedFragment);
-                    item.setChecked(true);
-                    break;
-                case R.id.nav_cal:
-                    replaceFragment(calendarFragment);
-                    item.setChecked(true);
-                    break;
-            }
-            return false;
-        }
-    };
 
     public void saveFile(Bitmap bitmap, String name) {
         try {
