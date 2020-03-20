@@ -2,9 +2,6 @@ package com.physphile.forbot.Feed;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,7 +16,6 @@ import com.physphile.forbot.MainActivity;
 import com.physphile.forbot.NewsLongTapDialog;
 import com.physphile.forbot.R;
 
-import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,7 +70,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         private TextView newsDate;
         NewsViewHolder(@NonNull View itemView) {
             super(itemView);
-            newsTitle = itemView.findViewById(R.id.NewsTitle);
+            newsTitle = itemView.findViewById(R.id.newsTitle);
             newsTitleImage = itemView.findViewById(R.id.NewsTitleImage);
             newsAuthor = itemView.findViewById(R.id.newsAuthor);
             newsDate = itemView.findViewById(R.id.newsDate);

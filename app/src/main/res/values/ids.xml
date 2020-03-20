@@ -2,4 +2,5 @@
 <resources>
     <item name="NotAuthBtn" type="id"/>
     <item name="AccountSettingsBtn" type="id"/>
+    <item name="newsDoneBtn" type="id"/>
 </resources>

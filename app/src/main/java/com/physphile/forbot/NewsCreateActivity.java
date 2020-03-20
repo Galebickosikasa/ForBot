@@ -1,23 +1,39 @@
 package com.physphile.forbot;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toolbar;
+
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.physphile.forbot.Feed.NewsFirebaseItem;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -25,6 +41,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
+
+import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
+import br.com.simplepass.loadingbutton.customViews.CircularProgressImageButton;
+import br.com.simplepass.loadingbutton.customViews.OnAnimationEndListener;
+
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE_IMAGE;
@@ -40,20 +61,40 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private DatabaseReference databaseReference;
     private EditText NewsNumber;
     private EditText newsText;
+    private CircularProgressImageButton btn;
+    private CoordinatorLayout parent;
+//    private Toolbar toolbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_create);
         NewsTitleImage = findViewById(R.id.newsTitleImage);
-        NewsTitle = findViewById(R.id.NewsTitle);
-        Button newsDoneBtn = findViewById(R.id.NewsDoneBtn);
+        int width = getWindowManager().getDefaultDisplay().getWidth();
+        int height = width * 10 /16;
+        NewsTitleImage.setLayoutParams(new CollapsingToolbarLayout.LayoutParams(width, height));
+        NewsTitle = findViewById(R.id.newsTitle);
         NewsTitleImage.setOnClickListener(onClickListener);
-        newsDoneBtn.setOnClickListener(onClickListener);
+        parent = findViewById(R.id.parent);
+        btn = getBtn();
+        parent.addView(btn);
+        TextInputLayout newsNumberField = findViewById(R.id.newsNumberField);
+//        toolbar = findViewById(R.id.newsToolbar);
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
         NewsNumber = findViewById(R.id.newsNumber);
+        CoordinatorLayout.LayoutParams numberParams = (CoordinatorLayout.LayoutParams) newsNumberField.getLayoutParams();
+        numberParams.setAnchorId(R.id.newsTitleImage);
+        newsNumberField.setLayoutParams(numberParams);
         newsText = findViewById(R.id.newsText);
+//        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                finish();
+//            }
+//        });
     }
 
     @Override
@@ -70,8 +111,9 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                             .setCropShape(CropImageView.CropShape.RECTANGLE)
                             .setAspectRatio(16, 10)
                             .start(NewsCreateActivity.this);
+
                     break;
-                case R.id.NewsDoneBtn:
+                case R.id.newsDoneBtn:
                     putNewsFirebase(Integer.parseInt(NewsNumber.getText().toString()), NewsTitle.getText().toString(), newsText.getText().toString());
                     Intent intent = new Intent();
                     intent.putExtra(INTENT_EXTRA_NEWS_TITLE, NewsTitle.getText().toString());
@@ -82,6 +124,23 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         }
     };
 
+    private CircularProgressImageButton getBtn(){
+        btn = new CircularProgressImageButton(this);
+        CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(dpToPx(this, 70), dpToPx(this, 70));
+        lp.setAnchorId(R.id.newsTitleImage);
+        lp.anchorGravity = Gravity.BOTTOM | Gravity.END;
+        lp.setMarginEnd(dpToPx(this, 16));
+        btn.setLayoutParams(lp);
+        btn.setBackground(getDrawable(R.drawable.circle_shape));
+        btn.setId(R.id.newsDoneBtn);
+        btn.setOnClickListener(onClickListener);
+        btn.setElevation(dpToPx(this, 8));
+        btn.setImageResource(R.drawable.ic_block_black_24dp);
+        btn.setFinalCorner(dpToPx(this, 35));
+        btn.setInitialCorner(dpToPx(this, 35));
+        btn.setSpinningBarColor(getResources().getColor(R.color.colorSecond));
+        return btn;
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -96,6 +155,8 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                     e.printStackTrace();
                 }
                 NewsTitleImage.setImageBitmap(bitmap);
+                btn.startAnimation();
+                btn.setImageResource(R.drawable.ic_file_download_black_24dp);
                 saveFile(bitmap, INTENT_EXTRA_NEWS_TITLE_IMAGE);
                 uploadImage(resultUri);
             }
@@ -115,7 +176,17 @@ public class NewsCreateActivity extends BaseSwipeActivity {
 
     private void uploadImage(Uri filePath) {
         storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + NewsNumber.getText().toString());
-        storageReference.putFile(filePath);
+        storageReference.putFile(filePath).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                btn.revertAnimation();
+                btn.setImageResource(R.drawable.ic_done_black_24dp);
+            }
+        });
+    }
+
+    private static int dpToPx(final Context context, final float dp) {
+        return (int)(dp * context.getResources().getDisplayMetrics().density);
     }
 
     public void putNewsFirebase(int num, final String title, final String text) {

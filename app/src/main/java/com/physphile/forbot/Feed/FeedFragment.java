@@ -75,8 +75,8 @@ public class FeedFragment extends Fragment {
 //                toolbar.getMenu().getItem(1).setIcon(R.drawable.common_google_signin_btn_icon_dark);
             }
         }
-        final View frontLayout = getLayoutInflater().inflate(R.layout.front_layout, null);
-        mSwipeRefreshLayout = frontLayout.findViewById(R.id.swipeRefreshLayout);
+
+        mSwipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -89,10 +89,6 @@ public class FeedFragment extends Fragment {
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
         adapter = new NewsAdapter(getContext());
         newsList.setAdapter(adapter);
-//        adapter.setItems(Arrays.asList(
-//                new NewsFirebaseItem("хард код", "https://firebasestorage.googleapis.com/v0/b/forbot-20468.appspot.com/o/newsImages%2F228?alt=media&token=9645bd31-b9fa-4adc-b681-cec34914b5b1",
-//                        "очень длинный текст статьи", "Артём", "20.03.20")
-//        ));
         getNews();
         Log.e(LOG_NAME, "getNews()");
         return v;
