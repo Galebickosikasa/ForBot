@@ -15,10 +15,8 @@ import com.bumptech.glide.Glide;
 import com.physphile.forbot.MainActivity;
 import com.physphile.forbot.NewsLongTapDialog;
 import com.physphile.forbot.R;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.NEWS_PAGE_ACTIVITY_PATH;
 
@@ -43,7 +41,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public void addItem(NewsFirebaseItem item){
-        Log.e(LOG_NAME, "setItems()" + item.getTitle());
+//        Log.e(LOG_NAME, "setItems()" + item.getTitle());
         newsList.add(0, item);
         notifyItemChanged(getItemCount() - 1);
     }
@@ -55,7 +53,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         holder.bind(newsList.get(position));
-        Log.e(LOG_NAME, "onBindViewHolder()" + position);
+//        Log.e(LOG_NAME, "onBindViewHolder()" + position);
 
     }
 

@@ -20,6 +20,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.physphile.forbot.ClassHelper;
 import com.physphile.forbot.ProfileDialogFragment;
 import com.physphile.forbot.R;
 import java.util.Calendar;
@@ -44,7 +45,7 @@ public class CalendarFragment extends Fragment {
         olympsAdapter = new OlympsAdapter();
         OlympsList.setAdapter(olympsAdapter);
         Calendar calendar = Calendar.getInstance();
-        toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
+        toolbar.setOnMenuItemClickListener(new ClassHelper(getActivity(), getChildFragmentManager(), olympsAdapter, calendarView).onMenuItemClickListener);
         getOlymps(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
         return v;
     }
@@ -59,28 +60,6 @@ public class CalendarFragment extends Fragment {
     private String makePath (int year, int month, int dayOfMonth) {
         return year + "/" + month + "/" + dayOfMonth;
     }
-
-    private OnMenuItemClickListener onMenuItemClickListener = new OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            switch (item.getItemId()){
-                case R.id.set_today:
-                    CalendarView cal = v.findViewById(R.id.calendar);
-                    olympsAdapter.clearItems();
-                    cal.setDate(Calendar.getInstance().getTime().getTime());
-                    break;
-                case R.id.profile:
-                    if (FirebaseAuth.getInstance().getCurrentUser() != null){
-                        DialogFragment profileDialog = new ProfileDialogFragment();
-                        profileDialog.show(getChildFragmentManager(), FRAGMENT_DIALOG_PROFILE_TAG);
-                    } else {
-                        startActivity(new Intent(AUTH_ACTIVITY_PATH));
-                    }
-                    break;
-            }
-            return false;
-        }
-    };
 
     private void getOlymps (int year, int month, int dayOfMonth) {
         database.getReference(makePath(year, month, dayOfMonth))

@@ -1,51 +1,36 @@
 package com.physphile.forbot;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.Toolbar;
-
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.textfield.TextInputLayout;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.physphile.forbot.Feed.NewsFirebaseItem;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
-
-import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
-import br.com.simplepass.loadingbutton.customViews.CircularProgressButton;
-import br.com.simplepass.loadingbutton.customViews.OnAnimationEndListener;
-
+import br.com.simplepass.loadingbutton.customViews.CircularProgressImageButton;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE_IMAGE;
@@ -59,11 +44,11 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private EditText NewsTitle;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
-    private EditText NewsNumber;
+    private TextInputEditText NewsNumber;
     private EditText newsText;
-    private CircularProgressButton btn;
+    private CircularProgressImageButton btn;
     private CoordinatorLayout parent;
-//    private Toolbar toolbar;
+    private Toolbar toolbar;
 
 
     @Override
@@ -77,28 +62,24 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         NewsTitle = findViewById(R.id.newsTitle);
         NewsTitleImage.setOnClickListener(onClickListener);
         parent = findViewById(R.id.parent);
-        btn = findViewById(R.id.ok_btn);
-
-        btn.startAnimation();
-
+        btn = getBtn();
         parent.addView(btn);
-        TextInputLayout newsNumberField = findViewById(R.id.newsNumberField);
-//        toolbar = findViewById(R.id.newsToolbar);
+        toolbar = findViewById(R.id.newsToolbar);
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
         NewsNumber = findViewById(R.id.newsNumber);
-        CoordinatorLayout.LayoutParams numberParams = (CoordinatorLayout.LayoutParams) newsNumberField.getLayoutParams();
+        CoordinatorLayout.LayoutParams numberParams = (CoordinatorLayout.LayoutParams) NewsNumber.getLayoutParams();
         numberParams.setAnchorId(R.id.newsTitleImage);
-        newsNumberField.setLayoutParams(numberParams);
+        NewsNumber.setLayoutParams(numberParams);
         newsText = findViewById(R.id.newsText);
-        Log.e ("kek", "oao");
-//        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
-//        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                finish();
-//            }
-//        });
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+        toolbar.setOnMenuItemClickListener(new ClassHelper(this, getSupportFragmentManager()).onMenuItemClickListener);
     }
 
     @Override
@@ -111,42 +92,51 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         public void onClick(View v) {
             switch(v.getId()) {
                 case R.id.newsTitleImage:
-                    CropImage.activity()
-                            .setCropShape(CropImageView.CropShape.RECTANGLE)
-                            .setAspectRatio(16, 10)
-                            .start(NewsCreateActivity.this);
+                    if (!NewsNumber.getText().toString().equals("")) {
+                        CropImage.activity()
+                                .setCropShape(CropImageView.CropShape.RECTANGLE)
+                                .setAspectRatio(16, 10)
+                                .start(NewsCreateActivity.this);
+                    } else {
+                        Snackbar.make(v, "Сначала введите номер статьи", Snackbar.LENGTH_LONG).show();
+                    }
 
                     break;
                 case R.id.newsDoneBtn:
-                    putNewsFirebase(Integer.parseInt(NewsNumber.getText().toString()), NewsTitle.getText().toString(), newsText.getText().toString());
-                    Intent intent = new Intent();
-                    intent.putExtra(INTENT_EXTRA_NEWS_TITLE, NewsTitle.getText().toString());
-                    setResult(RESULT_OK, intent);
-                    finish();
+                    if (!newsText.getText().toString().equals("") && !NewsTitle.getText().toString().equals("")){
+                        putNewsFirebase(Integer.parseInt(NewsNumber.getText().toString()), NewsTitle.getText().toString(), newsText.getText().toString());
+                        Intent intent = new Intent();
+                        intent.putExtra(INTENT_EXTRA_NEWS_TITLE, NewsTitle.getText().toString());
+                        setResult(RESULT_OK, intent);
+                        finish();
+
+                    } else {
+                        Snackbar.make(v, "Сначала заполните все поля", Snackbar.LENGTH_LONG).show();
+                    }
                     break;
             }
         }
     };
 
-//    private CircularProgressButton getBtn(){
-//        btn = new CircularProgressButton(this);
-//        CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(dpToPx(this, 70), dpToPx(this, 70));
-//        lp.setAnchorId(R.id.newsTitleImage);
-//        lp.anchorGravity = Gravity.BOTTOM | Gravity.END;
-//        lp.setMarginEnd(dpToPx(this, 16));
-//        btn.setLayoutParams(lp);
-//        btn.setBackground(getDrawable(R.drawable.circle_shape));
-//        btn.setId(R.id.newsDoneBtn);
-//        btn.setOnClickListener(onClickListener);
-//        btn.setElevation(dpToPx(this, 8));
-////        btn.setImageResource(R.drawable.ic_block_black_24dp);
-//        btn.setFinalCorner(dpToPx(this, 35));
-//        btn.setInitialCorner(dpToPx(this, 35));
-//        btn.setSpinningBarColor(getResources().getColor(R.color.colorSecond));
-//        Log.e ("kek", "oaoao");
-//        return btn;
-//    }
-
+    private CircularProgressImageButton getBtn(){
+        btn = new CircularProgressImageButton(this);
+        ClassHelper classHelper = new ClassHelper(this);
+        CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(classHelper.dpToPx(70), classHelper.dpToPx(70));
+        lp.setAnchorId(R.id.newsTitleImage);
+        lp.anchorGravity = Gravity.BOTTOM | Gravity.END;
+        lp.setMarginEnd(classHelper.dpToPx(16));
+        btn.setLayoutParams(lp);
+        btn.setBackground(getDrawable(R.drawable.circle_shape));
+        btn.setId(R.id.newsDoneBtn);
+        btn.setOnClickListener(onClickListener);
+        btn.setClickable(false);
+        btn.setElevation(classHelper.dpToPx(8));
+        btn.setImageResource(R.drawable.ic_block_black_24dp);
+        btn.setFinalCorner(classHelper.dpToPx(35));
+        btn.setInitialCorner(classHelper.dpToPx(35));
+        btn.setSpinningBarColor(getResources().getColor(R.color.colorSecond));
+        return btn;
+    }
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -162,38 +152,26 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                 }
                 NewsTitleImage.setImageBitmap(bitmap);
                 btn.startAnimation();
-//                btn.setImageResource(R.drawable.ic_file_download_black_24dp);
-                saveFile(bitmap, INTENT_EXTRA_NEWS_TITLE_IMAGE);
+                btn.setImageResource(R.drawable.ic_file_download_black_24dp);
+                new ClassHelper(this).saveFile(bitmap, INTENT_EXTRA_NEWS_TITLE_IMAGE);
                 uploadImage(resultUri);
             }
         }
     }
 
-    public void saveFile(Bitmap bitmap, String name) {
-        try {
-            FileOutputStream out = openFileOutput(name, MODE_PRIVATE);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            Log.e(LOG_NAME, "файл сохранен");
-            out.close();
-        } catch (Exception ignored) {
-            Log.e(LOG_NAME, "файл не сохранен");
-        }
-    }
+
 
     private void uploadImage(Uri filePath) {
         storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + NewsNumber.getText().toString());
-        storageReference.putFile(filePath).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        storageReference.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 btn.revertAnimation();
-
-                btn.doneLoadingAnimation(getResources().getColor(R.color.colorSecond));
+                btn.setImageResource(R.drawable.ic_done_black_24dp);
+                btn.setClickable(true);
+                Log.e(LOG_NAME, "uploadImage()");
             }
         });
-    }
-
-    private static int dpToPx(final Context context, final float dp) {
-        return (int)(dp * context.getResources().getDisplayMetrics().density);
     }
 
     public void putNewsFirebase(int num, final String title, final String text) {
@@ -203,6 +181,10 @@ public class NewsCreateActivity extends BaseSwipeActivity {
             public void onSuccess(Uri uri) {
                 databaseReference = database.getReference(DATABASE_NEWS_PATH);
                 Calendar calendar = Calendar.getInstance();
+                Log.e(LOG_NAME, title + " " + uri.toString() + " " + text + " " +
+                        FirebaseAuth.getInstance().getCurrentUser().getEmail() + " " +
+                        calendar.get(Calendar.DATE) + "." + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR)
+                        );
                 NewsFirebaseItem nfi = new NewsFirebaseItem(title,
                         uri.toString(),
                         text,
@@ -210,13 +192,11 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                         calendar.get(Calendar.DATE) + "." + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR)
                 );
                 databaseReference.push().setValue(nfi);
-                Log.e(LOG_NAME, "Новости подгружены");
+//                Log.e(LOG_NAME, "Новости подгружены");
             }
         });
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-    }
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {}
 }

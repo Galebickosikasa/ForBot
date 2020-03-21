@@ -3,13 +3,10 @@ package com.physphile.forbot.Feed;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
@@ -18,7 +15,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -27,20 +23,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.physphile.forbot.ClassHelper;
 import com.physphile.forbot.ProfileDialogFragment;
 import com.physphile.forbot.R;
-
-import java.util.Arrays;
-import java.util.Collection;
-
 import static android.app.Activity.RESULT_OK;
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
-import static com.physphile.forbot.Constants.AUTH_ACTIVITY_CODE;
 import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
 import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
-import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_CODE;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
@@ -86,11 +77,11 @@ public class FeedFragment extends Fragment {
             }
         });
         mSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN);
-        toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
+        toolbar.setOnMenuItemClickListener(new ClassHelper(getActivity(), getChildFragmentManager()).onMenuItemClickListener);
         adapter = new NewsAdapter(getContext());
         newsList.setAdapter(adapter);
         getNews();
-        Log.e(LOG_NAME, "getNews()");
+//        Log.e(LOG_NAME, "getNews()");
         return v;
     }
 
@@ -101,25 +92,7 @@ public class FeedFragment extends Fragment {
 
     public static FeedFragment newInstance() { return new FeedFragment(); }
 
-    private Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
-        @Override
-        public boolean onMenuItemClick(MenuItem item) {
-            switch (item.getItemId()) {
-                case R.id.profile:
-                    if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                        DialogFragment profileDialog = new ProfileDialogFragment();
-                        profileDialog.show(getChildFragmentManager(), FRAGMENT_DIALOG_PROFILE_TAG);
-                    } else {
-                        startActivity(new Intent(AUTH_ACTIVITY_PATH));
-                    }
-                    break;
-                case R.id.createNews:
-                    startActivityForResult(new Intent(NEWS_CREATE_ACTIVITY_PATH), NEWS_CREATE_ACTIVITY_CODE);
-                    break;
-            }
-            return false;
-        }
-    };
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -139,7 +112,7 @@ public class FeedFragment extends Fragment {
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
                         adapter.addItem(item);
-                        Log.e("onChildAdded", item.getTitle());
+//                        Log.e("onChildAdded", item.getTitle());
                     }
                     @Override
                     public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}

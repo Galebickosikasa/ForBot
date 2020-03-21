@@ -1,25 +1,13 @@
 package com.physphile.forbot;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
 import android.widget.CompoundButton;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.physphile.forbot.Calendar.CalendarFragment;
 import com.physphile.forbot.Feed.FeedFragment;
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
 import me.ibrahimsn.lib.OnItemSelectedListener;
 import me.ibrahimsn.lib.SmoothBottomBar;
-
-import static com.physphile.forbot.Constants.LOG_NAME;
 
 public class MainActivity extends BaseSwipeActivity {
     FeedFragment feedFragment;
@@ -77,31 +65,12 @@ public class MainActivity extends BaseSwipeActivity {
         ft.commit();
     }
 
-    public void saveFile(Bitmap bitmap, String name) {
-        try {
-            FileOutputStream out = openFileOutput(name, MODE_PRIVATE);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.close();
-            Log.e(LOG_NAME, "файл сохранен");
-        } catch (Exception ignored) {
-            Log.e(LOG_NAME, "файл не сохранен");
-        }
-    }
-
-    public Bitmap readFile(String name) throws FileNotFoundException {
-        FileInputStream is = openFileInput(name);
-        Log.e(LOG_NAME, "файл прочитан");
-        return BitmapFactory.decodeStream(is);
-    }
-
     @Override
     public boolean isSupportSwipeBack() {
         return false;
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
-    }
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {}
 }
 
