@@ -1,10 +1,11 @@
 package com.physphile.forbot;
 
 import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.DialogFragment;
 
 
 public class NewsLongTapDialog extends DialogFragment {

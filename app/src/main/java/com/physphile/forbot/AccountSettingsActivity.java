@@ -1,7 +1,5 @@
 package com.physphile.forbot;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +7,10 @@ import android.view.MenuItem;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.warkiz.widget.IndicatorSeekBar;
 import com.warkiz.widget.OnSeekChangeListener;
 import com.warkiz.widget.SeekParams;
@@ -16,6 +18,27 @@ import com.warkiz.widget.SeekParams;
 public class AccountSettingsActivity extends AppCompatActivity {
     IndicatorSeekBar ChooseFoamSeek;
     CheckBox physicsCheck, mathCheck;
+    OnSeekChangeListener ChooseFoamSeekListener = new OnSeekChangeListener() {
+        @Override
+        public void onSeeking(SeekParams seekParams) {
+            TextView ChooseFoamTxt = findViewById(R.id.ChooseFoamTxt);
+            String s = ChooseFoamSeek.getProgress() + " класс";
+            ChooseFoamTxt.setText(s);
+        }
+
+        @Override
+        public void onStartTrackingTouch(IndicatorSeekBar seekBar) {
+        }
+
+        @Override
+        public void onStopTrackingTouch(IndicatorSeekBar seekBar) {
+            SharedPreferences sp = getSharedPreferences("foam", Context.MODE_PRIVATE);
+            SharedPreferences.Editor e = sp.edit();
+            e.putInt("foam", ChooseFoamSeek.getProgress());
+            e.apply();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,15 +56,15 @@ public class AccountSettingsActivity extends AppCompatActivity {
         physicsCheck.setOnCheckedChangeListener(OnCheckBoxClick("physics"));
         mathCheck.setOnCheckedChangeListener(OnCheckBoxClick("math"));
 
-        if(getSharedPreferences("physics", Context.MODE_PRIVATE).getBoolean("physics", false)){
+        if (getSharedPreferences("physics", Context.MODE_PRIVATE).getBoolean("physics", false)) {
             physicsCheck.setChecked(true);
         }
-        if(getSharedPreferences("math", Context.MODE_PRIVATE).getBoolean("math", false)){
+        if (getSharedPreferences("math", Context.MODE_PRIVATE).getBoolean("math", false)) {
             mathCheck.setChecked(true);
         }
         int foam = getSharedPreferences("foam", Context.MODE_PRIVATE).getInt("foam", -1);
 
-        if (foam != -1){
+        if (foam != -1) {
             ChooseFoamSeek.setProgress(foam);
         }
     }
@@ -55,31 +78,13 @@ public class AccountSettingsActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    OnSeekChangeListener ChooseFoamSeekListener = new OnSeekChangeListener() {
-        @Override
-        public void onSeeking(SeekParams seekParams) {
-            TextView ChooseFoamTxt = findViewById(R.id.ChooseFoamTxt);
-            String s = ChooseFoamSeek.getProgress() + " класс";
-            ChooseFoamTxt.setText(s);
-        }
-        @Override
-        public void onStartTrackingTouch(IndicatorSeekBar seekBar) {}
-        @Override
-        public void onStopTrackingTouch(IndicatorSeekBar seekBar) {
-            SharedPreferences sp = getSharedPreferences("foam", Context.MODE_PRIVATE);
-            SharedPreferences.Editor e = sp.edit();
-            e.putInt("foam", ChooseFoamSeek.getProgress());
-            e.apply();
-        }
-    };
-
-    private CheckBox.OnCheckedChangeListener OnCheckBoxClick (final String name){
+    private CheckBox.OnCheckedChangeListener OnCheckBoxClick(final String name) {
         return new CheckBox.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 SharedPreferences sp = getSharedPreferences(name, Context.MODE_PRIVATE);
                 SharedPreferences.Editor e = sp.edit();
-                if (isChecked){
+                if (isChecked) {
                     e.putBoolean(name, true);
                 } else {
                     e.putBoolean(name, false);

@@ -4,17 +4,17 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -24,16 +24,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.physphile.forbot.ClassHelper;
-import com.physphile.forbot.ProfileDialogFragment;
 import com.physphile.forbot.R;
+
 import static android.app.Activity.RESULT_OK;
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
-import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
-import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
 import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_CODE;
-import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
 
 public class FeedFragment extends Fragment {
@@ -44,6 +41,10 @@ public class FeedFragment extends Fragment {
     private RecyclerView newsList;
     private View v;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    public static FeedFragment newInstance() {
+        return new FeedFragment();
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -59,7 +60,7 @@ public class FeedFragment extends Fragment {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         Toolbar toolbar = v.findViewById(R.id.feedToolbar);
-        if (user != null){
+        if (user != null) {
             if (user.getUid().equals(ARTEM_ADMIN_UID) || user.getUid().equals(GLEB_ADMIN_ID) || user.getUid().equals(PAVEL_ST_ADMIN_ID)) {
                 toolbar.getMenu().clear();
                 toolbar.inflateMenu(R.menu.admin_toolbar_menu);
@@ -90,10 +91,6 @@ public class FeedFragment extends Fragment {
         newsList.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
-    public static FeedFragment newInstance() { return new FeedFragment(); }
-
-
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -104,24 +101,34 @@ public class FeedFragment extends Fragment {
         }
     }
 
-    private void getNews(){
+    private void getNews() {
 //        Log.e(LOG_NAME, DATABASE_NEWS_PATH);
-        database.getReference(DATABASE_NEWS_PATH)
+        final int[] num = {1};
+        database.getReference(DATABASE_NEWS_PATH + num[0])
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
                         adapter.addItem(item);
+                        ++num[0];
 //                        Log.e("onChildAdded", item.getTitle());
                     }
+
                     @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+
                     @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    }
+
                     @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {}
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
 
                 });
     }

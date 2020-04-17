@@ -2,10 +2,13 @@ package com.physphile.forbot;
 
 import android.os.Bundle;
 import android.widget.CompoundButton;
-import com.physphile.forbot.Calendar.CalendarFragment;
-import com.physphile.forbot.Feed.FeedFragment;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+
+import com.physphile.forbot.Calendar.CalendarFragment;
+import com.physphile.forbot.Feed.FeedFragment;
+
 import me.ibrahimsn.lib.OnItemSelectedListener;
 import me.ibrahimsn.lib.SmoothBottomBar;
 
@@ -13,7 +16,7 @@ public class MainActivity extends BaseSwipeActivity {
     FeedFragment feedFragment;
     CalendarFragment calendarFragment;
 
-//    @RequiresApi(api = Build.VERSION_CODES.M)
+    //    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,7 +62,7 @@ public class MainActivity extends BaseSwipeActivity {
 //        }
 //    }
 
-    private void replaceFragment(Fragment f){
+    private void replaceFragment(Fragment f) {
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.replace(R.id.nav_host_fragment, f);
         ft.commit();
@@ -71,6 +74,7 @@ public class MainActivity extends BaseSwipeActivity {
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {}
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    }
 }
 

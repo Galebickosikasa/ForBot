@@ -12,8 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -22,9 +24,11 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+
 import static android.app.Activity.RESULT_OK;
 import static com.physphile.forbot.Constants.ACCOUNT_SETTINGS_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.AUTH_ACTIVITY_CODE;
@@ -33,41 +37,18 @@ import static com.physphile.forbot.Constants.FILE_PREFIX;
 import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.STORAGE_AVATARS_PATH;
 
-public class ProfileDialogFragment extends DialogFragment  {
+public class ProfileDialogFragment extends DialogFragment {
     private View v;
     private FirebaseStorage storage;
     private ImageView Avatar;
     private TextView AccountField;
     private FirebaseUser user;
     private FirebaseAuth mAuth;
-
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
-        v = inflater.inflate(R.layout.fragment_profile_dialog, container, false);
-        getDialog().getWindow().setBackgroundDrawableResource(R.color.transparent);
-        AccountField = v.findViewById(R.id.AccountField);
-        mAuth = FirebaseAuth.getInstance();
-        Avatar = v.findViewById(R.id.Avatar);
-        user = mAuth.getCurrentUser();
-        if(mAuth.getCurrentUser() !=  null){ Avatar.setOnClickListener(onClickListener); }
-        storage = FirebaseStorage.getInstance();
-        mAuth.addAuthStateListener(authStateListener);
-        v.findViewById(R.id.SettingsField).setOnClickListener(onClickListener);
-        if(user != null){
-            try {
-                setAvatar();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return v;
-    }
-
     private FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             user = firebaseAuth.getCurrentUser();
-            if (user != null){
+            if (user != null) {
                 AccountField.setText(user.getEmail());
                 Log.e(LOG_NAME, "setText");
             }
@@ -76,7 +57,7 @@ public class ProfileDialogFragment extends DialogFragment  {
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch(v.getId()){
+            switch (v.getId()) {
                 case R.id.Avatar:
                     CropImage.activity()
                             .setCropShape(CropImageView.CropShape.OVAL)
@@ -91,10 +72,34 @@ public class ProfileDialogFragment extends DialogFragment  {
         }
     };
 
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+        v = inflater.inflate(R.layout.fragment_profile_dialog, container, false);
+        getDialog().getWindow().setBackgroundDrawableResource(R.color.transparent);
+        AccountField = v.findViewById(R.id.AccountField);
+        mAuth = FirebaseAuth.getInstance();
+        Avatar = v.findViewById(R.id.Avatar);
+        user = mAuth.getCurrentUser();
+        if (mAuth.getCurrentUser() != null) {
+            Avatar.setOnClickListener(onClickListener);
+        }
+        storage = FirebaseStorage.getInstance();
+        mAuth.addAuthStateListener(authStateListener);
+        v.findViewById(R.id.SettingsField).setOnClickListener(onClickListener);
+        if (user != null) {
+            try {
+                setAvatar();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return v;
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE:
                 CropImage.ActivityResult result = CropImage.getActivityResult(data);
                 if (resultCode == RESULT_OK) {
@@ -111,11 +116,13 @@ public class ProfileDialogFragment extends DialogFragment  {
                 break;
 
             case AUTH_ACTIVITY_CODE:
-                if (resultCode == RESULT_OK){
+                if (resultCode == RESULT_OK) {
                     try {
                         setAvatarFirebase();
                         Log.e(LOG_NAME, "автар установлен");
-                    } catch (IOException e) { Log.e(LOG_NAME, "аватар не установлен"); }
+                    } catch (IOException e) {
+                        Log.e(LOG_NAME, "аватар не установлен");
+                    }
 
                 }
                 break;

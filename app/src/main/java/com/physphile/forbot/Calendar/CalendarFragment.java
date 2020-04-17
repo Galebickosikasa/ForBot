@@ -1,40 +1,46 @@
 package com.physphile.forbot.Calendar;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
-import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.firebase.auth.FirebaseAuth;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.physphile.forbot.ClassHelper;
-import com.physphile.forbot.ProfileDialogFragment;
 import com.physphile.forbot.R;
+
 import java.util.Calendar;
-import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
-import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
 
 public class CalendarFragment extends Fragment {
     private FirebaseDatabase database;
     private OlympsAdapter olympsAdapter;
     private View v;
     private RecyclerView OlympsList;
+    private CalendarView.OnDateChangeListener onDateChangeListener = new CalendarView.OnDateChangeListener() {
+        @Override
+        public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+            olympsAdapter.clearItems();
+            getOlymps(year, month, dayOfMonth);
+        }
+    };
+
+    public static CalendarFragment newInstance() {
+        return new CalendarFragment();
+    }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.fragment_calendar, container,false);
+        v = inflater.inflate(R.layout.fragment_calendar, container, false);
         Toolbar toolbar = v.findViewById(R.id.calendarToolbar);
         initRecyclerView();
         CalendarView calendarView = v.findViewById(R.id.calendar);
@@ -55,36 +61,34 @@ public class CalendarFragment extends Fragment {
         OlympsList.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
-    public static CalendarFragment newInstance() { return new CalendarFragment(); }
-
-    private String makePath (int year, int month, int dayOfMonth) {
+    private String makePath(int year, int month, int dayOfMonth) {
         return year + "/" + month + "/" + dayOfMonth;
     }
 
-    private void getOlymps (int year, int month, int dayOfMonth) {
+    private void getOlymps(int year, int month, int dayOfMonth) {
         database.getReference(makePath(year, month, dayOfMonth))
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    OlympsListItem item = dataSnapshot.getValue(OlympsListItem.class);
-                    olympsAdapter.setItems(item);
+                        OlympsListItem item = dataSnapshot.getValue(OlympsListItem.class);
+                        olympsAdapter.setItems(item);
                     }
+
                     @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {}
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+
                     @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {}
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    }
+
                     @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s){}
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    }
+
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {}
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                    }
                 });
     }
-
-    private CalendarView.OnDateChangeListener onDateChangeListener= new CalendarView.OnDateChangeListener() {
-        @Override
-        public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-            olympsAdapter.clearItems();
-            getOlymps(year, month, dayOfMonth);
-        }
-    };
 }

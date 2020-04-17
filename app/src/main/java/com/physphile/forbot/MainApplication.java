@@ -1,6 +1,7 @@
 package com.physphile.forbot;
 
 import android.app.Application;
+
 import com.example.swipebacklib.SlideFinishManager;
 
 /**

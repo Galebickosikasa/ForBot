@@ -4,9 +4,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.physphile.forbot.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,11 +24,12 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
         return new OlympsViewHolder(view);
     }
 
-    public void setItems(OlympsListItem item){
+    public void setItems(OlympsListItem item) {
         olympsList.add(item);
         notifyDataSetChanged();
     }
-    public void clearItems(){
+
+    public void clearItems() {
         olympsList.clear();
         notifyDataSetChanged();
     }
@@ -36,23 +40,25 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
     }
 
     @Override
-    public int getItemCount() {  return olympsList.size(); }
+    public int getItemCount() {
+        return olympsList.size();
+    }
 
     class OlympsViewHolder extends RecyclerView.ViewHolder {
         private TextView olympName;
         private TextView olympLevel;
 
 
-        public void bind(OlympsListItem item){
-            olympName.setText(item.getName());
-            olympLevel.setText(item.getLevel());
-
-        }
-
         public OlympsViewHolder(@NonNull View itemView) {
             super(itemView);
             olympName = itemView.findViewById(R.id.olympName);
             olympLevel = itemView.findViewById(R.id.olympLevel);
+
+        }
+
+        public void bind(OlympsListItem item) {
+            olympName.setText(item.getName());
+            olympLevel.setText(item.getLevel());
 
         }
     }

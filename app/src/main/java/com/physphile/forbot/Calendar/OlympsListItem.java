@@ -4,7 +4,8 @@ class OlympsListItem {
     public String name;
     public String level;
 
-    OlympsListItem(){}
+    OlympsListItem() {
+    }
 
     OlympsListItem(String _name, String _level) {
         this.level = _level;
@@ -15,12 +16,12 @@ class OlympsListItem {
         return name;
     }
 
-    String getLevel() {
-        return level;
+    void setName(String name) {
+        this.name = name;
     }
 
-    void setName (String name) {
-        this.name = name;
+    String getLevel() {
+        return level;
     }
 
     void setLevel(String level) {

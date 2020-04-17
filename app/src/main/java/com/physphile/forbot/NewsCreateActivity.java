@@ -1,8 +1,5 @@
 package com.physphile.forbot;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -14,6 +11,11 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
@@ -27,10 +29,13 @@ import com.google.firebase.storage.UploadTask;
 import com.physphile.forbot.Feed.NewsFirebaseItem;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
+
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
+
 import br.com.simplepass.loadingbutton.customViews.CircularProgressImageButton;
+
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE_IMAGE;
@@ -49,7 +54,36 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private CircularProgressImageButton btn;
     private CoordinatorLayout parent;
     private Toolbar toolbar;
+    private View.OnClickListener onClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()) {
+                case R.id.newsTitleImage:
+                    if (!NewsNumber.getText().toString().equals("")) {
+                        CropImage.activity()
+                                .setCropShape(CropImageView.CropShape.RECTANGLE)
+                                .setAspectRatio(16, 10)
+                                .start(NewsCreateActivity.this);
+                    } else {
+                        Snackbar.make(v, "Сначала введите номер статьи", Snackbar.LENGTH_LONG).show();
+                    }
 
+                    break;
+                case R.id.newsDoneBtn:
+                    if (!newsText.getText().toString().equals("") && !NewsTitle.getText().toString().equals("")) {
+                        putNewsFirebase(Integer.parseInt(NewsNumber.getText().toString()), NewsTitle.getText().toString(), newsText.getText().toString());
+                        Intent intent = new Intent();
+                        intent.putExtra(INTENT_EXTRA_NEWS_TITLE, NewsTitle.getText().toString());
+                        setResult(RESULT_OK, intent);
+                        finish();
+
+                    } else {
+                        Snackbar.make(v, "Сначала заполните все поля", Snackbar.LENGTH_LONG).show();
+                    }
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +91,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         setContentView(R.layout.activity_news_create);
         NewsTitleImage = findViewById(R.id.newsTitleImage);
         int width = getWindowManager().getDefaultDisplay().getWidth();
-        int height = width * 10 /16;
+        int height = width * 10 / 16;
         NewsTitleImage.setLayoutParams(new CollapsingToolbarLayout.LayoutParams(width, height));
         NewsTitle = findViewById(R.id.newsTitle);
         NewsTitleImage.setOnClickListener(onClickListener);
@@ -87,38 +121,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         return R.layout.activity_news_create;
     }
 
-    private View.OnClickListener onClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch(v.getId()) {
-                case R.id.newsTitleImage:
-                    if (!NewsNumber.getText().toString().equals("")) {
-                        CropImage.activity()
-                                .setCropShape(CropImageView.CropShape.RECTANGLE)
-                                .setAspectRatio(16, 10)
-                                .start(NewsCreateActivity.this);
-                    } else {
-                        Snackbar.make(v, "Сначала введите номер статьи", Snackbar.LENGTH_LONG).show();
-                    }
-
-                    break;
-                case R.id.newsDoneBtn:
-                    if (!newsText.getText().toString().equals("") && !NewsTitle.getText().toString().equals("")){
-                        putNewsFirebase(Integer.parseInt(NewsNumber.getText().toString()), NewsTitle.getText().toString(), newsText.getText().toString());
-                        Intent intent = new Intent();
-                        intent.putExtra(INTENT_EXTRA_NEWS_TITLE, NewsTitle.getText().toString());
-                        setResult(RESULT_OK, intent);
-                        finish();
-
-                    } else {
-                        Snackbar.make(v, "Сначала заполните все поля", Snackbar.LENGTH_LONG).show();
-                    }
-                    break;
-            }
-        }
-    };
-
-    private CircularProgressImageButton getBtn(){
+    private CircularProgressImageButton getBtn() {
         btn = new CircularProgressImageButton(this);
         ClassHelper classHelper = new ClassHelper(this);
         CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(classHelper.dpToPx(70), classHelper.dpToPx(70));
@@ -137,6 +140,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         btn.setSpinningBarColor(getResources().getColor(R.color.colorSecond));
         return btn;
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -160,7 +164,6 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     }
 
 
-
     private void uploadImage(Uri filePath) {
         storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + NewsNumber.getText().toString());
         storageReference.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -174,22 +177,23 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         });
     }
 
-    public void putNewsFirebase(int num, final String title, final String text) {
+    public void putNewsFirebase(final int num, final String title, final String text) {
         storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
         storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                databaseReference = database.getReference(DATABASE_NEWS_PATH);
+                databaseReference = database.getReference(DATABASE_NEWS_PATH + num);
                 Calendar calendar = Calendar.getInstance();
                 Log.e(LOG_NAME, title + " " + uri.toString() + " " + text + " " +
                         FirebaseAuth.getInstance().getCurrentUser().getEmail() + " " +
                         calendar.get(Calendar.DATE) + "." + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR)
-                        );
+                );
                 NewsFirebaseItem nfi = new NewsFirebaseItem(title,
                         uri.toString(),
                         text,
                         FirebaseAuth.getInstance().getCurrentUser().getEmail(),
-                        calendar.get(Calendar.DATE) + "." + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR)
+                        calendar.get(Calendar.DATE) + "." + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR),
+                        num
                 );
                 databaseReference.push().setValue(nfi);
 //                Log.e(LOG_NAME, "Новости подгружены");
@@ -198,5 +202,6 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     }
 
     @Override
-    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {}
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    }
 }

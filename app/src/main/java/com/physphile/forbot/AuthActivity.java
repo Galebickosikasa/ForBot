@@ -1,7 +1,5 @@
 package com.physphile.forbot;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -10,6 +8,10 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -20,6 +22,19 @@ public class AuthActivity extends BaseSwipeActivity {
     private EditText MailField;
     private EditText PwdField;
     private FirebaseAuth mAuth;
+    View.OnClickListener OnSignBtnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            signing(MailField.getText().toString(), PwdField.getText().toString());
+        }
+    };
+    View.OnClickListener OnRegBtnClick = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            register(MailField.getText().toString(), PwdField.getText().toString());
+            signing(MailField.getText().toString(), PwdField.getText().toString());
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,22 +66,7 @@ public class AuthActivity extends BaseSwipeActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    View.OnClickListener OnSignBtnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            signing(MailField.getText().toString(), PwdField.getText().toString());
-        }
-    };
-    View.OnClickListener OnRegBtnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            register(MailField.getText().toString(), PwdField.getText().toString());
-            signing(MailField.getText().toString(), PwdField.getText().toString());
-        }
-    };
-
-
-    public void signing (String email, String password){
+    public void signing(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -76,11 +76,14 @@ public class AuthActivity extends BaseSwipeActivity {
                             Intent intent = new Intent();
                             setResult(RESULT_OK, intent);
                             finish();
-                        } else { Toast.makeText(AuthActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show(); }
+                        } else {
+                            Toast.makeText(AuthActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
     }
-    public void register (String email, String password){
+
+    public void register(String email, String password) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -88,7 +91,9 @@ public class AuthActivity extends BaseSwipeActivity {
                         if (task.isSuccessful()) {
                             FirebaseUser user = mAuth.getCurrentUser();
                             Toast.makeText(AuthActivity.this, "Register success.", Toast.LENGTH_SHORT).show();
-                        } else { Toast.makeText(AuthActivity.this, "Register failed.", Toast.LENGTH_SHORT).show(); }
+                        } else {
+                            Toast.makeText(AuthActivity.this, "Register failed.", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
     }
