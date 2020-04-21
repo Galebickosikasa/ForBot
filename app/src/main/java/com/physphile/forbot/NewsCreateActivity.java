@@ -1,6 +1,8 @@
 package com.physphile.forbot;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,15 +14,20 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -54,6 +61,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private CircularProgressImageButton btn;
     private CoordinatorLayout parent;
     private Toolbar toolbar;
+    private SharedPreferences sp;
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -76,7 +84,6 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                         intent.putExtra(INTENT_EXTRA_NEWS_TITLE, NewsTitle.getText().toString());
                         setResult(RESULT_OK, intent);
                         finish();
-
                     } else {
                         Snackbar.make(v, "Сначала заполните все поля", Snackbar.LENGTH_LONG).show();
                     }
@@ -89,6 +96,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_create);
+        sp = getSharedPreferences("newsNums", Context.MODE_PRIVATE);
         NewsTitleImage = findViewById(R.id.newsTitleImage);
         int width = getWindowManager().getDefaultDisplay().getWidth();
         int height = width * 10 / 16;
@@ -178,16 +186,13 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     }
 
     public void putNewsFirebase(final int num, final String title, final String text) {
+        Log.e("kek", "open");
+        databaseReference = database.getReference(DATABASE_NEWS_PATH);
         storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
         storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
             public void onSuccess(Uri uri) {
-                databaseReference = database.getReference(DATABASE_NEWS_PATH + num);
                 Calendar calendar = Calendar.getInstance();
-                Log.e(LOG_NAME, title + " " + uri.toString() + " " + text + " " +
-                        FirebaseAuth.getInstance().getCurrentUser().getEmail() + " " +
-                        calendar.get(Calendar.DATE) + "." + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR)
-                );
                 NewsFirebaseItem nfi = new NewsFirebaseItem(title,
                         uri.toString(),
                         text,
@@ -196,7 +201,41 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                         num
                 );
                 databaseReference.push().setValue(nfi);
-//                Log.e(LOG_NAME, "Новости подгружены");
+                Log.e(LOG_NAME, "Новости подгружены");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("kek", "fail" + e.toString());
+            }
+        });
+        databaseReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.e("kek", dataSnapshot.getKey());
+                SharedPreferences.Editor e = sp.edit();
+                e.putString("news#" + NewsNumber.getText().toString(), dataSnapshot.getKey());
+                e.commit();
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }

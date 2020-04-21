@@ -197,6 +197,7 @@ public class SwipeBackLayout extends FrameLayout {
             }
             innerScrollView = Util.findAllScrollViews(this);
         } catch (Exception e) {
+            Log.e ("kek", e.toString());
             super.onLayout(changed, l, t, r, b);
         }
     }

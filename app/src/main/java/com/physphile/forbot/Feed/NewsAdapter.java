@@ -46,7 +46,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public void addItem(NewsFirebaseItem item) {
-//        Log.e(LOG_NAME, "setItems()" + item.getTitle());
         newsList.add(0, item);
         notifyItemChanged(getItemCount() - 1);
     }
@@ -59,8 +58,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         holder.bind(newsList.get(position));
-//        Log.e(LOG_NAME, "onBindViewHolder()" + position);
-
     }
 
     @Override
@@ -70,9 +67,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     private void itemLongClick(int position) {
         NewsLongTapDialog profileDialog = new NewsLongTapDialog();
-
         profileDialog.show(((MainActivity) context).getSupportFragmentManager(), "NewsLongTapDialog");
-
     }
 
     private void itemClick(int position) {
@@ -106,6 +101,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         }
 
         public void bind(NewsFirebaseItem item) {
+            Log.e ("kek", "bind");
             newsTitle.setText(item.getTitle());
             newsText.setText(item.getText());
             newsAuthor.setText(item.getAuthor());

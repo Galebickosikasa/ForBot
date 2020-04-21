@@ -1,5 +1,9 @@
 package com.physphile.forbot;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,9 +14,6 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import androidx.appcompat.widget.Toolbar;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
@@ -26,19 +27,15 @@ import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
 import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
 
-public class NewsPage extends BaseSwipeActivity {
+public class OlympPage extends BaseSwipeActivity {
     private FirebaseUser user;
     private Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.editNews:
+                case R.id.editOlymp:
                     break;
-                case R.id.removeNews:
-                    SharedPreferences sp = getSharedPreferences("newsNums", Context.MODE_PRIVATE);
-                    String s = sp.getString("news#" + getIntent().getIntExtra("newsNumber", -1), "kek");
-                    FirebaseDatabase.getInstance().getReference(DATABASE_NEWS_PATH + '/' + s).removeValue();
-                    Log.e(LOG_NAME, "remove");
+                case R.id.removeOlymp:
                     break;
             }
             return false;
@@ -48,30 +45,30 @@ public class NewsPage extends BaseSwipeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_olymp_page);
         user = FirebaseAuth.getInstance().getCurrentUser();
-        setContentView(R.layout.activity_news_page);
-        Toolbar toolbar = findViewById(R.id.newsToolbar);
-        TextView newsText = findViewById(R.id.newsText);
-        ImageView newsTitleImage = findViewById(R.id.newsTitleImage);
+        Toolbar toolbar = findViewById(R.id.olympToolbar);
+        TextView olympText = findViewById(R.id.olympText);
+        ImageView newsTitleImage = findViewById(R.id.olympTitleImage);
+        TextView olympName = findViewById(R.id.olympName);
+        TextView olympDate = findViewById(R.id.olympDate);
+        TextView olympLevel = findViewById(R.id.olympLevel);
         int width = getWindowManager().getDefaultDisplay().getWidth();
         int height = width * 10 / 16;
-        AppBarLayout appBarLayout = findViewById(R.id.main_appbar);
+        AppBarLayout appBarLayout = findViewById(R.id.olympAppbar);
         appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(width, height));
         Intent intent = getIntent();
-        TextView newsTitle = findViewById(R.id.newsTitle);
-        TextView newsDate = findViewById(R.id.newsDate);
-        TextView newsAuthor = findViewById(R.id.newsAuthor);
         if (user != null) {
             if (user.getUid().equals(ARTEM_ADMIN_UID) || user.getUid().equals(GLEB_ADMIN_ID) || user.getUid().equals(PAVEL_ST_ADMIN_ID)) {
                 toolbar.getMenu().clear();
-                toolbar.inflateMenu(R.menu.admin_news_page_menu);
+                toolbar.inflateMenu(R.menu.admin_olymp_page_menu);
 //                toolbar.getMenu().getItem(1).setIcon(R.drawable.common_google_signin_btn_icon_dark); lol
             }
         }
-        newsTitle.setText(intent.getStringExtra("newsTitle"));
-        newsAuthor.setText(intent.getStringExtra("newsAuthor"));
-        newsDate.setText(intent.getStringExtra("newsDate"));
-        newsText.setText(intent.getStringExtra("newsText"));
+        olympName.setText(intent.getStringExtra("olympName"));
+        olympDate.setText(intent.getStringExtra("olympDate"));
+        olympText.setText(intent.getStringExtra("olympText"));
+        olympLevel.setText(intent.getStringExtra("olympLevel"));
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -80,12 +77,12 @@ public class NewsPage extends BaseSwipeActivity {
             }
         });
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
-        Glide.with(this).load(intent.getStringExtra("newsTitleImageUri")).into(newsTitleImage);
+        Glide.with(this).load(intent.getStringExtra("olympTitleImageUri")).into(newsTitleImage);
     }
 
     @Override
     protected int getLayoutId() {
-        return R.layout.activity_news_page;
+        return R.layout.activity_olymp_page;
     }
 
     @Override
