@@ -2,6 +2,7 @@ package com.physphile.forbot;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.fragment.app.DialogFragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
@@ -19,7 +21,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
+import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
+import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
+import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
 import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
+import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
 
 public class NewsPage extends BaseSwipeActivity {
@@ -28,11 +34,13 @@ public class NewsPage extends BaseSwipeActivity {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
+
                 case R.id.editNews:
                     break;
                 case R.id.removeNews:
-                    getIntent().getIntExtra("newsNumber", -1);
-                    DatabaseReference newsReference = FirebaseDatabase.getInstance().getReference("news/");
+                    FirebaseDatabase.getInstance().getReference(DATABASE_NEWS_PATH + '/' + getIntent().getIntExtra("newsNumber", -1))
+                    .removeValue();
+                    Log.e(LOG_NAME, "remove");
                     break;
             }
             return false;
@@ -73,6 +81,7 @@ public class NewsPage extends BaseSwipeActivity {
                 finish();
             }
         });
+        toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
         Glide.with(this).load(intent.getStringExtra("newsTitleImageUri")).into(newsTitleImage);
     }
 

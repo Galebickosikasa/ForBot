@@ -3,6 +3,7 @@ package com.physphile.forbot.Feed;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,7 @@ import static android.app.Activity.RESULT_OK;
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
+import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_CODE;
 import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
 
@@ -103,14 +105,12 @@ public class FeedFragment extends Fragment {
 
     private void getNews() {
 //        Log.e(LOG_NAME, DATABASE_NEWS_PATH);
-        final int[] num = {1};
-        database.getReference(DATABASE_NEWS_PATH + num[0])
+        database.getReference(DATABASE_NEWS_PATH)
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
                         adapter.addItem(item);
-                        ++num[0];
 //                        Log.e("onChildAdded", item.getTitle());
                     }
 

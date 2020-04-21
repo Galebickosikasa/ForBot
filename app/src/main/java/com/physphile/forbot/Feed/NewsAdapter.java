@@ -70,6 +70,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     private void itemLongClick(int position) {
         NewsLongTapDialog profileDialog = new NewsLongTapDialog();
+
         profileDialog.show(((MainActivity) context).getSupportFragmentManager(), "NewsLongTapDialog");
 
     }
