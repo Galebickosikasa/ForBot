@@ -47,7 +47,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
 
     public void addItem(NewsFirebaseItem item) {
         newsList.add(0, item);
-        notifyItemChanged(getItemCount() - 1);
+        notifyDataSetChanged();
     }
 
     public void clearItems() {

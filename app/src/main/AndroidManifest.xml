@@ -21,7 +21,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".NewsPage">
+        <activity android:name=".NewsPage"
+            android:theme="@style/newsPageStyle">
             <intent-filter>
                 <action android:name="com.physphile.forbot.NewsPage" />
 

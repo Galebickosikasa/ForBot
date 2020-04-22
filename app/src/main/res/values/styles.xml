@@ -26,6 +26,9 @@
         <item name="color">@android:color/darker_gray</item>
     </style>
 
+    <style name="newsPageStyle" parent="AppTheme">
+        <item name="android:statusBarColor">@color/alphaWhite</item>
+    </style>
     <style name="SpaceStyle">
         <item name="background">@color/black</item>
     </style>

@@ -11,4 +11,5 @@
     <color name="gray">#2D2D2D</color>
     <color name="transparent">#00000000</color>
     <color name="dark">#121212</color>
+    <color name="alphaWhite">#33FFFFFF</color>
 </resources>
