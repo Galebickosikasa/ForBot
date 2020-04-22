@@ -144,9 +144,9 @@ public class SwipeBackLayout extends FrameLayout {
      * 绑定
      */
     public void bind() {
-        Log.e("zh","bind  SlideFinishManager.mSlideFinishLayoutList.size:: " + SlideFinishManager.getInstance().mActivityStack.size());
+//        Log.e("zh","bind  SlideFinishManager.mSlideFinishLayoutList.size:: " + SlideFinishManager.getInstance().mActivityStack.size());
         if(finishAnim && mPreviousChild != null){
-            Log.e("zh","bind  mPreviousChild != null ");
+//            Log.e("zh","bind  mPreviousChild != null ");
             ObjectAnimator closeAnimatorX = ObjectAnimator.ofFloat(mPreviousChild, "scaleX", 1f, FINALSCALE);
             ObjectAnimator closeAnimatorY = ObjectAnimator.ofFloat(mPreviousChild, "scaleY", 1f, FINALSCALE);
             AnimatorSet animatorSet1 = new AnimatorSet();
@@ -159,7 +159,7 @@ public class SwipeBackLayout extends FrameLayout {
      * 上层滑动关闭，底层恢复缩放动画
      */
     public void startFinishAnim() {
-        Log.e("zh","startFinishAnim  SlideFinishManager.mSlideFinishLayoutList.size:: " + SlideFinishManager.getInstance().mActivityStack.size());
+//        Log.e("zh","startFinishAnim  SlideFinishManager.mSlideFinishLayoutList.size:: " + SlideFinishManager.getInstance().mActivityStack.size());
         if(finishAnim &&  mPreviousChild != null){
             ObjectAnimator closeAnimatorX = ObjectAnimator.ofFloat(mPreviousChild, "scaleX", FINALSCALE, 1f);
             ObjectAnimator closeAnimatorY = ObjectAnimator.ofFloat(mPreviousChild, "scaleY", FINALSCALE, 1f);
@@ -197,7 +197,7 @@ public class SwipeBackLayout extends FrameLayout {
             }
             innerScrollView = Util.findAllScrollViews(this);
         } catch (Exception e) {
-            Log.e ("kek", e.toString());
+//            Log.e ("kek", e.toString());
             super.onLayout(changed, l, t, r, b);
         }
     }

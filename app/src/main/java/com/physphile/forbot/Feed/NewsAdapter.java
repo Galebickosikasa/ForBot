@@ -71,7 +71,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     private void itemClick(int position) {
-        Log.e(LOG_NAME, position + "");
+//        Log.e(LOG_NAME, position + "");
         Intent intent = new Intent(NEWS_PAGE_ACTIVITY_PATH);
         intent.putExtra("newsTitle", newsList.get(position).getTitle());
         intent.putExtra("newsText", newsList.get(position).getText());
@@ -101,7 +101,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         }
 
         public void bind(NewsFirebaseItem item) {
-            Log.e ("kek", "bind");
+//            Log.e ("kek", "bind");
             newsTitle.setText(item.getTitle());
             newsText.setText(item.getText());
             newsAuthor.setText(item.getAuthor());

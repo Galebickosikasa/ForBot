@@ -30,6 +30,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -38,6 +39,7 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Objects;
 
@@ -186,8 +188,22 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     }
 
     public void putNewsFirebase(final int num, final String title, final String text) {
-        Log.e("kek", "open");
         databaseReference = database.getReference(DATABASE_NEWS_PATH);
+        final long[] count = new long[1];
+        databaseReference = databaseReference.child(NewsNumber.getText().toString());
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                count[0] = dataSnapshot.getChildrenCount();
+                Log.e(LOG_NAME, "" + count[0]);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        Log.e(LOG_NAME, "" + count[0]);
         storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
         storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
@@ -200,42 +216,13 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                         calendar.get(Calendar.DATE) + "." + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR),
                         num
                 );
-                databaseReference.push().setValue(nfi);
+                databaseReference.setValue(nfi);
                 Log.e(LOG_NAME, "Новости подгружены");
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.e("kek", "fail" + e.toString());
-            }
-        });
-        databaseReference.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.e("kek", dataSnapshot.getKey());
-                SharedPreferences.Editor e = sp.edit();
-                e.putString("news#" + NewsNumber.getText().toString(), dataSnapshot.getKey());
-                e.commit();
-            }
-
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
     }

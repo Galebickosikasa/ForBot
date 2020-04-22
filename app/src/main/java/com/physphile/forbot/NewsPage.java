@@ -35,9 +35,9 @@ public class NewsPage extends BaseSwipeActivity {
                 case R.id.editNews:
                     break;
                 case R.id.removeNews:
-                    SharedPreferences sp = getSharedPreferences("newsNums", Context.MODE_PRIVATE);
-                    String s = sp.getString("news#" + getIntent().getIntExtra("newsNumber", -1), "kek");
-                    FirebaseDatabase.getInstance().getReference(DATABASE_NEWS_PATH + '/' + s).removeValue();
+//                    SharedPreferences sp = getSharedPreferences("newsNums", Context.MODE_PRIVATE);
+//                    String s = sp.getString("news#" + getIntent().getIntExtra("newsNumber", -1), "kek");
+                    FirebaseDatabase.getInstance().getReference(DATABASE_NEWS_PATH + getIntent().getIntExtra("newsNumber", -1)).removeValue();
                     Log.e(LOG_NAME, "remove");
                     break;
             }

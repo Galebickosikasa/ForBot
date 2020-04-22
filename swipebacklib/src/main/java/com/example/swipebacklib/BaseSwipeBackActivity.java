@@ -18,7 +18,7 @@ public class BaseSwipeBackActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity = this;
-        Log.e("zh","onCreate mActivity ========" + mActivity.getClass().getSimpleName());
+//        Log.e("zh","onCreate mActivity ========" + mActivity.getClass().getSimpleName());
         mHelper = new SwipeBackActivityHelper(this);
         //是否支持缩放动画
         mHelper.onActivityCreate(isSupportFinishAnim());
@@ -29,7 +29,7 @@ public class BaseSwipeBackActivity extends AppCompatActivity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        Log.e("zh","onPostCreate  mActivity ========" + mActivity.getClass().getSimpleName());
+//        Log.e("zh","onPostCreate  mActivity ========" + mActivity.getClass().getSimpleName());
         mHelper.onPostCreate();
     }
 
@@ -39,7 +39,7 @@ public class BaseSwipeBackActivity extends AppCompatActivity {
         if( getSwipeBackLayout().finishAnim && !getSwipeBackLayout().mIsActivitySwipeing){
             Util.convertActivityFromTranslucent(mActivity);
             getSwipeBackLayout().mIsActivityTranslucent = false;
-            Log.e("zh","onEnterAnimationComplete  mActivity ========" + mActivity.getClass().getSimpleName());
+//            Log.e("zh","onEnterAnimationComplete  mActivity ========" + mActivity.getClass().getSimpleName());
         }
     }
 
@@ -69,14 +69,14 @@ public class BaseSwipeBackActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        Log.e("zh","onPause ==========================" + mActivity.getClass().getSimpleName());
+//        Log.e("zh","onPause ==========================" + mActivity.getClass().getSimpleName());
         super.onPause();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.e("zh","onStop ==========================" + mActivity.getClass().getSimpleName());
+//        Log.e("zh","onStop ==========================" + mActivity.getClass().getSimpleName());
     }
 
     @Override
@@ -87,7 +87,7 @@ public class BaseSwipeBackActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        Log.e("zh","onDestroy ==========================" + mActivity.getClass().getSimpleName());
+//        Log.e("zh","onDestroy ==========================" + mActivity.getClass().getSimpleName());
         super.onDestroy();
     }
 }

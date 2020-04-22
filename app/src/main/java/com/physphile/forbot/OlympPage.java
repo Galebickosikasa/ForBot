@@ -49,7 +49,7 @@ public class OlympPage extends BaseSwipeActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         Toolbar toolbar = findViewById(R.id.olympToolbar);
         TextView olympText = findViewById(R.id.olympText);
-        ImageView newsTitleImage = findViewById(R.id.olympTitleImage);
+//        ImageView newsTitleImage = findViewById(R.id.olympTitleImage);
         TextView olympName = findViewById(R.id.olympName);
         TextView olympDate = findViewById(R.id.olympDate);
         TextView olympLevel = findViewById(R.id.olympLevel);
@@ -77,7 +77,7 @@ public class OlympPage extends BaseSwipeActivity {
             }
         });
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
-        Glide.with(this).load(intent.getStringExtra("olympTitleImageUri")).into(newsTitleImage);
+//        Glide.with(this).load(intent.getStringExtra("olympTitleImageUri")).into(newsTitleImage);
     }
 
     @Override

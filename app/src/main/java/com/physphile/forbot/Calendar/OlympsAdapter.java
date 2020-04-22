@@ -25,8 +25,8 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
     private List<OlympsListItem> olympsList = new ArrayList<>();
     private Context context;
 
-    public OlympsAdapter(Context context) {
-        this.context = context;
+    public OlympsAdapter(Context _context) {
+        this.context = _context;
     }
 
     @NonNull
@@ -34,15 +34,15 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
     public OlympsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.olymps_item, parent, false);
-        ImageView iv = view.findViewById(R.id.olympTitleImage);
-        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(parent.getWidth(),
-                parent.getWidth() * 10 / 16);
-        iv.setLayoutParams(lp);
+//        ImageView iv = view.findViewById(R.id.olympTitleImage);
+//        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(parent.getWidth(),
+//                parent.getWidth() * 10 / 16);
+//        iv.setLayoutParams(lp);
         return new OlympsViewHolder(view);
     }
 
     public void addItems(OlympsListItem item) {
-        Log.e ("kek", "start");
+//        Log.e ("kek", "start");
         olympsList.add(0, item);
         notifyItemChanged(getItemCount() - 1);
     }
@@ -66,23 +66,20 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
         Intent intent = new Intent(OLYMP_PAGE_ACTIVITY_PATH);
         intent.putExtra("olympName", olympsList.get(pos).getName());
         intent.putExtra("olympDate", olympsList.get(pos).getDate());
-        intent.putExtra("olympLevel", olympsList.get(pos).getLevel());
-        intent.putExtra("olympText", olympsList.get(pos).getText());
-        intent.putExtra("olympUri", olympsList.get(pos).getUri());
+//        intent.putExtra("olympLevel", olympsList.get(pos).getLevel());
+//        intent.putExtra("olympText", olympsList.get(pos).getText());
+//        intent.putExtra("olympUri", olympsList.get(pos).getUri());
         context.startActivity(intent);
     }
 
     class OlympsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView olympName;
-        private TextView olympLevel;
         private TextView olympDate;
-        private TextView olympText;
-        private ImageView olympImage;
 
         public OlympsViewHolder(@NonNull View itemView) {
             super(itemView);
             olympName = itemView.findViewById(R.id.olympName);
-            olympLevel = itemView.findViewById(R.id.olympLevel);
+            olympDate = itemView.findViewById(R.id.olympDate);
 //            olympDate = itemView.findViewById(R.id.olympDate);
 //            olympText = itemView.findViewById(R.id.olympText);
 //            olympImage = itemView.findViewById(R.id.olympTitleImage);
@@ -91,7 +88,7 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
 
         public void bind(OlympsListItem item) {
             olympName.setText(item.getName());
-            olympLevel.setText(item.getLevel());
+            olympDate.setText(item.getDate());
 //            olympDate.setText(item.getDate());
 //            olympText.setText(item.getText());
 //            Glide.with(itemView.getContext())

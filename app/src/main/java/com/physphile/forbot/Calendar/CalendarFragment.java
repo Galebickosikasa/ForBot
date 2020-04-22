@@ -63,17 +63,6 @@ public class CalendarFragment extends Fragment {
         Calendar calendar = Calendar.getInstance();
         toolbar.setOnMenuItemClickListener(new ClassHelper(getActivity(), getChildFragmentManager(), olympsAdapter, calendarView).onMenuItemClickListener);
         getOlymps(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
-
-        /////////////////////////////////////
-        /*
-        DatabaseReference databaseReference = database.getReference();
-        databaseReference = databaseReference.child(makePath(2020, 3, 24));
-        String uri = "https://firebasestorage.googleapis.com/v0/b/forbot-20468.appspot.com/o/newsImages%2F1?alt=media&token=7280c4c6-f8c4-4b5f-9ade-ac7477cc7dcc";
-        OlympsListItem oli = new OlympsListItem ("LOL", "1", uri, "2020.4.22", "here we go");
-        databaseReference.push().setValue(oli);
-        */
-        ////////////////////////////////////
-
         return v;
     }
 
