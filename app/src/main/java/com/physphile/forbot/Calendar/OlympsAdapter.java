@@ -66,35 +66,32 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
         Intent intent = new Intent(OLYMP_PAGE_ACTIVITY_PATH);
         intent.putExtra("olympName", olympsList.get(pos).getName());
         intent.putExtra("olympDate", olympsList.get(pos).getDate());
-//        intent.putExtra("olympLevel", olympsList.get(pos).getLevel());
-//        intent.putExtra("olympText", olympsList.get(pos).getText());
-//        intent.putExtra("olympUri", olympsList.get(pos).getUri());
+        intent.putExtra("olympLevel", olympsList.get(pos).getLevel());
+        intent.putExtra("olympText", olympsList.get(pos).getText());
+        intent.putExtra("olympUri", olympsList.get(pos).getUri());
         context.startActivity(intent);
     }
 
     class OlympsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView olympName;
-        private TextView olympDate;
+        private TextView olympLevel;
+        private ImageView olympImage;
 
         public OlympsViewHolder(@NonNull View itemView) {
             super(itemView);
             olympName = itemView.findViewById(R.id.olympName);
-            olympDate = itemView.findViewById(R.id.olympDate);
-//            olympDate = itemView.findViewById(R.id.olympDate);
-//            olympText = itemView.findViewById(R.id.olympText);
-//            olympImage = itemView.findViewById(R.id.olympTitleImage);
+            olympLevel = itemView.findViewById(R.id.olympLevel);
+            olympImage = itemView.findViewById(R.id.olympImage);
             itemView.setOnClickListener(this);
         }
 
         public void bind(OlympsListItem item) {
             olympName.setText(item.getName());
-            olympDate.setText(item.getDate());
-//            olympDate.setText(item.getDate());
-//            olympText.setText(item.getText());
-//            Glide.with(itemView.getContext())
-//                    .load(item.getUri())
-//                    .into(olympImage);
-//            olympImage.setVisibility(item.getUri() != null ? View.VISIBLE : View.GONE);
+            olympLevel.setText(item.getLevel());
+            Glide.with(itemView.getContext())
+                    .load(item.getUri())
+                    .into(olympImage);
+            olympImage.setVisibility(item.getUri() != null ? View.VISIBLE : View.GONE);
         }
 
         @Override
