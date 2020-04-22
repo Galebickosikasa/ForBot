@@ -40,7 +40,7 @@
                 android:id="@+id/newsToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="#33FFFFFF"
+                android:background="@color/alphaWhite"
                 app:layout_collapseMode="pin"
                 app:menu="@menu/default_toolbar_menu"
                 app:popupTheme="@style/Widget.MaterialComponents.Toolbar" />

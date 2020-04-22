@@ -25,7 +25,6 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,7 +38,6 @@ import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Objects;
 
@@ -64,24 +62,23 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private CoordinatorLayout parent;
     private Toolbar toolbar;
     private SharedPreferences sp;
+    private SharedPreferences ChildCount;
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.newsTitleImage:
-                    if (!NewsNumber.getText().toString().equals("")) {
-                        CropImage.activity()
-                                .setCropShape(CropImageView.CropShape.RECTANGLE)
-                                .setAspectRatio(16, 10)
-                                .start(NewsCreateActivity.this);
-                    } else {
-                        Snackbar.make(v, "Сначала введите номер статьи", Snackbar.LENGTH_LONG).show();
-                    }
+                    CropImage.activity()
+                            .setCropShape(CropImageView.CropShape.RECTANGLE)
+                            .setAspectRatio(16, 10)
+                            .start(NewsCreateActivity.this);
+
+//                  Snackbar.make(v, "Сначала введите номер статьи", Snackbar.LENGTH_LONG).show();
 
                     break;
                 case R.id.newsDoneBtn:
                     if (!newsText.getText().toString().equals("") && !NewsTitle.getText().toString().equals("")) {
-                        putNewsFirebase(Integer.parseInt(NewsNumber.getText().toString()), NewsTitle.getText().toString(), newsText.getText().toString());
+                        putNewsFirebase(NewsTitle.getText().toString(), newsText.getText().toString());
                         Intent intent = new Intent();
                         intent.putExtra(INTENT_EXTRA_NEWS_TITLE, NewsTitle.getText().toString());
                         setResult(RESULT_OK, intent);
@@ -99,6 +96,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_create);
         sp = getSharedPreferences("newsNums", Context.MODE_PRIVATE);
+        ChildCount = getSharedPreferences("ChildCount", Context.MODE_PRIVATE);
         NewsTitleImage = findViewById(R.id.newsTitleImage);
         int width = getWindowManager().getDefaultDisplay().getWidth();
         int height = width * 10 / 16;
@@ -111,10 +109,6 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         toolbar = findViewById(R.id.newsToolbar);
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
-        NewsNumber = findViewById(R.id.newsNumber);
-        CoordinatorLayout.LayoutParams numberParams = (CoordinatorLayout.LayoutParams) NewsNumber.getLayoutParams();
-        numberParams.setAnchorId(R.id.newsTitleImage);
-        NewsNumber.setLayoutParams(numberParams);
         newsText = findViewById(R.id.newsText);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -157,7 +151,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
-                Uri resultUri = result.getUri();
+                final Uri resultUri = result.getUri();
                 Bitmap bitmap = null;
                 try {
                     bitmap = MediaStore.Images.Media.getBitmap(Objects.requireNonNull(this).getContentResolver(), resultUri);
@@ -168,14 +162,24 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                 btn.startAnimation();
                 btn.setImageResource(R.drawable.ic_file_download_black_24dp);
                 new ClassHelper(this).saveFile(bitmap, INTENT_EXTRA_NEWS_TITLE_IMAGE);
-                uploadImage(resultUri);
+                database.getReference(DATABASE_NEWS_PATH).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        uploadImage(resultUri, String.valueOf(dataSnapshot.getChildrenCount() + 1));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
             }
         }
     }
 
 
-    private void uploadImage(Uri filePath) {
-        storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + NewsNumber.getText().toString());
+    private void uploadImage(Uri filePath, String path) {
+        storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + path);
         storageReference.putFile(filePath).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -187,15 +191,37 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         });
     }
 
-    public void putNewsFirebase(final int num, final String title, final String text) {
+    public void putNewsFirebase(final String title, final String text) {
         databaseReference = database.getReference(DATABASE_NEWS_PATH);
-        final long[] count = new long[1];
-        databaseReference = databaseReference.child(NewsNumber.getText().toString());
+
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                count[0] = dataSnapshot.getChildrenCount();
-                Log.e(LOG_NAME, "" + count[0]);
+                final long num = dataSnapshot.getChildrenCount() + 1;
+                Log.e(LOG_NAME, num + "");
+                databaseReference = databaseReference.child(num + "");
+                storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
+                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Calendar calendar = Calendar.getInstance();
+                        NewsFirebaseItem nfi = new NewsFirebaseItem(title,
+                                uri.toString(),
+                                text,
+                                FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                                calendar.get(Calendar.DATE) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR),
+                                num
+                        );
+                        databaseReference.setValue(nfi);
+                        Log.e(LOG_NAME, "Новости подгружены");
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e("ARTEM", "fail" + e.toString());
+                    }
+                });
+//                Log.e(LOG_NAME, dataSnapshot.getChildrenCount() + "");
             }
 
             @Override
@@ -203,28 +229,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
 
             }
         });
-        Log.e(LOG_NAME, "" + count[0]);
-        storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
-        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                Calendar calendar = Calendar.getInstance();
-                NewsFirebaseItem nfi = new NewsFirebaseItem(title,
-                        uri.toString(),
-                        text,
-                        FirebaseAuth.getInstance().getCurrentUser().getEmail(),
-                        calendar.get(Calendar.DATE) + "." + String.valueOf(calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR),
-                        num
-                );
-                databaseReference.setValue(nfi);
-                Log.e(LOG_NAME, "Новости подгружены");
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.e("kek", "fail" + e.toString());
-            }
-        });
+
     }
 
     @Override

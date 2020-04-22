@@ -40,6 +40,7 @@
                 android:id="@+id/olympToolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
+                android:background="@color/alphaWhite"
                 app:layout_collapseMode="pin"
                 app:menu="@menu/default_toolbar_menu"
                 app:popupTheme="@style/Widget.MaterialComponents.Toolbar" />

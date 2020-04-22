@@ -1,6 +1,5 @@
 package com.physphile.forbot.Calendar;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,20 +14,15 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.physphile.forbot.ClassHelper;
 import com.physphile.forbot.R;
 
 import java.util.Calendar;
-
-import static com.physphile.forbot.Constants.STORAGE_OLYMP_IMAGE_PATH;
 
 public class CalendarFragment extends Fragment {
     private FirebaseDatabase database;
@@ -53,7 +47,7 @@ public class CalendarFragment extends Fragment {
         Toolbar toolbar = v.findViewById(R.id.calendarToolbar);
         initRecyclerView();
         CalendarView calendarView = v.findViewById(R.id.calendar);
-        calendarView.setDate(Calendar.getInstance().getTime().getTime());
+//        calendarView.setDate(Calendar.getInstance().getTime().getTime());
         calendarView.setOnDateChangeListener(onDateChangeListener);
         OlympsList = v.findViewById(R.id.OlympsList);
         database = FirebaseDatabase.getInstance();

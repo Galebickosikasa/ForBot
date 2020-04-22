@@ -6,12 +6,12 @@ public class NewsFirebaseItem {
     public String text;
     public String author;
     public String date;
-    public int number;
+    public long number;
 
     public NewsFirebaseItem() {
     }
 
-    public NewsFirebaseItem(String _title, String _uri, String _text, String _author, String _date, int _number) {
+    public NewsFirebaseItem(String _title, String _uri, String _text, String _author, String _date, long _number) {
         this.uri = _uri;
         this.title = _title;
         this.text = _text;
@@ -60,7 +60,7 @@ public class NewsFirebaseItem {
         this.text = text;
     }
 
-    public int getNumber() {
+    public long getNumber() {
         return number;
     }
 

@@ -1,10 +1,7 @@
 package com.physphile.forbot;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -23,7 +20,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
-import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
 
 public class NewsPage extends BaseSwipeActivity {
@@ -37,8 +33,8 @@ public class NewsPage extends BaseSwipeActivity {
                 case R.id.removeNews:
 //                    SharedPreferences sp = getSharedPreferences("newsNums", Context.MODE_PRIVATE);
 //                    String s = sp.getString("news#" + getIntent().getIntExtra("newsNumber", -1), "kek");
-                    FirebaseDatabase.getInstance().getReference(DATABASE_NEWS_PATH + getIntent().getIntExtra("newsNumber", -1)).removeValue();
-                    Log.e(LOG_NAME, "remove");
+                    FirebaseDatabase.getInstance().getReference(DATABASE_NEWS_PATH + getIntent().getExtras().getLong("newsNumber")).removeValue();
+                    NewsPage.super.finish();
                     break;
             }
             return false;
