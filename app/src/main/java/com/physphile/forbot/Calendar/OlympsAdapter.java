@@ -42,8 +42,7 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
     }
 
     public void addItems(OlympsListItem item) {
-//        Log.e ("kek", "start");
-        olympsList.add(0, item);
+        olympsList.add(item);
         notifyItemChanged(getItemCount() - 1);
     }
 

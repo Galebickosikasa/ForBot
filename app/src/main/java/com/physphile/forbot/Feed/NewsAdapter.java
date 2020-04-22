@@ -28,7 +28,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     private List<NewsFirebaseItem> newsList = new ArrayList<>();
     private Context context;
 
-
     NewsAdapter(Context _context) {
         this.context = _context;
     }
@@ -46,7 +45,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public void addItem(NewsFirebaseItem item) {
-        newsList.add(0, item);
+        newsList.add(item);
         notifyDataSetChanged();
     }
 

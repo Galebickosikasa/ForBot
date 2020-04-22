@@ -25,6 +25,7 @@ import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -164,8 +165,35 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                 new ClassHelper(this).saveFile(bitmap, INTENT_EXTRA_NEWS_TITLE_IMAGE);
                 database.getReference(DATABASE_NEWS_PATH).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        uploadImage(resultUri, String.valueOf(dataSnapshot.getChildrenCount() + 1));
+                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+
+                        database.getReference("removeCnt").addChildEventListener(new ChildEventListener() {
+                            @Override
+                            public void onChildAdded(@NonNull DataSnapshot _dataSnapshot, @Nullable String s) {
+                                uploadImage(resultUri, String.valueOf(dataSnapshot.getChildrenCount() + 1 + Long.parseLong(_dataSnapshot.getValue().toString())));
+                            }
+
+                            @Override
+                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                            }
+
+                            @Override
+                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+
                     }
 
                     @Override
@@ -193,35 +221,60 @@ public class NewsCreateActivity extends BaseSwipeActivity {
 
     public void putNewsFirebase(final String title, final String text) {
         databaseReference = database.getReference(DATABASE_NEWS_PATH);
-
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                final long num = dataSnapshot.getChildrenCount() + 1;
-                Log.e(LOG_NAME, num + "");
-                databaseReference = databaseReference.child(num + "");
-                storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
-                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
+                database.getReference("removeCnt/").addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onSuccess(Uri uri) {
-                        Calendar calendar = Calendar.getInstance();
-                        NewsFirebaseItem nfi = new NewsFirebaseItem(title,
-                                uri.toString(),
-                                text,
-                                FirebaseAuth.getInstance().getCurrentUser().getEmail(),
-                                calendar.get(Calendar.DATE) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR),
-                                num
-                        );
-                        databaseReference.setValue(nfi);
-                        Log.e(LOG_NAME, "Новости подгружены");
+                    public void onChildAdded(@NonNull DataSnapshot _dataSnapshot, @Nullable String s) {
+                        Log.e ("kek", "" + _dataSnapshot.getValue());
+                        final long num = dataSnapshot.getChildrenCount() + Integer.parseInt(_dataSnapshot.getValue().toString()) + 1;
+                        Log.e(LOG_NAME, num + "");
+                        databaseReference = databaseReference.child(num + "");
+                        storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
+                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                Calendar calendar = Calendar.getInstance();
+                                NewsFirebaseItem nfi = new NewsFirebaseItem(title,
+                                        uri.toString(),
+                                        text,
+                                        FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                                        calendar.get(Calendar.DATE) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR),
+                                        num
+                                );
+                                databaseReference.setValue(nfi);
+                                Log.e(LOG_NAME, "Новости подгружены");
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.e("ARTEM", "fail" + e.toString());
+                            }
+                        });
                     }
-                }).addOnFailureListener(new OnFailureListener() {
+
                     @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e("ARTEM", "fail" + e.toString());
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
                     }
                 });
-//                Log.e(LOG_NAME, dataSnapshot.getChildrenCount() + "");
+
             }
 
             @Override

@@ -76,7 +76,6 @@ public class CalendarFragment extends Fragment {
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         OlympsListItem item = dataSnapshot.getValue(OlympsListItem.class);
                         olympsAdapter.addItems(item);
-                        Log.e ("kek", "next1");
                     }
 
                     @Override
