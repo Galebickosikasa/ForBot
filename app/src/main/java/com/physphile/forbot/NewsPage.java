@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -18,15 +17,16 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
+import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
 import static com.physphile.forbot.Constants.STORAGE_NEWS_IMAGE_PATH;
 
@@ -45,25 +45,11 @@ public class NewsPage extends BaseSwipeActivity {
                     FirebaseDatabase.getInstance().getReference(DATABASE_NEWS_PATH + num.toString()).removeValue();
                     FirebaseStorage.getInstance().getReference(STORAGE_NEWS_IMAGE_PATH + num.toString()).delete();
 
-                    FirebaseDatabase.getInstance().getReference("removeCnt/").addChildEventListener(new ChildEventListener() {
+                    FirebaseDatabase.getInstance().getReference("removeCnt/").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
-                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             FirebaseDatabase.getInstance().getReference("removeCnt/").setValue(Long.parseLong(dataSnapshot.getValue().toString()) + 1);
-                        }
-
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                        }
-
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                        }
-
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                            Log.e(LOG_NAME, Long.parseLong(dataSnapshot.getValue().toString()) + 1 + "");
                         }
 
                         @Override

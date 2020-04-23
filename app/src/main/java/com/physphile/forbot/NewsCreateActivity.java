@@ -162,7 +162,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                 database.getReference(DATABASE_NEWS_PATH).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                        database.getReference("removeCnt").addValueEventListener(new ValueEventListener() {
+                        database.getReference("removeCnt").addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot _dataSnapshot) {
                                 uploadImage(resultUri, String.valueOf(dataSnapshot.getChildrenCount() + 1 + Long.parseLong(_dataSnapshot.getValue().toString())));
@@ -202,7 +202,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                database.getReference("removeCnt").addValueEventListener(new ValueEventListener() {
+                database.getReference("removeCnt").addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot _dataSnapshot) {
                         final long num = dataSnapshot.getChildrenCount() + Integer.parseInt(_dataSnapshot.getValue().toString()) + 1;
@@ -220,6 +220,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                                         num
                                 );
                                 databaseReference.setValue(nfi);
+
                             }
                         });
                     }
