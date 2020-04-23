@@ -56,7 +56,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
         android:fontFamily="@font/ubuntu_mono"
-        android:text="Зарегестироваться"
+        android:text="Зарегистрироваться"
         app:backgroundTint="@color/colorPrimaryLight" />
 
     <com.google.android.material.button.MaterialButton

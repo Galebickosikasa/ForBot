@@ -2,6 +2,7 @@ package com.physphile.forbot;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -32,7 +33,7 @@ public class AuthActivity extends BaseSwipeActivity {
         @Override
         public void onClick(View v) {
             register(MailField.getText().toString(), PwdField.getText().toString());
-            signing(MailField.getText().toString(), PwdField.getText().toString());
+//            signing(MailField.getText().toString(), PwdField.getText().toString());
         }
     };
 
@@ -72,10 +73,15 @@ public class AuthActivity extends BaseSwipeActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(AuthActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent();
-                            setResult(RESULT_OK, intent);
-                            finish();
+                            if (mAuth.getCurrentUser().isEmailVerified()) {
+                                Toast.makeText(AuthActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent();
+                                setResult(RESULT_OK, intent);
+                                finish();
+                            } else {
+                                Toast.makeText(AuthActivity.this, "Authentication failed. Please verify your email.", Toast.LENGTH_LONG).show();
+                            }
+
                         } else {
                             Toast.makeText(AuthActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
@@ -89,14 +95,21 @@ public class AuthActivity extends BaseSwipeActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            Toast.makeText(AuthActivity.this, "Register success.", Toast.LENGTH_SHORT).show();
+                            FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(AuthActivity.this, "Register success. Please verify your email account", Toast.LENGTH_SHORT).show();
+                                    } else {
+                                        Log.e ("kek", task.getException().getMessage());
+                                    }
+                                }
+                            });
                         } else {
                             Toast.makeText(AuthActivity.this, "Register failed.", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
-        mAuth.getCurrentUser ().sendEmailVerification();
     }
 
     @Override

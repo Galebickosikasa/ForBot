@@ -42,7 +42,6 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
-import java.util.Random;
 
 import br.com.simplepass.loadingbutton.customViews.CircularProgressImageButton;
 
@@ -50,8 +49,6 @@ import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE_IMAGE;
 import static com.physphile.forbot.Constants.STORAGE_NEWS_IMAGE_PATH;
-import static java.lang.Math.abs;
-import static java.lang.Math.max;
 
 public class NewsCreateActivity extends BaseSwipeActivity {
     private FirebaseStorage storage;

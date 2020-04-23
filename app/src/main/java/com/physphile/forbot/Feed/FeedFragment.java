@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -33,6 +34,7 @@ import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
+import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
 import static com.physphile.forbot.Constants.LOG_NAME;
@@ -67,14 +69,13 @@ public class FeedFragment extends Fragment {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
         Toolbar toolbar = v.findViewById(R.id.feedToolbar);
-        if (user != null) {
+        if (user != null && user.isEmailVerified()) {
             if (user.getUid().equals(ARTEM_ADMIN_UID) || user.getUid().equals(GLEB_ADMIN_ID) || user.getUid().equals(PAVEL_ST_ADMIN_ID)) {
                 toolbar.getMenu().clear();
                 toolbar.inflateMenu(R.menu.admin_toolbar_menu);
 //                toolbar.getMenu().getItem(1).setIcon(R.drawable.common_google_signin_btn_icon_dark);
             }
         }
-
         mSwipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override

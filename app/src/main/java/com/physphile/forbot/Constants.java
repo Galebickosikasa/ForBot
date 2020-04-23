@@ -1,9 +1,9 @@
 package com.physphile.forbot;
 
 public class Constants {
-    public final static String ARTEM_ADMIN_UID = "WIdrvU8LHNcltsf6l9dvONruekD2";
-    public final static String GLEB_ADMIN_ID = "usvB8zPjiCOvLLaZBKwlVVRkI1F2";
-    public final static String PAVEL_ST_ADMIN_ID = "ILHfY9ubRKf7oyiuo0bXLppj0pV2";
+    public final static String ARTEM_ADMIN_UID = "WIdrvU8LHNcltsf6l9dvONruekD2"; // need to fix
+    public final static String GLEB_ADMIN_ID = "JlPNxCIulpP4TGGDZyoDlIO2JKg1";
+    public final static String PAVEL_ST_ADMIN_ID = "ILHfY9ubRKf7oyiuo0bXLppj0pV2"; // need to fix
     public final static int NEWS_CREATE_ACTIVITY_CODE = 57;
     public final static int AUTH_ACTIVITY_CODE = 50;
     public final static String LOG_NAME = "ARTEM";
