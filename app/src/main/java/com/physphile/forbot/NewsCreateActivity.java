@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -18,11 +19,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,6 +34,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.physphile.forbot.Feed.NewsAdapter;
 import com.physphile.forbot.Feed.NewsFirebaseItem;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
@@ -38,6 +42,7 @@ import com.theartofdev.edmodo.cropper.CropImageView;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.Objects;
+import java.util.Random;
 
 import br.com.simplepass.loadingbutton.customViews.CircularProgressImageButton;
 
@@ -45,6 +50,8 @@ import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE_IMAGE;
 import static com.physphile.forbot.Constants.STORAGE_NEWS_IMAGE_PATH;
+import static java.lang.Math.abs;
+import static java.lang.Math.max;
 
 public class NewsCreateActivity extends BaseSwipeActivity {
     private FirebaseStorage storage;
@@ -60,6 +67,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private Toolbar toolbar;
     private SharedPreferences sp;
     private SharedPreferences ChildCount;
+    private int num;
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -91,8 +99,10 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        NewsAdapter kek = new NewsAdapter(getBaseContext());
+        Log.e ("kek", "num" + kek.mx);
+        num = kek.mx + 1;
         setContentView(R.layout.activity_news_create);
-        sp = getSharedPreferences("newsNums", Context.MODE_PRIVATE);
         ChildCount = getSharedPreferences("ChildCount", Context.MODE_PRIVATE);
         NewsTitleImage = findViewById(R.id.newsTitleImage);
         int width = getWindowManager().getDefaultDisplay().getWidth();
@@ -159,31 +169,10 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                 btn.startAnimation();
                 btn.setImageResource(R.drawable.ic_file_download_black_24dp);
                 new ClassHelper(this).saveFile(bitmap, INTENT_EXTRA_NEWS_TITLE_IMAGE);
-                database.getReference(DATABASE_NEWS_PATH).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                        database.getReference("removeCnt").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot _dataSnapshot) {
-                                uploadImage(resultUri, String.valueOf(dataSnapshot.getChildrenCount() + 1 + Long.parseLong(_dataSnapshot.getValue().toString())));
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
+                uploadImage(resultUri, "" + num);
             }
         }
     }
-
 
     private void uploadImage(Uri filePath, String path) {
         storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + path);
@@ -202,35 +191,27 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                database.getReference("removeCnt").addListenerForSingleValueEvent(new ValueEventListener() {
+                databaseReference = databaseReference.child(num + "");
+                storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
+                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot _dataSnapshot) {
-                        final long num = dataSnapshot.getChildrenCount() + Integer.parseInt(_dataSnapshot.getValue().toString()) + 1;
-                        databaseReference = databaseReference.child(num + "");
-                        storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
-                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                            @Override
-                            public void onSuccess(Uri uri) {
-                                Calendar calendar = Calendar.getInstance();
-                                NewsFirebaseItem nfi = new NewsFirebaseItem(title,
-                                        uri.toString(),
-                                        text,
-                                        FirebaseAuth.getInstance().getCurrentUser().getEmail(),
-                                        calendar.get(Calendar.DATE) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR),
-                                        num
-                                );
-                                databaseReference.setValue(nfi);
-
-                            }
-                        });
+                    public void onSuccess(Uri uri) {
+                        Calendar calendar = Calendar.getInstance();
+                        NewsFirebaseItem nfi = new NewsFirebaseItem(title,
+                                uri.toString(),
+                                text,
+                                FirebaseAuth.getInstance().getCurrentUser().getEmail(),
+                                calendar.get(Calendar.DATE) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR),
+                                num
+                        );
+                        databaseReference.setValue(nfi);
                     }
-
+                }).addOnFailureListener(new OnFailureListener() {
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e ("kek", e.toString());
                     }
                 });
-
             }
 
             @Override

@@ -32,6 +32,7 @@ import static com.physphile.forbot.Constants.STORAGE_NEWS_IMAGE_PATH;
 
 public class NewsPage extends BaseSwipeActivity {
     private FirebaseUser user;
+    private Integer num;
     private Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
@@ -39,24 +40,9 @@ public class NewsPage extends BaseSwipeActivity {
                 case R.id.editNews:
                     break;
                 case R.id.removeNews:
-//                    SharedPreferences sp = getSharedPreferences("newsNums", Context.MODE_PRIVATE);
-//                    String s = sp.getString("news#" + getIntent().getIntExtra("newsNumber", -1), "kek");
-                    Long num = getIntent().getExtras().getLong("newsNumber");
+                    Log.e ("kek", "deleting " + num);
                     FirebaseDatabase.getInstance().getReference(DATABASE_NEWS_PATH + num.toString()).removeValue();
                     FirebaseStorage.getInstance().getReference(STORAGE_NEWS_IMAGE_PATH + num.toString()).delete();
-
-                    FirebaseDatabase.getInstance().getReference("removeCnt/").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            FirebaseDatabase.getInstance().getReference("removeCnt/").setValue(Long.parseLong(dataSnapshot.getValue().toString()) + 1);
-                            Log.e(LOG_NAME, Long.parseLong(dataSnapshot.getValue().toString()) + 1 + "");
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
                     NewsPage.super.finish();
                     break;
             }
@@ -91,6 +77,7 @@ public class NewsPage extends BaseSwipeActivity {
         newsAuthor.setText(intent.getStringExtra("newsAuthor"));
         newsDate.setText(intent.getStringExtra("newsDate"));
         newsText.setText(intent.getStringExtra("newsText"));
+        num = intent.getIntExtra("newsNumber", -1);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

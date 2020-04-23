@@ -96,6 +96,7 @@ public class AuthActivity extends BaseSwipeActivity {
                         }
                     }
                 });
+        mAuth.getCurrentUser ().sendEmailVerification();
     }
 
     @Override

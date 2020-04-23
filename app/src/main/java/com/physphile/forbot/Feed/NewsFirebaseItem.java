@@ -6,18 +6,18 @@ public class NewsFirebaseItem {
     public String text;
     public String author;
     public String date;
-    public long number;
+    public Integer number;
 
     public NewsFirebaseItem() {
     }
 
-    public NewsFirebaseItem(String _title, String _uri, String _text, String _author, String _date, long _number) {
-        this.uri = _uri;
-        this.title = _title;
-        this.text = _text;
-        this.author = _author;
-        this.date = _date;
-        this.number = _number;
+    public NewsFirebaseItem(String title, String uri, String text, String author, String date, Integer number) {
+        this.title = title;
+        this.uri = uri;
+        this.text = text;
+        this.author = author;
+        this.date = date;
+        this.number = number;
     }
 
     public String getTitle() {
@@ -60,7 +60,7 @@ public class NewsFirebaseItem {
         this.text = text;
     }
 
-    public long getNumber() {
+    public Integer getNumber() {
         return number;
     }
 

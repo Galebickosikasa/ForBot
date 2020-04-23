@@ -2,6 +2,7 @@ package com.physphile.forbot.Feed;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.physphile.forbot.MainActivity;
+import com.physphile.forbot.NewsCreateActivity;
 import com.physphile.forbot.NewsLongTapDialog;
 import com.physphile.forbot.R;
 
@@ -23,12 +25,14 @@ import java.util.List;
 
 import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.NEWS_PAGE_ACTIVITY_PATH;
+import static java.lang.Math.max;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
-    private List<NewsFirebaseItem> newsList = new ArrayList<>();
+    public List<NewsFirebaseItem> newsList = new ArrayList<>();
     private Context context;
+    public static int mx;
 
-    NewsAdapter(Context _context) {
+    public NewsAdapter(Context _context) {
         this.context = _context;
     }
 
@@ -48,13 +52,18 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public void addItem(NewsFirebaseItem item) {
         newsList.add(0, item);
         notifyDataSetChanged();
-        Log.e(LOG_NAME, "addItem" + item.getNumber());
+        mx = max (item.getNumber(), mx);
+        Log.e ("kek", "mx adapter " + mx);
     }
 
     public void clearItems() {
         newsList.clear();
         notifyDataSetChanged();
         Log.e(LOG_NAME, "clearItems");
+    }
+
+    public List<NewsFirebaseItem> getArrayList () {
+        return newsList;
     }
 
     @Override
@@ -81,9 +90,8 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         intent.putExtra("newsDate", newsList.get(position).getDate());
         intent.putExtra("newsAuthor", newsList.get(position).getAuthor());
         intent.putExtra("newsTitleImageUri", newsList.get(position).getUri());
-//        Log.e(LOG_NAME, newsList.get(position).getNumber() + "");
         intent.putExtra("newsNumber", newsList.get(position).getNumber());
-        Log.e(LOG_NAME, "click" + position);
+//        Log.e(LOG_NAME, "click" + position);
         context.startActivity(intent);
 
     }

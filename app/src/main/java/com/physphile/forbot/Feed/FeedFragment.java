@@ -1,8 +1,10 @@
 package com.physphile.forbot.Feed;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +29,8 @@ import com.google.firebase.storage.StorageReference;
 import com.physphile.forbot.ClassHelper;
 import com.physphile.forbot.R;
 
+import java.util.List;
+
 import static android.app.Activity.RESULT_OK;
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
@@ -34,6 +38,7 @@ import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
 import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_CODE;
 import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
+import static java.lang.Math.max;
 
 public class FeedFragment extends Fragment {
     private NewsAdapter adapter;
@@ -111,7 +116,6 @@ public class FeedFragment extends Fragment {
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
                         adapter.addItem(item);
-
                     }
 
                     @Override
@@ -131,6 +135,5 @@ public class FeedFragment extends Fragment {
                     }
                 });
         Log.e(LOG_NAME, "getNews()");
-
     }
 }
