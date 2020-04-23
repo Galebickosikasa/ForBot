@@ -7,7 +7,6 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -19,13 +18,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,7 +44,6 @@ import br.com.simplepass.loadingbutton.customViews.CircularProgressImageButton;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE;
 import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE_IMAGE;
-import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.STORAGE_NEWS_IMAGE_PATH;
 
 public class NewsCreateActivity extends BaseSwipeActivity {
@@ -166,26 +162,10 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                 database.getReference(DATABASE_NEWS_PATH).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-
-                        database.getReference("removeCnt").addChildEventListener(new ChildEventListener() {
+                        database.getReference("removeCnt").addValueEventListener(new ValueEventListener() {
                             @Override
-                            public void onChildAdded(@NonNull DataSnapshot _dataSnapshot, @Nullable String s) {
+                            public void onDataChange(@NonNull DataSnapshot _dataSnapshot) {
                                 uploadImage(resultUri, String.valueOf(dataSnapshot.getChildrenCount() + 1 + Long.parseLong(_dataSnapshot.getValue().toString())));
-                            }
-
-                            @Override
-                            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                            }
-
-                            @Override
-                            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                            }
-
-                            @Override
-                            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                             }
 
                             @Override
@@ -193,7 +173,6 @@ public class NewsCreateActivity extends BaseSwipeActivity {
 
                             }
                         });
-
                     }
 
                     @Override
@@ -214,7 +193,6 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                 btn.revertAnimation();
                 btn.setImageResource(R.drawable.ic_done_black_24dp);
                 btn.setClickable(true);
-                Log.e(LOG_NAME, "uploadImage()");
             }
         });
     }
@@ -224,12 +202,10 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                database.getReference("removeCnt/").addChildEventListener(new ChildEventListener() {
+                database.getReference("removeCnt").addValueEventListener(new ValueEventListener() {
                     @Override
-                    public void onChildAdded(@NonNull DataSnapshot _dataSnapshot, @Nullable String s) {
-                        Log.e ("kek", "" + _dataSnapshot.getValue());
+                    public void onDataChange(@NonNull DataSnapshot _dataSnapshot) {
                         final long num = dataSnapshot.getChildrenCount() + Integer.parseInt(_dataSnapshot.getValue().toString()) + 1;
-                        Log.e(LOG_NAME, num + "");
                         databaseReference = databaseReference.child(num + "");
                         storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
                         storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
@@ -244,29 +220,8 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                                         num
                                 );
                                 databaseReference.setValue(nfi);
-                                Log.e(LOG_NAME, "Новости подгружены");
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.e("ARTEM", "fail" + e.toString());
                             }
                         });
-                    }
-
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-                    }
-
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
                     }
 
                     @Override

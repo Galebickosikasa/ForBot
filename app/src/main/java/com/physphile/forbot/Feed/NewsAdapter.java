@@ -41,22 +41,26 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(parent.getWidth(),
                 parent.getWidth() * 10 / 16);
         iw.setLayoutParams(lp);
+        Log.e(LOG_NAME, "onCreateViewHolder");
         return new NewsViewHolder(view);
     }
 
     public void addItem(NewsFirebaseItem item) {
-        newsList.add(item);
+        newsList.add(0, item);
         notifyDataSetChanged();
+        Log.e(LOG_NAME, "addItem" + item.getNumber());
     }
 
     public void clearItems() {
         newsList.clear();
         notifyDataSetChanged();
+        Log.e(LOG_NAME, "clearItems");
     }
 
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         holder.bind(newsList.get(position));
+        Log.e(LOG_NAME, "holder.bind" + position);
     }
 
     @Override
@@ -77,9 +81,11 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         intent.putExtra("newsDate", newsList.get(position).getDate());
         intent.putExtra("newsAuthor", newsList.get(position).getAuthor());
         intent.putExtra("newsTitleImageUri", newsList.get(position).getUri());
-        Log.e(LOG_NAME, newsList.get(position).getNumber() + "");
+//        Log.e(LOG_NAME, newsList.get(position).getNumber() + "");
         intent.putExtra("newsNumber", newsList.get(position).getNumber());
+        Log.e(LOG_NAME, "click" + position);
         context.startActivity(intent);
+
     }
 
     public class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -98,10 +104,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             newsText = itemView.findViewById(R.id.newsText);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
+            Log.e(LOG_NAME, "func newsViewHolder");
         }
 
         public void bind(NewsFirebaseItem item) {
-//            Log.e ("kek", "bind");
             newsTitle.setText(item.getTitle());
             newsText.setText(item.getText());
             newsAuthor.setText(item.getAuthor());
@@ -109,7 +115,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             Glide.with(itemView.getContext())
                     .load(item.getUri())
                     .into(newsTitleImage);
-            newsTitleImage.setVisibility(item.getUri() != null ? View.VISIBLE : View.GONE);
+//            newsTitleImage.setVisibility(item.getUri() != null ? View.VISIBLE : View.GONE);
         }
 
         @Override
