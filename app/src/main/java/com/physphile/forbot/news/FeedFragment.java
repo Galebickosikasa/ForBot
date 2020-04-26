@@ -1,4 +1,4 @@
-package com.physphile.forbot.Feed;
+package com.physphile.forbot.news;
 
 import android.content.Intent;
 import android.graphics.Color;
@@ -26,8 +26,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.physphile.forbot.ProfileDialogFragment;
 import com.physphile.forbot.R;
+import com.physphile.forbot.profile.ProfileMenuDialog;
 
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
 import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
@@ -55,7 +55,7 @@ public class FeedFragment extends Fragment {
             switch (item.getItemId()) {
                 case R.id.profile:
                     if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                        DialogFragment profileDialog = new ProfileDialogFragment();
+                        DialogFragment profileDialog = new ProfileMenuDialog();
                         profileDialog.show(getParentFragmentManager(), FRAGMENT_DIALOG_PROFILE_TAG);
                     } else {
                         startActivity(new Intent(AUTH_ACTIVITY_PATH));

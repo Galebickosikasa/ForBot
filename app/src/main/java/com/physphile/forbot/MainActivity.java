@@ -9,8 +9,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.physphile.forbot.Calendar.CalendarFragment;
-import com.physphile.forbot.Feed.FeedFragment;
+import com.physphile.forbot.news.FeedFragment;
+import com.physphile.forbot.olympiads.CalendarFragment;
 
 import me.ibrahimsn.lib.OnItemSelectedListener;
 import me.ibrahimsn.lib.SmoothBottomBar;

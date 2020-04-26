@@ -1,4 +1,4 @@
-package com.physphile.forbot;
+package com.physphile.forbot.news;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -17,6 +17,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.physphile.forbot.BaseSwipeActivity;
+import com.physphile.forbot.R;
 
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;

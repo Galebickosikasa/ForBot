@@ -1,4 +1,4 @@
-package com.physphile.forbot.Feed;
+package com.physphile.forbot.news;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.physphile.forbot.MainActivity;
-import com.physphile.forbot.NewsLongTapDialog;
 import com.physphile.forbot.R;
 
 import java.util.ArrayList;

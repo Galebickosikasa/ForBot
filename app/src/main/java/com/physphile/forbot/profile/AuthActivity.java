@@ -1,4 +1,4 @@
-package com.physphile.forbot;
+package com.physphile.forbot.profile;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +16,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.physphile.forbot.BaseSwipeActivity;
+import com.physphile.forbot.R;
 
 public class AuthActivity extends BaseSwipeActivity {
     private EditText MailField;

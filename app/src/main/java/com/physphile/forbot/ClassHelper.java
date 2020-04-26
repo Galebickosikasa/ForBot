@@ -13,7 +13,8 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.physphile.forbot.Calendar.OlympsAdapter;
+import com.physphile.forbot.olympiads.OlympsAdapter;
+import com.physphile.forbot.profile.ProfileMenuDialog;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,7 +36,7 @@ public class ClassHelper {
             switch (item.getItemId()) {
                 case R.id.profile:
                     if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                        DialogFragment profileDialog = new ProfileDialogFragment();
+                        DialogFragment profileDialog = new ProfileMenuDialog();
                         profileDialog.show(fragmentManager, FRAGMENT_DIALOG_PROFILE_TAG);
                     } else {
                         activity.startActivity(new Intent(AUTH_ACTIVITY_PATH));

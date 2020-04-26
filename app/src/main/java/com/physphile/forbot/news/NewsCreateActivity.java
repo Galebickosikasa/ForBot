@@ -1,4 +1,4 @@
-package com.physphile.forbot;
+package com.physphile.forbot.news;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,8 +30,9 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.physphile.forbot.Feed.NewsAdapter;
-import com.physphile.forbot.Feed.NewsFirebaseItem;
+import com.physphile.forbot.BaseSwipeActivity;
+import com.physphile.forbot.ClassHelper;
+import com.physphile.forbot.R;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 

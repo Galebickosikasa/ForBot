@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
@@ -68,8 +67,7 @@
             android:layout_marginStart="18dp"
             android:layout_marginTop="14dp"
             android:layout_marginEnd="18dp"
-            android:fontFamily="@font/ubuntu_mono_bold"
-            android:lineSpacingExtra="5sp"
+            android:fontFamily="@font/source_sans_pro_bold"
             android:text="Название статьи может тоже быть длинным"
             android:textColor="@android:color/primary_text_light"
             android:textSize="22sp" />

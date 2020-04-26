@@ -1,4 +1,4 @@
-package com.physphile.forbot.Calendar;
+package com.physphile.forbot.olympiads;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

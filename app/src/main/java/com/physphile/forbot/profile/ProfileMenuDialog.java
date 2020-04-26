@@ -1,4 +1,4 @@
-package com.physphile.forbot;
+package com.physphile.forbot.profile;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
+import com.physphile.forbot.ClassHelper;
+import com.physphile.forbot.R;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
@@ -30,14 +33,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static android.app.Activity.RESULT_OK;
-import static com.physphile.forbot.Constants.ACCOUNT_SETTINGS_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.AUTH_ACTIVITY_CODE;
 import static com.physphile.forbot.Constants.FILE_IMAGE_AVATAR;
 import static com.physphile.forbot.Constants.FILE_PREFIX;
 import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.STORAGE_AVATARS_PATH;
 
-public class ProfileDialogFragment extends DialogFragment {
+public class ProfileMenuDialog extends DialogFragment {
     private View v;
     private FirebaseStorage storage;
     private ImageView Avatar;
@@ -62,11 +64,14 @@ public class ProfileDialogFragment extends DialogFragment {
                     CropImage.activity()
                             .setCropShape(CropImageView.CropShape.OVAL)
                             .setAspectRatio(1, 1)
-                            .start(getContext(), ProfileDialogFragment.this);
+                            .start(getContext(), ProfileMenuDialog.this);
                     break;
-                case R.id.AccountSettingsBtn:
+                case R.id.Profile:
+                    Intent intent = new Intent("com.physphile.forbot.profile.ProfileActivity");
+                    startActivity(intent);
+                    break;
                 case R.id.SettingsField:
-                    startActivity(new Intent(ACCOUNT_SETTINGS_ACTIVITY_PATH));
+                    startActivity(new Intent("com.physphile.forbot.profile.AccountSettingsActivity"));
                     break;
             }
         }
@@ -93,6 +98,8 @@ public class ProfileDialogFragment extends DialogFragment {
                 e.printStackTrace();
             }
         }
+        LinearLayout Profile = v.findViewById(R.id.Profile);
+        Profile.setOnClickListener(onClickListener);
         return v;
     }
 

@@ -14,26 +14,34 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".profile.ProfileActivity">
+            <intent-filter>
+                <action android:name="com.physphile.forbot.profile.ProfileActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity
-            android:name=".OlympPage"
+            android:name=".olympiads.OlympPage"
             android:theme="@style/newsPageStyle">
             <intent-filter>
-                <action android:name="com.physphile.forbot.OlympPage" />
+                <action android:name="com.physphile.forbot.olympiads.OlympPage" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".NewsPage"
+        <activity
+            android:name=".news.NewsPage"
             android:theme="@style/newsPageStyle">
             <intent-filter>
-                <action android:name="com.physphile.forbot.NewsPage" />
+                <action android:name="com.physphile.forbot.news.NewsPage" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".NewsCreateActivity">
+        <activity android:name=".news.NewsCreateActivity">
             <intent-filter>
-                <action android:name="com.physphile.forbot.NewsCreateActivity" />
+                <action android:name="com.physphile.forbot.news.NewsCreateActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
@@ -48,15 +56,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".AccountSettingsActivity"
+            android:name="com.physphile.forbot.profile.AccountSettingsActivity"
             android:theme="@style/DefaultActivityTheme">
             <intent-filter>
-                <action android:name="com.physphile.forbot.AccountSettingsActivity" />
+                <action android:name="com.physphile.forbot.profile.AccountSettingsActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".AuthActivity">
+        <activity android:name=".profile.AuthActivity">
             <intent-filter>
                 <action android:name="com.physphile.forbot.AuthActivity" />
 

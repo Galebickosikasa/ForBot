@@ -1,4 +1,4 @@
-package com.physphile.forbot;
+package com.physphile.forbot.olympiads;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,8 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.physphile.forbot.BaseSwipeActivity;
+import com.physphile.forbot.R;
 
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
 import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;

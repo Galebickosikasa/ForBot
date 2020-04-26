@@ -1,4 +1,4 @@
-package com.physphile.forbot.Calendar;
+package com.physphile.forbot.olympiads;
 
 class OlympsListItem {
     public String name;

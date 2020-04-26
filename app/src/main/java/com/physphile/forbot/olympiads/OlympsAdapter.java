@@ -1,4 +1,4 @@
-package com.physphile.forbot.Calendar;
+package com.physphile.forbot.olympiads;
 
 import android.content.Context;
 import android.content.Intent;

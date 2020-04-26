@@ -1,4 +1,4 @@
-package com.physphile.forbot.Feed;
+package com.physphile.forbot.news;
 
 public class NewsFirebaseItem {
     public String title;
