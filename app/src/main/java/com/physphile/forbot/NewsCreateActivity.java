@@ -157,7 +157,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                 NewsTitleImage.setImageBitmap(bitmap);
                 btn.startAnimation();
                 btn.setImageResource(R.drawable.ic_file_download_black_24dp);
-                uploadImage(resultUri, "" + num);
+                uploadImage(resultUri, String.valueOf(num));
             }
         }
     }
@@ -175,7 +175,8 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     }
 
     public void putNewsFirebase(final String title, final String text) {
-        database.getReference(DATABASE_NEWS_PATH + num).addListenerForSingleValueEvent(new ValueEventListener() {
+        databaseReference = database.getReference(DATABASE_NEWS_PATH + num);
+        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
                 storage.getReference(STORAGE_NEWS_IMAGE_PATH + num)
