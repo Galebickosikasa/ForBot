@@ -1,13 +1,11 @@
 package com.physphile.forbot;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -19,13 +17,11 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,8 +42,6 @@ import java.util.Objects;
 import br.com.simplepass.loadingbutton.customViews.CircularProgressImageButton;
 
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
-import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE;
-import static com.physphile.forbot.Constants.INTENT_EXTRA_NEWS_TITLE_IMAGE;
 import static com.physphile.forbot.Constants.STORAGE_NEWS_IMAGE_PATH;
 
 public class NewsCreateActivity extends BaseSwipeActivity {
@@ -63,8 +57,8 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private CoordinatorLayout parent;
     private Toolbar toolbar;
     private SharedPreferences sp;
-    private SharedPreferences ChildCount;
     private int num;
+
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -74,16 +68,10 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                             .setCropShape(CropImageView.CropShape.RECTANGLE)
                             .setAspectRatio(16, 10)
                             .start(NewsCreateActivity.this);
-
-//                  Snackbar.make(v, "Сначала введите номер статьи", Snackbar.LENGTH_LONG).show();
-
                     break;
                 case R.id.newsDoneBtn:
                     if (!newsText.getText().toString().equals("") && !NewsTitle.getText().toString().equals("")) {
                         putNewsFirebase(NewsTitle.getText().toString(), newsText.getText().toString());
-                        Intent intent = new Intent();
-                        intent.putExtra(INTENT_EXTRA_NEWS_TITLE, NewsTitle.getText().toString());
-                        setResult(RESULT_OK, intent);
                         finish();
                     } else {
                         Snackbar.make(v, "Сначала заполните все поля", Snackbar.LENGTH_LONG).show();
@@ -95,25 +83,29 @@ public class NewsCreateActivity extends BaseSwipeActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //инициализация активити
         super.onCreate(savedInstanceState);
-        NewsAdapter kek = new NewsAdapter(getBaseContext());
-        Log.e ("kek", "num" + kek.mx);
-        num = kek.mx + 1;
         setContentView(R.layout.activity_news_create);
-        ChildCount = getSharedPreferences("ChildCount", Context.MODE_PRIVATE);
-        NewsTitleImage = findViewById(R.id.newsTitleImage);
-        int width = getWindowManager().getDefaultDisplay().getWidth();
-        int height = width * 10 / 16;
-        NewsTitleImage.setLayoutParams(new CollapsingToolbarLayout.LayoutParams(width, height));
-        NewsTitle = findViewById(R.id.newsTitle);
-        NewsTitleImage.setOnClickListener(onClickListener);
-        parent = findViewById(R.id.parent);
-        btn = getBtn();
-        parent.addView(btn);
-        toolbar = findViewById(R.id.newsToolbar);
+
+        //инициализация переменных
+        NewsAdapter kek = new NewsAdapter(getBaseContext());
+        num = NewsAdapter.mx + 1;
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
+
+        //инициализация View-элементов
+        NewsTitleImage = findViewById(R.id.newsTitleImage);
+        parent = findViewById(R.id.parent);
+        toolbar = findViewById(R.id.newsToolbar);
         newsText = findViewById(R.id.newsText);
+        NewsTitle = findViewById(R.id.newsTitle);
+
+        //заполнение View-элементов
+        int width = getWindowManager().getDefaultDisplay().getWidth();
+        NewsTitleImage.setLayoutParams(new CollapsingToolbarLayout.LayoutParams(width, width * 10 / 16));
+        NewsTitleImage.setOnClickListener(onClickListener);
+        btn = getBtn();
+        parent.addView(btn);
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -165,7 +157,6 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                 NewsTitleImage.setImageBitmap(bitmap);
                 btn.startAnimation();
                 btn.setImageResource(R.drawable.ic_file_download_black_24dp);
-                new ClassHelper(this).saveFile(bitmap, INTENT_EXTRA_NEWS_TITLE_IMAGE);
                 uploadImage(resultUri, "" + num);
             }
         }
@@ -184,13 +175,11 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     }
 
     public void putNewsFirebase(final String title, final String text) {
-        databaseReference = database.getReference(DATABASE_NEWS_PATH);
-        databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        database.getReference(DATABASE_NEWS_PATH + num).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull final DataSnapshot dataSnapshot) {
-                databaseReference = databaseReference.child(num + "");
-                storageReference = storage.getReference(STORAGE_NEWS_IMAGE_PATH + num);
-                storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                storage.getReference(STORAGE_NEWS_IMAGE_PATH + num)
+                        .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
                         Calendar calendar = Calendar.getInstance();
@@ -203,20 +192,13 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                         );
                         databaseReference.setValue(nfi);
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e ("kek", e.toString());
-                    }
                 });
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
             }
         });
-
     }
 
     @Override

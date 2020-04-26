@@ -11,13 +11,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 public class AuthActivity extends BaseSwipeActivity {
     private EditText MailField;
@@ -26,14 +24,19 @@ public class AuthActivity extends BaseSwipeActivity {
     View.OnClickListener OnSignBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            signing(MailField.getText().toString(), PwdField.getText().toString());
+            if (!MailField.getText().toString().equals("") && !PwdField.getText().toString().equals("")) {
+                signing(MailField.getText().toString(), PwdField.getText().toString());
+            }
         }
     };
     View.OnClickListener OnRegBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            register(MailField.getText().toString(), PwdField.getText().toString());
-//            signing(MailField.getText().toString(), PwdField.getText().toString());
+            if (!MailField.getText().toString().equals("") && !PwdField.getText().toString().equals("")) {
+                register(MailField.getText().toString(), PwdField.getText().toString());
+                signing(MailField.getText().toString(), PwdField.getText().toString());
+
+            }
         }
     };
 
@@ -41,9 +44,9 @@ public class AuthActivity extends BaseSwipeActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setHomeButtonEnabled(true);
-        actionBar.setDisplayHomeAsUpEnabled(true);
+//        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setHomeButtonEnabled(true);
+//        actionBar.setDisplayHomeAsUpEnabled(true);
         mAuth = FirebaseAuth.getInstance();
         MailField = findViewById(R.id.MailField);
         PwdField = findViewById(R.id.PwdField);
@@ -73,15 +76,10 @@ public class AuthActivity extends BaseSwipeActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            if (mAuth.getCurrentUser().isEmailVerified()) {
-                                Toast.makeText(AuthActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent();
-                                setResult(RESULT_OK, intent);
-                                finish();
-                            } else {
-                                Toast.makeText(AuthActivity.this, "Authentication failed. Please verify your email.", Toast.LENGTH_LONG).show();
-                            }
-
+                            Toast.makeText(AuthActivity.this, "Authentication success.", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent();
+                            setResult(RESULT_OK, intent);
+                            finish();
                         } else {
                             Toast.makeText(AuthActivity.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
@@ -101,7 +99,7 @@ public class AuthActivity extends BaseSwipeActivity {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(AuthActivity.this, "Register success. Please verify your email account", Toast.LENGTH_SHORT).show();
                                     } else {
-                                        Log.e ("kek", task.getException().getMessage());
+                                        Log.e("kek", task.getException().getMessage());
                                     }
                                 }
                             });

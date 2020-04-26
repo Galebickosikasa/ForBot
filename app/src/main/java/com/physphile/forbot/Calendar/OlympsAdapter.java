@@ -2,7 +2,6 @@ package com.physphile.forbot.Calendar;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -34,10 +32,6 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
     public OlympsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.olymps_item, parent, false);
-//        ImageView iv = view.findViewById(R.id.olympTitleImage);
-//        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(parent.getWidth(),
-//                parent.getWidth() * 10 / 16);
-//        iv.setLayoutParams(lp);
         return new OlympsViewHolder(view);
     }
 
@@ -61,7 +55,7 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
         return olympsList.size();
     }
 
-    void olympClick (int pos) {
+    void olympClick(int pos) {
         Intent intent = new Intent(OLYMP_PAGE_ACTIVITY_PATH);
         intent.putExtra("olympName", olympsList.get(pos).getName());
         intent.putExtra("olympDate", olympsList.get(pos).getDate());
@@ -97,7 +91,7 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
         public void onClick(View v) {
             int pos = getAdapterPosition();
             if (pos != RecyclerView.NO_POSITION) {
-                olympClick (pos);
+                olympClick(pos);
             }
         }
     }

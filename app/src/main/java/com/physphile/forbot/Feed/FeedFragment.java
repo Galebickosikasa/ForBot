@@ -1,46 +1,41 @@
 package com.physphile.forbot.Feed;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.physphile.forbot.ClassHelper;
+import com.physphile.forbot.ProfileDialogFragment;
 import com.physphile.forbot.R;
 
-import java.util.List;
-
-import static android.app.Activity.RESULT_OK;
 import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
 import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
+import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
 import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
-import static com.physphile.forbot.Constants.LOG_NAME;
-import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_CODE;
+import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
-import static java.lang.Math.max;
 
 public class FeedFragment extends Fragment {
     private NewsAdapter adapter;
@@ -49,7 +44,30 @@ public class FeedFragment extends Fragment {
     private FirebaseDatabase database;
     private RecyclerView newsList;
     private View v;
+    private FirebaseAuth mAuth;
+    private FirebaseUser user;
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
+    private Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.profile:
+                    if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                        DialogFragment profileDialog = new ProfileDialogFragment();
+                        profileDialog.show(getParentFragmentManager(), FRAGMENT_DIALOG_PROFILE_TAG);
+                    } else {
+                        startActivity(new Intent(AUTH_ACTIVITY_PATH));
+                    }
+                    break;
+                case R.id.createNews:
+                    startActivity(new Intent(NEWS_CREATE_ACTIVITY_PATH));
+                    break;
+            }
+            return false;
+        }
+    };
 
     public static FeedFragment newInstance() {
         return new FeedFragment();
@@ -61,32 +79,36 @@ public class FeedFragment extends Fragment {
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //инициализация фрагмента
         v = inflater.inflate(R.layout.feed_fragment_backdrop, container, false);
-        Log.e(LOG_NAME, "onCreateView_FeedFragment");
-        initRecyclerView();
+
+        //инициализация переменных
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
+        mAuth = FirebaseAuth.getInstance();
+        user = mAuth.getCurrentUser();
+
+        //инициализация View-элементов
+        initRecyclerView();
         Toolbar toolbar = v.findViewById(R.id.feedToolbar);
-        if (user != null && user.isEmailVerified()) {
-            if (user.getUid().equals(ARTEM_ADMIN_UID) || user.getUid().equals(GLEB_ADMIN_ID) || user.getUid().equals(PAVEL_ST_ADMIN_ID)) {
-                toolbar.getMenu().clear();
-                toolbar.inflateMenu(R.menu.admin_toolbar_menu);
-//                toolbar.getMenu().getItem(1).setIcon(R.drawable.common_google_signin_btn_icon_dark);
-            }
-        }
         mSwipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
+
+        //заполнение View-элементов
+        if (user != null && (user.getUid().equals(ARTEM_ADMIN_UID) || user.getUid().equals(GLEB_ADMIN_ID) || user.getUid().equals(PAVEL_ST_ADMIN_ID))) {
+            toolbar.getMenu().clear();
+            toolbar.inflateMenu(R.menu.admin_toolbar_menu);
+        }
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 adapter.clearItems();
                 getNews();
-                mSwipeRefreshLayout.setRefreshing(false);
             }
         });
         mSwipeRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN);
-        toolbar.setOnMenuItemClickListener(new ClassHelper(getActivity(), getChildFragmentManager()).onMenuItemClickListener);
+        toolbar.setOnMenuItemClickListener(onMenuItemClickListener);
+
+        //остальные методы
         adapter = new NewsAdapter(getContext());
         newsList.setAdapter(adapter);
         adapter.clearItems();
@@ -100,41 +122,30 @@ public class FeedFragment extends Fragment {
         newsList.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == NEWS_CREATE_ACTIVITY_CODE) {
-            if (resultCode == RESULT_OK) {
-
-            }
-        }
-    }
-
     private void getNews() {
-        database.getReference(DATABASE_NEWS_PATH)
-                .addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
-                        adapter.addItem(item);
-                    }
+        final DatabaseReference ref = database.getReference(DATABASE_NEWS_PATH);
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (int i = 1; i < dataSnapshot.getChildrenCount() + 1; ++i) {
+                    ref.child(i + "").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
+                            adapter.addItem(item);
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
 
-                    @Override
-                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                        }
+                    });
+                }
+            }
 
-                    @Override
-                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                    }
-
-                    @Override
-                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                    }
-                });
-        Log.e(LOG_NAME, "getNews()");
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
     }
 }

@@ -13,9 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="40dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="150dp"
         android:layout_marginEnd="40dp"
-        android:fontFamily="@font/ubuntu_mono"
+        android:elevation="5dp"
         android:hint="Адрес электронной почты"
         app:endIconMode="clear_text"
         app:errorEnabled="true">
@@ -25,7 +25,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:inputType="textEmailAddress" />
+            android:inputType="textEmailAddress"
+            android:textSize="18sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.textfield.TextInputLayout
@@ -36,7 +37,7 @@
         android:layout_marginStart="40dp"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="40dp"
-        android:fontFamily="@font/ubuntu_mono"
+        android:elevation="5dp"
         android:hint="Пароль"
         android:inputType="textPassword"
         app:endIconMode="password_toggle">
@@ -46,25 +47,43 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:textSize="18sp" />
+
     </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/SignBtn"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginBottom="5dp"
+        android:fontFamily="@font/ubuntu_mono_bold"
+        android:text="Войти"
+        android:textSize="24sp"
+        app:elevation="5dp" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="или"
+        android:textSize="20sp" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/RegBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:fontFamily="@font/ubuntu_mono"
+        android:layout_marginTop="5dp"
+        android:shadowColor="#FFFFFF"
         android:text="Зарегистрироваться"
-        app:backgroundTint="@color/colorPrimaryLight" />
+        android:textSize="16sp"
+        app:backgroundTint="@color/colorPrimaryLight"
+        app:elevation="0dp" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/SignBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="10dp"
-        android:fontFamily="@font/ubuntu_mono"
-        android:text="Войти" />
 </LinearLayout>

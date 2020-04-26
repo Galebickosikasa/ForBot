@@ -56,9 +56,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".AuthActivity"
-            android:theme="@style/DefaultActivityTheme">
+        <activity android:name=".AuthActivity">
             <intent-filter>
                 <action android:name="com.physphile.forbot.AuthActivity" />
 

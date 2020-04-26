@@ -2,8 +2,6 @@ package com.physphile.forbot.Feed;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,21 +14,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.physphile.forbot.MainActivity;
-import com.physphile.forbot.NewsCreateActivity;
 import com.physphile.forbot.NewsLongTapDialog;
 import com.physphile.forbot.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.NEWS_PAGE_ACTIVITY_PATH;
 import static java.lang.Math.max;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
+    public static int mx;
     public List<NewsFirebaseItem> newsList = new ArrayList<>();
     private Context context;
-    public static int mx;
 
     public NewsAdapter(Context _context) {
         this.context = _context;
@@ -45,31 +41,27 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(parent.getWidth(),
                 parent.getWidth() * 10 / 16);
         iw.setLayoutParams(lp);
-        Log.e(LOG_NAME, "onCreateViewHolder");
         return new NewsViewHolder(view);
     }
 
     public void addItem(NewsFirebaseItem item) {
         newsList.add(0, item);
-        notifyDataSetChanged();
-        mx = max (item.getNumber(), mx);
-        Log.e ("kek", "mx adapter " + mx);
+        notifyItemChanged(0);
+        mx = max(item.getNumber(), mx);
     }
 
     public void clearItems() {
         newsList.clear();
         notifyDataSetChanged();
-        Log.e(LOG_NAME, "clearItems");
     }
 
-    public List<NewsFirebaseItem> getArrayList () {
+    public List<NewsFirebaseItem> getArrayList() {
         return newsList;
     }
 
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         holder.bind(newsList.get(position));
-        Log.e(LOG_NAME, "holder.bind" + position);
     }
 
     @Override
@@ -83,15 +75,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     private void itemClick(int position) {
-//        Log.e(LOG_NAME, position + "");
         Intent intent = new Intent(NEWS_PAGE_ACTIVITY_PATH);
         intent.putExtra("newsTitle", newsList.get(position).getTitle());
         intent.putExtra("newsText", newsList.get(position).getText());
         intent.putExtra("newsDate", newsList.get(position).getDate());
         intent.putExtra("newsAuthor", newsList.get(position).getAuthor());
         intent.putExtra("newsTitleImageUri", newsList.get(position).getUri());
-        intent.putExtra("newsNumber", newsList.get(position).getNumber());
-//        Log.e(LOG_NAME, "click" + position);
+        intent.putExtra("newsNumber", newsList.get(position).getNumber().toString());
         context.startActivity(intent);
 
     }
@@ -112,7 +102,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             newsText = itemView.findViewById(R.id.newsText);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
-            Log.e(LOG_NAME, "func newsViewHolder");
         }
 
         public void bind(NewsFirebaseItem item) {
@@ -123,7 +112,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             Glide.with(itemView.getContext())
                     .load(item.getUri())
                     .into(newsTitleImage);
-//            newsTitleImage.setVisibility(item.getUri() != null ? View.VISIBLE : View.GONE);
+            newsTitleImage.setVisibility(item.getUri() != null ? View.VISIBLE : View.GONE);
         }
 
         @Override

@@ -8,10 +8,6 @@ import androidx.annotation.Nullable;
 import com.example.swipebacklib.BaseSwipeBackActivity;
 import com.example.swipebacklib.SwipeBackLayout;
 
-/**
- * Created by GongWen on 17/8/25.
- */
-
 public abstract class BaseSwipeActivity extends BaseSwipeBackActivity implements CompoundButton.OnCheckedChangeListener {
     public boolean isMain = false;
     protected SwipeBackLayout mSwipeBackLayout;

@@ -1,6 +1,5 @@
 package com.physphile.forbot;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.CompoundButton;
@@ -28,11 +27,11 @@ public class MainActivity extends BaseSwipeActivity {
         SmoothBottomBar navView = findViewById(R.id.nav_view);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
-        if (user == null || !user.isEmailVerified()) {
-            startActivity(new Intent(this, AuthActivity.class));
-            finish();
-        }
-        Log.e ("kek", "here");
+//        if (user == null || !user.isEmailVerified()) {
+//            startActivity(new Intent(this, AuthActivity.class));
+//            finish();
+//        }
+        Log.e("kek", "here");
         feedFragment = FeedFragment.newInstance();
         calendarFragment = CalendarFragment.newInstance();
         replaceFragment(feedFragment);
