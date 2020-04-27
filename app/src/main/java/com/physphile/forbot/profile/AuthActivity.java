@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -23,6 +24,7 @@ public class AuthActivity extends BaseSwipeActivity {
     private EditText MailField;
     private EditText PwdField;
     private FirebaseAuth mAuth;
+    private Toolbar toolbar;
     View.OnClickListener OnSignBtnClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -56,6 +58,14 @@ public class AuthActivity extends BaseSwipeActivity {
         Button signBtn = findViewById(R.id.SignBtn);
         regBtn.setOnClickListener(OnRegBtnClick);
         signBtn.setOnClickListener(OnSignBtnClick);
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     @Override

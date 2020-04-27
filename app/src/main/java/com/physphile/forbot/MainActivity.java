@@ -1,54 +1,63 @@
 package com.physphile.forbot;
 
 import android.os.Bundle;
-import android.util.Log;
+import android.util.SparseArray;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.physphile.forbot.news.FeedFragment;
 import com.physphile.forbot.olympiads.CalendarFragment;
 
-import me.ibrahimsn.lib.OnItemSelectedListener;
-import me.ibrahimsn.lib.SmoothBottomBar;
-
 public class MainActivity extends BaseSwipeActivity {
-    FeedFragment feedFragment;
-    CalendarFragment calendarFragment;
+    private FeedFragment feedFragment;
+    private SparseArray savedStateSparseArray;
+    private CalendarFragment calendarFragment;
+    private BottomBarAdapter bottomBarAdapter;
+    private ViewPager viewPager;
 
     //    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        SmoothBottomBar navView = findViewById(R.id.nav_view);
+//        SmoothBottomBar navView = findViewById(R.id.nav_view);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         FirebaseUser user = mAuth.getCurrentUser();
 //        if (user == null || !user.isEmailVerified()) {
 //            startActivity(new Intent(this, AuthActivity.class));
 //            finish();
 //        }
-        Log.e("kek", "here");
+        viewPager = findViewById(R.id.nav_host_fragment);
         feedFragment = FeedFragment.newInstance();
         calendarFragment = CalendarFragment.newInstance();
-        replaceFragment(feedFragment);
-        navView.setOnItemSelectedListener(new OnItemSelectedListener() {
-            @Override
-            public void onItemSelect(int i) {
-                switch (i) {
-                    case 0:
-                        replaceFragment(feedFragment);
-                        break;
-                    case 1:
-                        replaceFragment(calendarFragment);
-                        break;
-                }
-            }
-        });
+//        replaceFragment(feedFragment);
+//        navView.setOnItemSelectedListener(new OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelect(int i) {
+//                switch (i) {
+//                    case 0:
+////                        replaceFragment(feedFragment);
+//                        break;
+//                    case 1:
+////                        replaceFragment(calendarFragment);
+//                        break;
+//                }
+//            }
+//        });
 //        updateTheme();
+        bottomBarAdapter = new BottomBarAdapter(getSupportFragmentManager());
+        bottomBarAdapter.addFragments(feedFragment);
+        bottomBarAdapter.addFragments(calendarFragment);
+        viewPager.setAdapter(bottomBarAdapter);
+        Window w = getWindow();
+        w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
     }
 
     @Override

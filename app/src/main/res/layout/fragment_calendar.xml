@@ -1,8 +1,7 @@
-<androidx.constraintlayout.widget.ConstraintLayout
-xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-android:layout_width="match_parent"
-android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/calendarToolbar"
@@ -10,6 +9,7 @@ android:layout_height="match_parent">
         android:layout_height="?attr/actionBarSize"
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/toolbar_menu_calendar_fragment"
+        android:layout_marginTop="20dp"
         app:popupTheme="@style/Widget.AppCompat.ActionBar" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -46,9 +46,9 @@ android:layout_height="match_parent">
                     android:id="@+id/calendar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:theme="@style/CalenderViewCustom"
                     android:layout_marginBottom="20dp"
                     android:background="@color/transparent"
+                    android:theme="@style/CalenderViewCustom"
                     app:layout_collapseMode="parallax"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

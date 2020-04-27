@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -73,11 +72,6 @@ public class FeedFragment extends Fragment {
         return new FeedFragment();
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //инициализация фрагмента
         v = inflater.inflate(R.layout.feed_fragment_backdrop, container, false);
@@ -90,14 +84,11 @@ public class FeedFragment extends Fragment {
 
         //инициализация View-элементов
         initRecyclerView();
-        Toolbar toolbar = v.findViewById(R.id.feedToolbar);
+        final Toolbar toolbar = v.findViewById(R.id.feedToolbar);
         mSwipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
 
         //заполнение View-элементов
-        if (user != null && (user.getUid().equals(ARTEM_ADMIN_UID) || user.getUid().equals(GLEB_ADMIN_ID) || user.getUid().equals(PAVEL_ST_ADMIN_ID))) {
-            toolbar.getMenu().clear();
-            toolbar.inflateMenu(R.menu.admin_toolbar_menu);
-        }
+
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -114,6 +105,19 @@ public class FeedFragment extends Fragment {
         adapter.clearItems();
         getNews();
 
+        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser _user = firebaseAuth.getCurrentUser();
+                if (_user != null && (_user.getUid().equals(ARTEM_ADMIN_UID) || _user.getUid().equals(GLEB_ADMIN_ID) || _user.getUid().equals(PAVEL_ST_ADMIN_ID))) {
+                    toolbar.getMenu().clear();
+                    toolbar.inflateMenu(R.menu.admin_toolbar_menu);
+                } else {
+                    toolbar.getMenu().clear();
+                    toolbar.inflateMenu(R.menu.default_toolbar_menu);
+                }
+            }
+        });
         return v;
     }
 

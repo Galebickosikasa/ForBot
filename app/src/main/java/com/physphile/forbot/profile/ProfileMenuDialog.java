@@ -1,5 +1,7 @@
 package com.physphile.forbot.profile;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -73,6 +76,28 @@ public class ProfileMenuDialog extends DialogFragment {
                 case R.id.SettingsField:
                     startActivity(new Intent("com.physphile.forbot.profile.AccountSettingsActivity"));
                     break;
+                case R.id.AccountExit:
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setMessage("Вы хотите выйти?")
+                            .setNegativeButton("Нет, остаться", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+
+                                }
+                            }).setPositiveButton("Да, выйти", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            mAuth.signOut();
+                            getDialog().dismiss();
+                        }
+                    });
+                    AlertDialog dialog = builder.create();
+                    dialog.show();
+                    Button positiveBtn = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(positiveBtn.getLayoutParams());
+                    lp.setMarginStart(new ClassHelper(getActivity()).dpToPx(15));
+                    positiveBtn.setLayoutParams(lp);
+                    break;
             }
         }
     };
@@ -84,6 +109,7 @@ public class ProfileMenuDialog extends DialogFragment {
         AccountField = v.findViewById(R.id.AccountField);
         mAuth = FirebaseAuth.getInstance();
         Avatar = v.findViewById(R.id.Avatar);
+        LinearLayout AccountExit = v.findViewById(R.id.AccountExit);
         user = mAuth.getCurrentUser();
         if (mAuth.getCurrentUser() != null) {
             Avatar.setOnClickListener(onClickListener);
@@ -100,6 +126,7 @@ public class ProfileMenuDialog extends DialogFragment {
         }
         LinearLayout Profile = v.findViewById(R.id.Profile);
         Profile.setOnClickListener(onClickListener);
+        AccountExit.setOnClickListener(onClickListener);
         return v;
     }
 

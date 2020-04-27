@@ -7,6 +7,15 @@
     android:orientation="vertical"
     tools:context=".profile.AuthActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:minHeight="?attr/actionBarSize"
+        android:theme="?attr/actionBarTheme"
+        app:title="Авторизация" />
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/MailFieldLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
