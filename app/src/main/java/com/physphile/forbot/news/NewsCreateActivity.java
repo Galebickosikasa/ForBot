@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -58,7 +59,8 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private CoordinatorLayout parent;
     private Toolbar toolbar;
     private SharedPreferences sp;
-    private int num;
+    private int num, mask = 0;
+    private CheckBox phis, math, rus, lit, inf, chem, his, ast;
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -87,6 +89,72 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         //инициализация активити
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_news_create);
+
+        // инициализация предметов
+        phis = findViewById(R.id.physicsCheck); // 0
+        math = findViewById(R.id.mathCheck); // 1
+        rus = findViewById(R.id.russianCheck); // 2
+        lit = findViewById(R.id.literatureCheck); // 3
+        inf = findViewById(R.id.informaticsCheck); // 4
+        chem = findViewById(R.id.chemistryCheck); // 5
+        his = findViewById(R.id.historyCheck); // 6
+        ast = findViewById(R.id.astronomyCheck); // 7
+
+        phis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mask ^= (1<<0);
+            }
+        });
+
+        math.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mask ^= (1<<1);
+            }
+        });
+
+        rus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mask ^= (1<<2);
+            }
+        });
+
+        lit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mask ^= (1<<3);
+            }
+        });
+
+        inf.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mask ^= (1<<4);
+            }
+        });
+
+        chem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mask ^= (1<<5);
+            }
+        });
+
+        his.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mask ^= (1<<6);
+            }
+        });
+
+        ast.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mask ^= (1<<7);
+            }
+        });
 
         //инициализация переменных
         NewsAdapter kek = new NewsAdapter(getBaseContext());
@@ -190,7 +258,7 @@ public class NewsCreateActivity extends BaseSwipeActivity {
                                 text,
                                 FirebaseAuth.getInstance().getCurrentUser().getEmail(),
                                 calendar.get(Calendar.DATE) + "." + (calendar.get(Calendar.MONTH) + 1) + "." + calendar.get(Calendar.YEAR),
-                                num
+                                num, mask
                         );
                         databaseReference.setValue(nfi);
                     }

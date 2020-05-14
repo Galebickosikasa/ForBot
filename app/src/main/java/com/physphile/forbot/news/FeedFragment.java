@@ -3,10 +3,13 @@ package com.physphile.forbot.news;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
@@ -45,8 +48,10 @@ public class FeedFragment extends Fragment {
     private View v;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
-
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private CheckBox phis, math, rus, lit, inf, chem, his, ast;
+
+    private int msk = 0; // маска предметов
 
     private Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
@@ -76,6 +81,72 @@ public class FeedFragment extends Fragment {
         //инициализация фрагмента
         v = inflater.inflate(R.layout.feed_fragment_backdrop, container, false);
 
+        // инициализация предметов
+        phis = v.findViewById(R.id.physicsCheck); // 0
+        math = v.findViewById(R.id.mathCheck); // 1
+        rus = v.findViewById(R.id.russianCheck); // 2
+        lit = v.findViewById(R.id.literatureCheck); // 3
+        inf = v.findViewById(R.id.informaticsCheck); // 4
+        chem = v.findViewById(R.id.chemistryCheck); // 5
+        his = v.findViewById(R.id.historyCheck); // 6
+        ast = v.findViewById(R.id.astronomyCheck); // 7
+
+        phis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                msk ^= (1<<0);
+            }
+        });
+
+        math.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                msk ^= (1<<1);
+            }
+        });
+
+        rus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                msk ^= (1<<2);
+            }
+        });
+
+        lit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                msk ^= (1<<3);
+            }
+        });
+
+        inf.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                msk ^= (1<<4);
+            }
+        });
+
+        chem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                msk ^= (1<<5);
+            }
+        });
+
+        his.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                msk ^= (1<<6);
+            }
+        });
+
+        ast.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                msk ^= (1<<7);
+            }
+        });
+
         //инициализация переменных
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();
@@ -88,11 +159,9 @@ public class FeedFragment extends Fragment {
         mSwipeRefreshLayout = v.findViewById(R.id.swipeRefreshLayout);
 
         //заполнение View-элементов
-
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                adapter.clearItems();
                 getNews();
             }
         });
@@ -127,24 +196,34 @@ public class FeedFragment extends Fragment {
     }
 
     private void getNews() {
+        adapter.clearItems();
         final DatabaseReference ref = database.getReference(DATABASE_NEWS_PATH);
         ref.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (int i = 1; i < dataSnapshot.getChildrenCount() + 1; ++i) {
+                long cnt = dataSnapshot.getChildrenCount();
+                if (cnt == 0) return;
+                int i = 1;
+                while (i < 1000) {
                     ref.child(i + "").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
-                            adapter.addItem(item);
-                            mSwipeRefreshLayout.setRefreshing(false);
+                            if (item != null && (item.getMask() == 0 || (item.getMask() & msk) != 0)) {
+                                adapter.addItem(item);
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            } if (item != null) {
+                                adapter.setMx(item.getNumber());
+                            }
                         }
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                         }
                     });
+                    ++i;
                 }
+                Log.e ("kek_sz", "" + adapter.getItemCount());
             }
 
             @Override

@@ -1,23 +1,33 @@
 package com.physphile.forbot.news;
 
 public class NewsFirebaseItem {
-    public String title;
-    public String uri;
-    public String text;
-    public String author;
-    public String date;
-    public Integer number;
+    private String title;
+    private String uri;
+    private String text;
+    private String author;
+    private String date;
+    private Integer number;
+    private Integer mask;
 
     public NewsFirebaseItem() {
     }
 
-    public NewsFirebaseItem(String title, String uri, String text, String author, String date, Integer number) {
+    public NewsFirebaseItem(String title, String uri, String text, String author, String date, Integer number, Integer mask) {
         this.title = title;
         this.uri = uri;
         this.text = text;
         this.author = author;
         this.date = date;
         this.number = number;
+        this.mask = mask;
+    }
+
+    public Integer getMask() {
+        return mask;
+    }
+
+    public void setMask(Integer mask) {
+        this.mask = mask;
     }
 
     public String getTitle() {

@@ -91,6 +91,102 @@
                 android:padding="@dimen/activity_horizontal_margin"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
+
+            <TableLayout
+                android:id="@+id/tableLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:stretchColumns="*"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView11">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="5dp">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/physicsCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Физика" />
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/mathCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Математика" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipChildren="false"
+                    android:paddingBottom="5dp">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/russianCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Русский язык" />
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/literatureCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Литература" />
+
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="5dp">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/informaticsCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Информатика" />
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/chemistryCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Химия" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:paddingBottom="5dp">
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/historyCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="История" />
+
+                    <com.google.android.material.checkbox.MaterialCheckBox
+                        android:id="@+id/astronomyCheck"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Астрономия" />
+                </TableRow>
+
+            </TableLayout>
         </LinearLayout>
 
 
