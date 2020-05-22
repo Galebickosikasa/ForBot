@@ -1,11 +1,11 @@
 package com.physphile.forbot.olympiads;
 
 class OlympsListItem {
-    public String name;
-    public String level;
-    public String uri;
-    public String date;
-    public String text;
+    private String name;
+    private String level;
+    private String uri;
+    private String date;
+    private String text;
 
     public OlympsListItem() {
     }

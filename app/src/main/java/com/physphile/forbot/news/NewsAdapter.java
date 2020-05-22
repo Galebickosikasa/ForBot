@@ -72,11 +72,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         return newsList.size();
     }
 
-    private void itemLongClick(int position) {
-        NewsLongTapDialog profileDialog = new NewsLongTapDialog();
-        profileDialog.show(((MainActivity) context).getSupportFragmentManager(), "NewsLongTapDialog");
-    }
-
     private void itemClick(int position) {
         Intent intent = new Intent(NEWS_PAGE_ACTIVITY_PATH);
         intent.putExtra("newsTitle", newsList.get(position).getTitle());
@@ -86,10 +81,9 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         intent.putExtra("newsTitleImageUri", newsList.get(position).getUri());
         intent.putExtra("newsNumber", newsList.get(position).getNumber().toString());
         context.startActivity(intent);
-
     }
 
-    public class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
+    public class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView newsTitle;
         private ImageView newsTitleImage;
         private TextView newsText;
@@ -104,7 +98,6 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             newsDate = itemView.findViewById(R.id.newsDate);
             newsText = itemView.findViewById(R.id.newsText);
             itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
         }
 
         public void bind(NewsFirebaseItem item) {
@@ -126,13 +119,5 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
             }
         }
 
-        @Override
-        public boolean onLongClick(View v) {
-            int position = getAdapterPosition();
-            if (position != RecyclerView.NO_POSITION) {
-                itemLongClick(position);
-            }
-            return true;
-        }
     }
 }
