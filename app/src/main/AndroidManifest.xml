@@ -14,6 +14,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".olympiads.OlympCreateActvity">
+            <intent-filter>
+                <action android:name="com.physphile.forbot.olympiads.OlympCreateActvity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         <activity android:name=".profile.ProfileActivity">
             <intent-filter>
                 <action android:name="com.physphile.forbot.profile.ProfileActivity" />
@@ -56,7 +63,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.physphile.forbot.profile.AccountSettingsActivity"
+            android:name=".profile.AccountSettingsActivity"
             android:theme="@style/DefaultActivityTheme">
             <intent-filter>
                 <action android:name="com.physphile.forbot.profile.AccountSettingsActivity" />

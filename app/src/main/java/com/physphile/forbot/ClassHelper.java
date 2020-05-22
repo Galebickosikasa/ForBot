@@ -24,6 +24,8 @@ import java.util.Calendar;
 import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_PATH;
+import static com.physphile.forbot.Constants.OLYMPS_CREATE_ACTIVITY_PATH;
+import static com.physphile.forbot.Constants.OLYMP_PAGE_ACTIVITY_PATH;
 
 public class ClassHelper {
     private Activity activity;
@@ -48,6 +50,9 @@ public class ClassHelper {
                 case R.id.set_today:
                     olympsAdapter.clearItems();
                     calendarView.setDate(Calendar.getInstance().getTime().getTime());
+                    break;
+                case R.id.editOlymp:
+                    activity.startActivity (new Intent(OLYMPS_CREATE_ACTIVITY_PATH));
                     break;
             }
             return false;

@@ -53,12 +53,10 @@ public class NewsCreateActivity extends BaseSwipeActivity {
     private EditText NewsTitle;
     private FirebaseDatabase database;
     private DatabaseReference databaseReference;
-    private TextInputEditText NewsNumber;
     private EditText newsText;
     private CircularProgressImageButton btn;
     private CoordinatorLayout parent;
     private Toolbar toolbar;
-    private SharedPreferences sp;
     private int num, mask = 0;
     private CheckBox phis, math, rus, lit, inf, chem, his, ast;
 
@@ -157,7 +155,6 @@ public class NewsCreateActivity extends BaseSwipeActivity {
         });
 
         //инициализация переменных
-        NewsAdapter kek = new NewsAdapter(getBaseContext());
         num = NewsAdapter.mx + 1;
         storage = FirebaseStorage.getInstance();
         database = FirebaseDatabase.getInstance();

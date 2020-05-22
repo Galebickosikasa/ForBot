@@ -12,4 +12,5 @@
     <color name="transparent">#00000000</color>
     <color name="dark">#121212</color>
     <color name="alphaWhite">#80FFFFFF</color>
+    <color name="purple">#A513F4</color>
 </resources>

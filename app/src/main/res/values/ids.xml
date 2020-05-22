@@ -3,4 +3,5 @@
     <item name="NotAuthBtn" type="id"/>
     <item name="AccountSettingsBtn" type="id"/>
     <item name="newsDoneBtn" type="id"/>
+    <item name="olympDoneBtn" type="id"/>
 </resources>
