@@ -66,7 +66,7 @@ public class OlympCreateActivity extends BaseSwipeActivity implements DatePicker
     private Toolbar toolbar;
     private Button dateBtn;
     private TextView visualDate;
-    private Integer num;
+    private Integer num, YEAR, MONTH, DAYOFMONTH;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -130,6 +130,9 @@ public class OlympCreateActivity extends BaseSwipeActivity implements DatePicker
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         date = makeDate(year, month + 1, dayOfMonth);
         path = makePath(year, month, dayOfMonth);
+        YEAR = year;
+        MONTH = month;
+        DAYOFMONTH = dayOfMonth;
         visualDate.setText(date);
     }
 
@@ -205,7 +208,7 @@ public class OlympCreateActivity extends BaseSwipeActivity implements DatePicker
                         .getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                     @Override
                     public void onSuccess(Uri uri) {
-                        OlympsListItem item = new OlympsListItem(olympTitle.getText().toString(), level, uri.toString(), date, olympText.getText().toString());
+                        OlympsListItem item = new OlympsListItem(olympTitle.getText().toString(), level, uri.toString(), olympText.getText().toString(), num, YEAR, MONTH, DAYOFMONTH);
                         databaseReference.setValue(item);
                     }
                 });

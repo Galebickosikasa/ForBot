@@ -51,9 +51,6 @@ public class ClassHelper {
                     olympsAdapter.clearItems();
                     calendarView.setDate(Calendar.getInstance().getTime().getTime());
                     break;
-                case R.id.editOlymp:
-                    activity.startActivity (new Intent(OLYMPS_CREATE_ACTIVITY_PATH));
-                    break;
             }
             return false;
         }

@@ -1,7 +1,10 @@
 package com.physphile.forbot.olympiads;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CalendarView;
@@ -9,6 +12,7 @@ import android.widget.CalendarView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,9 +27,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.physphile.forbot.ClassHelper;
 import com.physphile.forbot.R;
+import com.physphile.forbot.profile.ProfileMenuDialog;
 
 import java.util.Calendar;
 import java.util.HashMap;
+
+import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
+import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
+import static com.physphile.forbot.Constants.OLYMPS_CREATE_ACTIVITY_PATH;
 
 public class CalendarFragment extends Fragment {
     private FirebaseDatabase database;
@@ -35,10 +44,11 @@ public class CalendarFragment extends Fragment {
     private RecyclerView OlympsList;
     private FirebaseAuth auth;
     private HashMap<String, String> admins;
+    private CalendarView calendarView;
+    private Calendar calendar;
     private CalendarView.OnDateChangeListener onDateChangeListener = new CalendarView.OnDateChangeListener() {
         @Override
         public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-            olympsAdapter.clearItems();
             getOlymps(year, month, dayOfMonth);
         }
     };
@@ -50,7 +60,7 @@ public class CalendarFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_calendar, container, false);
         OlympsList = v.findViewById(R.id.OlympsList);
-        CalendarView calendarView = v.findViewById(R.id.calendar);
+        calendarView = v.findViewById(R.id.calendar);
 
         final Toolbar toolbar = v.findViewById(R.id.calendarToolbar);
         auth = FirebaseAuth.getInstance();
@@ -79,18 +89,51 @@ public class CalendarFragment extends Fragment {
             }
         });
 
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.editOlymp:
+                        startActivityForResult(new Intent(OLYMPS_CREATE_ACTIVITY_PATH), 1);
+                        break;
+                    case R.id.set_today:
+                        olympsAdapter.clearItems();
+                        calendarView.setDate(Calendar.getInstance().getTime().getTime());
+                        break;
+                    case R.id.profile:
+                        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+                            DialogFragment profileDialog = new ProfileMenuDialog();
+                            profileDialog.show(getChildFragmentManager (), FRAGMENT_DIALOG_PROFILE_TAG);
+                        } else {
+                            startActivity(new Intent(AUTH_ACTIVITY_PATH));
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
+
         OlympsList.setLayoutManager(new LinearLayoutManager(getContext()));
         olympsAdapter = new OlympsAdapter(getContext());
         OlympsList.setAdapter(olympsAdapter);
 
-        Calendar calendar = Calendar.getInstance();
+        calendar = Calendar.getInstance();
         calendarView.setOnDateChangeListener(onDateChangeListener);
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
 
-        toolbar.setOnMenuItemClickListener(new ClassHelper(getActivity(), getChildFragmentManager(), olympsAdapter, calendarView).onMenuItemClickListener);
         getOlymps(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
         return v;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            getOlymps(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
+            Log.e ("kek", "here");
+        }
+        Log.e ("kek", "code " + requestCode);
     }
 
     private String makePath(int year, int month, int dayOfMonth) {
@@ -98,6 +141,8 @@ public class CalendarFragment extends Fragment {
     }
 
     private void getOlymps(int year, int month, int dayOfMonth) {
+        olympsAdapter.clearItems();
+        Log.e ("kek", "upd");
         database.getReference(makePath(year, month, dayOfMonth))
                 .addChildEventListener(new ChildEventListener() {
                     @Override

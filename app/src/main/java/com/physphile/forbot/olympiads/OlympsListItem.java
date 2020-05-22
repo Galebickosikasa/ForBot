@@ -1,21 +1,35 @@
 package com.physphile.forbot.olympiads;
 
 class OlympsListItem {
-    private String name;
-    private String level;
-    private String uri;
-    private String date;
-    private String text;
+    public String name;
+    public String level;
+    public String uri;
+    public String text;
+    public Integer num;
+    public Integer year;
+    public Integer month;
+    public Integer dayOfMonth;
 
     public OlympsListItem() {
     }
 
-    public OlympsListItem(String name, String level, String uri, String date, String text) {
+    public OlympsListItem(String name, String level, String uri, String text, Integer num, Integer year, Integer month, Integer dayOfMonth) {
         this.name = name;
         this.level = level;
         this.uri = uri;
-        this.date = date;
         this.text = text;
+        this.num = num;
+        this.year = year;
+        this.month = month;
+        this.dayOfMonth = dayOfMonth;
+    }
+
+    public Integer getNum() {
+        return num;
+    }
+
+    public void setNum(Integer num) {
+        this.num = num;
     }
 
     public String getName() {
@@ -43,11 +57,11 @@ class OlympsListItem {
     }
 
     public String getDate() {
-        return date;
+        return year + "." + (month + 1) + "." + dayOfMonth;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public String getPath () {
+        return year + "/" + month + "/" + dayOfMonth + "/" + num;
     }
 
     public String getText() {

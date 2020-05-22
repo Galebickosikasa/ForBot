@@ -1,5 +1,6 @@
 package com.physphile.forbot.olympiads;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.view.LayoutInflater;
@@ -62,6 +63,8 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
         intent.putExtra("olympLevel", olympsList.get(pos).getLevel());
         intent.putExtra("olympText", olympsList.get(pos).getText());
         intent.putExtra("olympUri", olympsList.get(pos).getUri());
+        intent.putExtra("olympPath", olympsList.get(pos).getPath());
+        intent.putExtra("olympNum", olympsList.get(pos).getNum().toString());
         context.startActivity(intent);
     }
 
