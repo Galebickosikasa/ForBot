@@ -22,6 +22,7 @@ public class MainActivity extends BaseSwipeActivity {
     private BottomBarAdapter bottomBarAdapter;
     private ViewPager viewPager;
 
+
     //    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {

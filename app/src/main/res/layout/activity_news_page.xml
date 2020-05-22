@@ -42,6 +42,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@color/alphaWhite"
                 app:layout_collapseMode="pin"
+                app:menu="@menu/default_toolbar_menu"
                 app:popupTheme="@style/Widget.MaterialComponents.Toolbar" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>

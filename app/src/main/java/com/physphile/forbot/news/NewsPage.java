@@ -8,6 +8,7 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -15,15 +16,17 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.physphile.forbot.BaseSwipeActivity;
 import com.physphile.forbot.R;
 
-import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
+import java.util.HashMap;
+
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
-import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
-import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
 import static com.physphile.forbot.Constants.STORAGE_NEWS_IMAGE_PATH;
 
 public class NewsPage extends BaseSwipeActivity {
@@ -31,6 +34,7 @@ public class NewsPage extends BaseSwipeActivity {
     private FirebaseDatabase database;
     private FirebaseStorage storage;
     private Intent intent;
+    public HashMap<String, String> admins;
     private Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
@@ -61,7 +65,7 @@ public class NewsPage extends BaseSwipeActivity {
         intent = getIntent();
 
         //инициализация View-элементов
-        Toolbar toolbar = findViewById(R.id.newsToolbar);
+        final Toolbar toolbar = findViewById(R.id.newsToolbar);
         TextView newsText = findViewById(R.id.newsText);
         TextView newsTitle = findViewById(R.id.newsTitle);
         TextView newsDate = findViewById(R.id.newsDate);
@@ -73,10 +77,22 @@ public class NewsPage extends BaseSwipeActivity {
         int width = getWindowManager().getDefaultDisplay().getWidth();
         appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(width,
                 width * 10 / 16));
-        if (user != null && (user.getUid().equals(ARTEM_ADMIN_UID) || user.getUid().equals(GLEB_ADMIN_ID) || user.getUid().equals(PAVEL_ST_ADMIN_ID))) {
-            toolbar.getMenu().clear();
-            toolbar.inflateMenu(R.menu.admin_news_page_menu);
-        }
+        FirebaseDatabase.getInstance().getReference("/admins").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                admins = (HashMap<String, String>) dataSnapshot.getValue();
+                if (user != null && admins.containsValue(user.getUid())) {
+                    toolbar.getMenu().clear();
+                    toolbar.inflateMenu(R.menu.admin_news_page_menu);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
         newsTitle.setText(intent.getStringExtra("newsTitle"));
         newsAuthor.setText(intent.getStringExtra("newsAuthor"));
         newsDate.setText(intent.getStringExtra("newsDate"));

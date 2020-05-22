@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.viewpager.widget.ViewPager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -31,13 +32,12 @@ import com.google.firebase.storage.StorageReference;
 import com.physphile.forbot.R;
 import com.physphile.forbot.profile.ProfileMenuDialog;
 
-import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
+import java.util.HashMap;
+
 import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
-import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
 import static com.physphile.forbot.Constants.NEWS_CREATE_ACTIVITY_PATH;
-import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
 
 public class FeedFragment extends Fragment {
     private NewsAdapter adapter;
@@ -49,6 +49,8 @@ public class FeedFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    public HashMap<String, String> admins;
+    private ViewPager viewPager;
     private CheckBox phis, math, rus, lit, inf, chem, his, ast;
 
     private int msk = 0; // маска предметов
@@ -94,56 +96,64 @@ public class FeedFragment extends Fragment {
         phis.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                msk ^= (1<<0);
+                msk ^= (1 << 0);
+                getNews();
             }
         });
 
         math.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                msk ^= (1<<1);
+                msk ^= (1 << 1);
+                getNews();
             }
         });
 
         rus.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                msk ^= (1<<2);
+                msk ^= (1 << 2);
+                getNews();
             }
         });
 
         lit.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                msk ^= (1<<3);
+                msk ^= (1 << 3);
+                getNews();
             }
         });
 
         inf.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                msk ^= (1<<4);
+                msk ^= (1 << 4);
+                getNews();
             }
         });
 
         chem.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                msk ^= (1<<5);
+                msk ^= (1 << 5);
+                getNews();
             }
         });
 
         his.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                msk ^= (1<<6);
+                msk ^= (1 << 6);
+                getNews();
             }
         });
 
         ast.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                msk ^= (1<<7);
+                msk ^= (1 << 7);
+                getNews();
             }
         });
 
@@ -173,20 +183,34 @@ public class FeedFragment extends Fragment {
         newsList.setAdapter(adapter);
         adapter.clearItems();
         getNews();
+        // admins initialize
 
-        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+        FirebaseDatabase.getInstance().getReference("/admins").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser _user = firebaseAuth.getCurrentUser();
-                if (_user != null && (_user.getUid().equals(ARTEM_ADMIN_UID) || _user.getUid().equals(GLEB_ADMIN_ID) || _user.getUid().equals(PAVEL_ST_ADMIN_ID))) {
-                    toolbar.getMenu().clear();
-                    toolbar.inflateMenu(R.menu.admin_toolbar_menu);
-                } else {
-                    toolbar.getMenu().clear();
-                    toolbar.inflateMenu(R.menu.default_toolbar_menu);
-                }
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                admins = (HashMap<String, String>) dataSnapshot.getValue();
+                mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+                    @Override
+                    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                        FirebaseUser _user = firebaseAuth.getCurrentUser();
+                        if (_user != null && admins.containsValue(_user.getUid())) {
+                            toolbar.getMenu().clear();
+                            toolbar.inflateMenu(R.menu.admin_toolbar_menu);
+                        } else {
+                            toolbar.getMenu().clear();
+                            toolbar.inflateMenu(R.menu.default_toolbar_menu);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
+
+
         return v;
     }
 
@@ -195,40 +219,89 @@ public class FeedFragment extends Fragment {
         newsList.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
+    private boolean isAdmin(String uid) {
+        for (int i = 0; i < admins.size(); ++i) {
+            if (admins.get(i).equals(uid)) {
+                return true;
+            }
+        }
+        return false;
+    }
     private void getNews() {
         adapter.clearItems();
         final DatabaseReference ref = database.getReference(DATABASE_NEWS_PATH);
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                long cnt = dataSnapshot.getChildrenCount();
-                if (cnt == 0) return;
-                int i = 1;
-                while (i < 1000) {
-                    ref.child(i + "").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
-                            if (item != null && (item.getMask() == 0 || (item.getMask() & msk) != 0)) {
-                                adapter.addItem(item);
+        if (msk == 0) {
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    long cnt = dataSnapshot.getChildrenCount();
+                    if (cnt == 0) return;
+                    int i = 1;
+                    while (i < 1000) {
+                        ref.child(i + "").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
+                                if (item != null) {
+                                    adapter.addItem(item);
+                                }
+
+                                if (item != null) {
+                                    NewsAdapter.setMx(item.getNumber());
+                                }
                                 mSwipeRefreshLayout.setRefreshing(false);
-                            } if (item != null) {
-                                adapter.setMx(item.getNumber());
                             }
-                        }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                        }
-                    });
-                    ++i;
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                        ++i;
+                    }
+                    Log.e("kek_sz", "" + adapter.getItemCount());
                 }
-                Log.e ("kek_sz", "" + adapter.getItemCount());
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        } else {
+            ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    long cnt = dataSnapshot.getChildrenCount();
+                    if (cnt == 0) return;
+                    int i = 1;
+                    while (i < 1000) {
+                        ref.child(i + "").addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
+                                if (item != null && ((item.getMask() & msk) != 0)) {
+                                    adapter.addItem(item);
+                                }
+                                if (item != null) {
+                                    NewsAdapter.setMx(item.getNumber());
+                                }
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                mSwipeRefreshLayout.setRefreshing(false);
+                            }
+                        });
+                        ++i;
+                    }
+                    Log.e("kek_sz", "" + adapter.getItemCount());
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                }
+            });
+        }
+
     }
 }

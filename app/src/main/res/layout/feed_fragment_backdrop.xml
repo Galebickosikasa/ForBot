@@ -11,15 +11,15 @@
         app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
-            app:navigationIcon="@drawable/ic_filter_list_black_24dp"
             android:id="@+id/feedToolbar"
-            app:menu="@menu/default_toolbar_menu"
-            android:theme="@style/Widget.MaterialComponents.Toolbar"
             android:layout_width="match_parent"
-            android:elevation="0dp"
-            android:layout_marginTop="20dp"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|enterAlways"/>
+            android:layout_marginTop="30dp"
+            android:elevation="0dp"
+            android:theme="@style/Widget.MaterialComponents.Toolbar"
+            app:layout_scrollFlags="scroll|enterAlways"
+            app:menu="@menu/default_toolbar_menu"
+            app:navigationIcon="@drawable/ic_filter_list_black_24dp" />
 
     </com.google.android.material.appbar.AppBarLayout>
 

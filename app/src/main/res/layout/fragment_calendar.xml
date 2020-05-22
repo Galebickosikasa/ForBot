@@ -7,9 +7,9 @@
         android:id="@+id/calendarToolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
+        android:layout_marginTop="30dp"
         app:layout_constraintTop_toTopOf="parent"
         app:menu="@menu/toolbar_menu_calendar_fragment"
-        android:layout_marginTop="20dp"
         app:popupTheme="@style/Widget.AppCompat.ActionBar" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
