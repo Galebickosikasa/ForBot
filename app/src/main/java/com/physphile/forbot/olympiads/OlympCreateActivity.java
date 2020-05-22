@@ -4,11 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -51,11 +49,10 @@ import java.util.Random;
 
 import br.com.simplepass.loadingbutton.customViews.CircularProgressImageButton;
 
-import static com.physphile.forbot.Constants.STORAGE_NEWS_IMAGE_PATH;
 import static com.physphile.forbot.Constants.STORAGE_OLYMP_IMAGE_PATH;
 import static java.lang.Math.abs;
 
-public class OlympCreateActvity extends BaseSwipeActivity implements DatePickerDialog.OnDateSetListener {
+public class OlympCreateActivity extends BaseSwipeActivity implements DatePickerDialog.OnDateSetListener {
     private FirebaseStorage storage;
     private FirebaseDatabase database;
     private StorageReference storageReference;
@@ -152,7 +149,7 @@ public class OlympCreateActvity extends BaseSwipeActivity implements DatePickerD
                     CropImage.activity()
                             .setCropShape(CropImageView.CropShape.RECTANGLE)
                             .setAspectRatio(16, 10)
-                            .start(OlympCreateActvity.this);
+                            .start(OlympCreateActivity.this);
                     break;
                 case R.id.olympDoneBtn:
                     if (!olympText.getText().toString().equals("") && !olympTitle.getText().toString().equals("") && !date.equals("")) {

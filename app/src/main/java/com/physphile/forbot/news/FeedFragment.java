@@ -12,6 +12,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
@@ -22,6 +23,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,7 +51,7 @@ public class FeedFragment extends Fragment {
     private FirebaseAuth mAuth;
     private FirebaseUser user;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    public HashMap<String, String> admins;
+    private HashMap<String, String> admins;
     private ViewPager viewPager;
     private CheckBox phis, math, rus, lit, inf, chem, his, ast;
 
@@ -227,81 +229,45 @@ public class FeedFragment extends Fragment {
         }
         return false;
     }
+
     private void getNews() {
         adapter.clearItems();
         final DatabaseReference ref = database.getReference(DATABASE_NEWS_PATH);
-        if (msk == 0) {
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    long cnt = dataSnapshot.getChildrenCount();
-                    if (cnt == 0) return;
-                    int i = 1;
-                    while (i < 1000) {
-                        ref.child(i + "").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
-                                if (item != null) {
-                                    adapter.addItem(item);
-                                }
-
-                                if (item != null) {
-                                    NewsAdapter.setMx(item.getNumber());
-                                }
-                                mSwipeRefreshLayout.setRefreshing(false);
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                mSwipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                        ++i;
+        ref.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
+                if (item != null) {
+                    NewsAdapter.setMx(item.getNumber());
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    if (msk == 0) {
+                        adapter.addItem(item);
+                    } else if ((item.getMask() & msk) != 0) {
+                        adapter.addItem(item);
                     }
-                    Log.e("kek_sz", "" + adapter.getItemCount());
                 }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-        } else {
-            ref.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    long cnt = dataSnapshot.getChildrenCount();
-                    if (cnt == 0) return;
-                    int i = 1;
-                    while (i < 1000) {
-                        ref.child(i + "").addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                NewsFirebaseItem item = dataSnapshot.getValue(NewsFirebaseItem.class);
-                                if (item != null && ((item.getMask() & msk) != 0)) {
-                                    adapter.addItem(item);
-                                }
-                                if (item != null) {
-                                    NewsAdapter.setMx(item.getNumber());
-                                }
-                                mSwipeRefreshLayout.setRefreshing(false);
-                            }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                mSwipeRefreshLayout.setRefreshing(false);
-                            }
-                        });
-                        ++i;
-                    }
-                    Log.e("kek_sz", "" + adapter.getItemCount());
-                }
+            }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                }
-            });
-        }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 }
