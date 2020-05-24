@@ -2,6 +2,7 @@ package com.physphile.forbot.news;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.physphile.forbot.MainActivity;
 import com.physphile.forbot.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.physphile.forbot.Constants.NEWS_PAGE_ACTIVITY_PATH;
@@ -24,8 +26,10 @@ import static java.lang.Math.max;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
     public static int mx;
+    public int needToAdd = 0;
     public List<NewsFirebaseItem> newsList = new ArrayList<>();
     private Context context;
+    public HashMap<Integer, Integer> news = new HashMap<>();
 
     public static void setMx(int mx) {
         NewsAdapter.mx = mx;
@@ -40,26 +44,26 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     public NewsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.news_item, parent, false);
-        ImageView iw = view.findViewById(R.id.NewsTitleImage);
-        ConstraintLayout.LayoutParams lp = new ConstraintLayout.LayoutParams(parent.getWidth(),
-                parent.getWidth() * 10 / 16);
-        iw.setLayoutParams(lp);
         return new NewsViewHolder(view);
     }
 
     public void addItem(NewsFirebaseItem item) {
-        newsList.add(0, item);
-        notifyItemChanged(0);
+        Log.e ("kek", "flag " + needToAdd);
+        if (needToAdd == 0 || news.containsKey(item.getNumber())) return;
+        Log.e ("kek", "add");
+        Log.e ("kek", "size " + newsList.size ());
+        Log.e ("kek", "num " + item.getNumber());
+        Log.e ("kek", "text " + item.getText());
         mx = max(item.getNumber(), mx);
+
+        news.put (item.getNumber(), 1);
+        newsList.add(item);
+        notifyItemChanged(getItemCount() - 1);
     }
 
     public void clearItems() {
         newsList.clear();
         notifyDataSetChanged();
-    }
-
-    public List<NewsFirebaseItem> getArrayList() {
-        return newsList;
     }
 
     @Override
