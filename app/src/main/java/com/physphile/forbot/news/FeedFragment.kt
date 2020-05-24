@@ -1,6 +1,8 @@
 package com.physphile.forbot.news
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -15,7 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout.OnRefreshListener
 import androidx.viewpager.widget.ViewPager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -27,17 +28,16 @@ import com.physphile.forbot.R
 import com.physphile.forbot.profile.ProfileMenuDialog
 import java.util.*
 
-class FeedFragment : Fragment() {
+class FeedFragment: Fragment() {
     private var adapter: NewsAdapter? = null
     private var storage: FirebaseStorage? = null
-    private val storageReference: StorageReference? = null
     private var database: FirebaseDatabase? = null
     private var newsList: RecyclerView? = null
     private var v: View? = null
     private var mAuth: FirebaseAuth? = null
     private var user: FirebaseUser? = null
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
-    private var admins: HashMap<String, String>? = null
+    private var admins: HashMap<*, *>? = null
     private val viewPager: ViewPager? = null
     private var phis: CheckBox? = null
     private var math: CheckBox? = null
@@ -49,6 +49,7 @@ class FeedFragment : Fragment() {
     private var ast: CheckBox? = null
     private var msk = 0 // маска предметов
     private var flag = 0
+    private var sp: SharedPreferences? = null
     private val onMenuItemClickListener = Toolbar.OnMenuItemClickListener { item ->
         when (item.itemId) {
             R.id.profile -> if (FirebaseAuth.getInstance().currentUser != null) {
@@ -57,7 +58,7 @@ class FeedFragment : Fragment() {
             } else {
                 startActivity(Intent(Constants.AUTH_ACTIVITY_PATH))
             }
-            R.id.createNews -> startActivityForResult(Intent(Constants.NEWS_CREATE_ACTIVITY_PATH), 1)
+            R.id.createNews -> startActivity(Intent(Constants.NEWS_CREATE_ACTIVITY_PATH))
         }
         false
     }
@@ -75,44 +76,45 @@ class FeedFragment : Fragment() {
         chem = v!!.findViewById(R.id.chemistryCheck) // 5
         his = v!!.findViewById(R.id.historyCheck) // 6
         ast = v!!.findViewById(R.id.astronomyCheck) // 7
-        phis!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        phis!!.setOnCheckedChangeListener { buttonView, isChecked ->
             msk = msk xor (1 shl 0)
             news
-        })
-        math!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        }
+        math!!.setOnCheckedChangeListener { buttonView, isChecked ->
             msk = msk xor (1 shl 1)
             news
-        })
-        rus!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        }
+        rus!!.setOnCheckedChangeListener { buttonView, isChecked ->
             msk = msk xor (1 shl 2)
             news
-        })
-        lit!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        }
+        lit!!.setOnCheckedChangeListener { buttonView, isChecked ->
             msk = msk xor (1 shl 3)
             news
-        })
-        inf!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        }
+        inf!!.setOnCheckedChangeListener { buttonView, isChecked ->
             msk = msk xor (1 shl 4)
             news
-        })
-        chem!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        }
+        chem!!.setOnCheckedChangeListener { buttonView, isChecked ->
             msk = msk xor (1 shl 5)
             news
-        })
-        his!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        }
+        his!!.setOnCheckedChangeListener { buttonView, isChecked ->
             msk = msk xor (1 shl 6)
             news
-        })
-        ast!!.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+        }
+        ast!!.setOnCheckedChangeListener { buttonView, isChecked ->
             msk = msk xor (1 shl 7)
             news
-        })
+        }
 
         //инициализация переменных
         storage = FirebaseStorage.getInstance()
         database = FirebaseDatabase.getInstance()
         mAuth = FirebaseAuth.getInstance()
         user = mAuth!!.currentUser
+        sp = activity?.getSharedPreferences("FlagToRemove", Context.MODE_PRIVATE)
 
         //инициализация View-элементов
         initRecyclerView()
@@ -120,23 +122,19 @@ class FeedFragment : Fragment() {
         mSwipeRefreshLayout = v!!.findViewById(R.id.swipeRefreshLayout)
 
         //заполнение View-элементов
-        mSwipeRefreshLayout!!.setOnRefreshListener {
-            Log.e ("kek", "upd")
-            flag = 1
-            news
-        }
+        mSwipeRefreshLayout!!.setOnRefreshListener { news }
         mSwipeRefreshLayout!!.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN)
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener)
 
         //остальные методы
         adapter = NewsAdapter(context)
         newsList!!.adapter = adapter
-        adapter!!.clearItems()
         news
+
         // admins initialize
         FirebaseDatabase.getInstance().getReference("/admins").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                admins = dataSnapshot.value as HashMap<String, String>?
+                admins = dataSnapshot.value as HashMap<*, *>?
                 mAuth!!.addAuthStateListener { firebaseAuth ->
                     val _user = firebaseAuth.currentUser
                     if (_user != null && admins!!.containsValue(_user.uid)) {
@@ -154,12 +152,15 @@ class FeedFragment : Fragment() {
         return v
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        Log.e ("kek", "result " + requestCode)
-//        news
-//        news
-//        news
+    fun onNewsClick(position: Int) {
+        val intent = Intent(Constants.NEWS_PAGE_ACTIVITY_PATH)
+        intent.putExtra("newsTitle", adapter?.newsList?.get(position)?.title)
+        intent.putExtra("newsText", adapter?.newsList?.get(position)?.text)
+        intent.putExtra("newsDate", adapter?.newsList?.get(position)?.date)
+        intent.putExtra("newsAuthor", adapter?.newsList?.get(position)?.author)
+        intent.putExtra("newsTitleImageUri", adapter?.newsList?.get(position)?.uri)
+        intent.putExtra("newsNumber", "" + adapter?.newsList?.get(position)?.number)
+        startActivityForResult(intent, 1)
     }
 
     private fun initRecyclerView() {
@@ -170,11 +171,18 @@ class FeedFragment : Fragment() {
         newsList!!.layoutManager = linearLayoutManager
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val f = sp!!.getBoolean("RemovedNews", false)
+        if (f) news
+        var e = sp!!.edit ()
+        e.putBoolean("RemovedNews", false)
+        e.apply()
+    }
+
     private val news: Unit
         private get() {
-            Log.e ("kek", "UpdateFromNews " + adapter?.needToAdd)
             adapter!!.clearItems()
-            adapter!!.news.clear ()
             val ref = database!!.getReference(Constants.DATABASE_NEWS_PATH)
             ref.addChildEventListener(object : ChildEventListener {
                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
@@ -182,13 +190,11 @@ class FeedFragment : Fragment() {
                     if (item != null) {
                         NewsAdapter.setMx(item.number)
                         mSwipeRefreshLayout!!.isRefreshing = false
-                        adapter?.needToAdd = 1
                         if (msk == 0) {
                             adapter!!.addItem(item)
                         } else if (item.mask and msk != 0) {
                             adapter!!.addItem(item)
                         }
-                        adapter?.needToAdd = 0
                     }
                 }
 
@@ -197,10 +203,6 @@ class FeedFragment : Fragment() {
                 override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {}
                 override fun onCancelled(databaseError: DatabaseError) {}
             })
-            adapter!!.newsList.reverse()
-            adapter!!.notifyDataSetChanged()
-
-//            adapter?.needToAdd = 0
         }
 
     companion object {

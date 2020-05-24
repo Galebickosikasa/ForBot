@@ -1,6 +1,8 @@
 package com.physphile.forbot.news;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +37,7 @@ public class NewsPage extends BaseSwipeActivity {
     private FirebaseStorage storage;
     private Intent intent;
     public HashMap<String, String> admins;
+    private SharedPreferences sp;
     private Toolbar.OnMenuItemClickListener onMenuItemClickListener = new Toolbar.OnMenuItemClickListener() {
         @Override
         public boolean onMenuItemClick(MenuItem item) {
@@ -42,6 +45,9 @@ public class NewsPage extends BaseSwipeActivity {
                 case R.id.editNews:
                     break;
                 case R.id.removeNews:
+                    SharedPreferences.Editor e = sp.edit();
+                    e.putBoolean ("RemovedNews", true);
+                    e.apply();
                     String num = intent.getStringExtra("newsNumber");
                     database.getReference(DATABASE_NEWS_PATH + num).removeValue();
                     storage.getReference(STORAGE_NEWS_IMAGE_PATH + num).delete();
@@ -63,6 +69,7 @@ public class NewsPage extends BaseSwipeActivity {
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
         intent = getIntent();
+        sp = getSharedPreferences("FlagToRemove", Context.MODE_PRIVATE);
 
         //инициализация View-элементов
         final Toolbar toolbar = findViewById(R.id.newsToolbar);

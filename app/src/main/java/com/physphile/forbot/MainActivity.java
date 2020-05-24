@@ -1,6 +1,7 @@
 package com.physphile.forbot;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Window;
 import android.view.WindowManager;
@@ -13,15 +14,16 @@ import androidx.viewpager.widget.ViewPager;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.physphile.forbot.news.FeedFragment;
+import com.physphile.forbot.news.NewsAdapter;
 import com.physphile.forbot.olympiads.CalendarFragment;
+import com.physphile.forbot.olympiads.OlympsAdapter;
 
-public class MainActivity extends BaseSwipeActivity {
+public class MainActivity extends BaseSwipeActivity implements NewsAdapter.OnNewsClick, OlympsAdapter.OnOlympsClick {
     private FeedFragment feedFragment;
     private SparseArray savedStateSparseArray;
     private CalendarFragment calendarFragment;
     private BottomBarAdapter bottomBarAdapter;
     private ViewPager viewPager;
-
 
     //    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
@@ -95,6 +97,16 @@ public class MainActivity extends BaseSwipeActivity {
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+    }
+
+    @Override
+    public void onNewsClick(int position) {
+        feedFragment.onNewsClick(position);
+    }
+
+    @Override
+    public void onOlympsClick(int position) {
+        calendarFragment.onOlympsClick(position);
     }
 }
 

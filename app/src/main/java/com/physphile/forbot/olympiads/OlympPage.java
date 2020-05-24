@@ -1,6 +1,8 @@
 package com.physphile.forbot.olympiads;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -36,6 +38,7 @@ public class OlympPage extends BaseSwipeActivity {
     private FirebaseUser user;
     private Intent intent;
     private FirebaseAuth auth;
+    private SharedPreferences sp;
     FirebaseDatabase database;
     FirebaseStorage storage;
     private HashMap<String, String> admins;
@@ -47,6 +50,9 @@ public class OlympPage extends BaseSwipeActivity {
                 case R.id.editOlymp:
                     break;
                 case R.id.removeOlymp:
+                    SharedPreferences.Editor e = sp.edit();
+                    e.putBoolean("RemovedOlymp", true);
+                    e.apply();
                     String num = intent.getStringExtra("olympNum");
                     String path = intent.getStringExtra("olympPath");
                     database.getReference(path).removeValue();
@@ -65,6 +71,7 @@ public class OlympPage extends BaseSwipeActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
+        sp = getSharedPreferences("FlagToRemove", Context.MODE_PRIVATE);
 
         final Toolbar toolbar = findViewById(R.id.olympToolbar);
         TextView olympText = findViewById(R.id.olympText);
@@ -79,35 +86,28 @@ public class OlympPage extends BaseSwipeActivity {
         appBarLayout.setLayoutParams(new CoordinatorLayout.LayoutParams(width, height));
         intent = getIntent();
 
-//        auth = FirebaseAuth.getInstance();
-//        FirebaseDatabase.getInstance().getReference("/admins").addListenerForSingleValueEvent(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                admins = (HashMap<String, String>) dataSnapshot.getValue();
-//                auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
-//                    @Override
-//                    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-//                        FirebaseUser user = firebaseAuth.getCurrentUser();
-//                        if (user != null && admins.containsValue(user.getUid())) {
-//                            toolbar.getMenu().clear();
-//                            toolbar.inflateMenu(R.menu.admin_olymp_page_menu);
-//                        }
-//                    }
-//                });
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//            }
-//        });
-
-        if (user != null) {
-            if (user.getUid().equals(ARTEM_ADMIN_UID) || user.getUid().equals(GLEB_ADMIN_ID) || user.getUid().equals(PAVEL_ST_ADMIN_ID)) {
-                toolbar.getMenu().clear();
-                toolbar.inflateMenu(R.menu.admin_olymp_page_menu);
+        auth = FirebaseAuth.getInstance();
+        FirebaseDatabase.getInstance().getReference("/admins").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                admins = (HashMap<String, String>) dataSnapshot.getValue();
+                auth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+                    @Override
+                    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        if (user != null && admins.containsValue(user.getUid())) {
+                            toolbar.getMenu().clear();
+                            toolbar.inflateMenu(R.menu.admin_olymp_page_menu);
+                        }
+                    }
+                });
             }
-        }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         olympName.setText(intent.getStringExtra("olympName"));
         olympDate.setText(intent.getStringExtra("olympDate"));

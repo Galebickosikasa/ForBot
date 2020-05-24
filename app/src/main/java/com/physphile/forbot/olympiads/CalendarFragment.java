@@ -1,6 +1,8 @@
 package com.physphile.forbot.olympiads;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,6 +37,7 @@ import java.util.HashMap;
 import static com.physphile.forbot.Constants.AUTH_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.FRAGMENT_DIALOG_PROFILE_TAG;
 import static com.physphile.forbot.Constants.OLYMPS_CREATE_ACTIVITY_PATH;
+import static com.physphile.forbot.Constants.OLYMP_PAGE_ACTIVITY_PATH;
 
 public class CalendarFragment extends Fragment {
     private FirebaseDatabase database;
@@ -46,10 +49,17 @@ public class CalendarFragment extends Fragment {
     private HashMap<String, String> admins;
     private CalendarView calendarView;
     private Calendar calendar;
+    SharedPreferences sp;
+    private int YEAR;
+    private int MONTH;
+    private int DAYOFMONTH;
     private CalendarView.OnDateChangeListener onDateChangeListener = new CalendarView.OnDateChangeListener() {
         @Override
         public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-            getOlymps(year, month, dayOfMonth);
+            YEAR = year;
+            MONTH = month;
+            DAYOFMONTH = dayOfMonth;
+            getOlymps ();
         }
     };
 
@@ -61,8 +71,8 @@ public class CalendarFragment extends Fragment {
         v = inflater.inflate(R.layout.fragment_calendar, container, false);
         OlympsList = v.findViewById(R.id.OlympsList);
         calendarView = v.findViewById(R.id.calendar);
-
         final Toolbar toolbar = v.findViewById(R.id.calendarToolbar);
+
         auth = FirebaseAuth.getInstance();
         FirebaseDatabase.getInstance().getReference("/admins").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -116,39 +126,57 @@ public class CalendarFragment extends Fragment {
         OlympsList.setLayoutManager(new LinearLayoutManager(getContext()));
         olympsAdapter = new OlympsAdapter(getContext());
         OlympsList.setAdapter(olympsAdapter);
+        sp = getActivity().getSharedPreferences("FlagToRemove", Context.MODE_PRIVATE);
 
         calendar = Calendar.getInstance();
         calendarView.setOnDateChangeListener(onDateChangeListener);
         database = FirebaseDatabase.getInstance();
         storage = FirebaseStorage.getInstance();
+        YEAR = calendar.get(Calendar.YEAR);
+        MONTH = calendar.get(Calendar.MONTH);
+        DAYOFMONTH = calendar.get(Calendar.DATE);
 
-        getOlymps(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
+        getOlymps();
         return v;
+    }
+
+    public void onOlympsClick (int pos) {
+        Intent intent = new Intent(OLYMP_PAGE_ACTIVITY_PATH);
+        intent.putExtra("olympName", olympsAdapter.olympsList.get(pos).getName());
+        intent.putExtra("olympDate", olympsAdapter.olympsList.get(pos).getDate());
+        intent.putExtra("olympLevel", olympsAdapter.olympsList.get(pos).getLevel());
+        intent.putExtra("olympText", olympsAdapter.olympsList.get(pos).getText());
+        intent.putExtra("olympUri", olympsAdapter.olympsList.get(pos).getUri());
+        intent.putExtra("olympPath", olympsAdapter.olympsList.get(pos).getPath());
+        intent.putExtra("olympNum", olympsAdapter.olympsList.get(pos).getNum().toString());
+        startActivityForResult(intent, 2);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
-            getOlymps(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DATE));
-            Log.e ("kek", "here");
+        if (requestCode == 2) {
+            boolean f = sp.getBoolean("RemovedOlymp", false);
+            if (f) getOlymps();
+            Log.e ("kek", "date " + calendar.get(Calendar.YEAR) + " " + calendar.get(Calendar.MONTH) + " " + calendar.get(Calendar.DATE));
+            SharedPreferences.Editor e = sp.edit();
+            e.putBoolean("RemovedOlymp", false);
+            e.apply();
         }
-        Log.e ("kek", "code " + requestCode);
     }
 
     private String makePath(int year, int month, int dayOfMonth) {
         return year + "/" + month + "/" + dayOfMonth;
     }
 
-    private void getOlymps(int year, int month, int dayOfMonth) {
+    private void getOlymps() {
         olympsAdapter.clearItems();
-        Log.e ("kek", "upd");
-        database.getReference(makePath(year, month, dayOfMonth))
+        database.getReference(makePath(YEAR, MONTH, DAYOFMONTH))
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                         OlympsListItem item = dataSnapshot.getValue(OlympsListItem.class);
-                        olympsAdapter.addItems(item);
+                        if (item.getYear() == YEAR && item.getMonth() == MONTH && item.getDayOfMonth() == DAYOFMONTH) olympsAdapter.addItems(item);
                     }
 
                     @Override

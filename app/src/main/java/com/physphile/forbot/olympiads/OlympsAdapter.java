@@ -3,6 +3,7 @@ package com.physphile.forbot.olympiads;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +17,24 @@ import com.bumptech.glide.Glide;
 import com.physphile.forbot.R;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.physphile.forbot.Constants.OLYMP_PAGE_ACTIVITY_PATH;
 
 public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsViewHolder> {
-    private List<OlympsListItem> olympsList = new ArrayList<>();
+    List<OlympsListItem> olympsList = new ArrayList<>();
+    HashMap<Integer, Integer> olymps = new HashMap<>();
     private Context context;
+    private OnOlympsClick onOlympsClick;
 
-    public OlympsAdapter(Context _context) {
-        this.context = _context;
+    public interface OnOlympsClick {
+        void onOlympsClick (int position);
+    }
+
+    public OlympsAdapter(Context context) {
+        this.context = context;
+        this.onOlympsClick = (OnOlympsClick) context;
     }
 
     @NonNull
@@ -37,12 +46,15 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
     }
 
     public void addItems(OlympsListItem item) {
+        if (olymps.containsKey(item.getNum())) return;
         olympsList.add(item);
+        olymps.put (item.getNum(), 1);
         notifyItemChanged(getItemCount() - 1);
     }
 
     public void clearItems() {
-        olympsList.clear();
+        olympsList.clear ();
+        olymps.clear ();
         notifyDataSetChanged();
     }
 
@@ -54,18 +66,6 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
     @Override
     public int getItemCount() {
         return olympsList.size();
-    }
-
-    void olympClick(int pos) {
-        Intent intent = new Intent(OLYMP_PAGE_ACTIVITY_PATH);
-        intent.putExtra("olympName", olympsList.get(pos).getName());
-        intent.putExtra("olympDate", olympsList.get(pos).getDate());
-        intent.putExtra("olympLevel", olympsList.get(pos).getLevel());
-        intent.putExtra("olympText", olympsList.get(pos).getText());
-        intent.putExtra("olympUri", olympsList.get(pos).getUri());
-        intent.putExtra("olympPath", olympsList.get(pos).getPath());
-        intent.putExtra("olympNum", olympsList.get(pos).getNum().toString());
-        context.startActivity(intent);
     }
 
     class OlympsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -92,9 +92,9 @@ public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsView
 
         @Override
         public void onClick(View v) {
-            int pos = getAdapterPosition();
-            if (pos != RecyclerView.NO_POSITION) {
-                olympClick(pos);
+            int position = getAdapterPosition();
+            if (position != RecyclerView.NO_POSITION) {
+                onOlympsClick.onOlympsClick (position);
             }
         }
     }

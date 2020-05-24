@@ -1,5 +1,6 @@
 package com.physphile.forbot.news;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -24,19 +25,24 @@ import java.util.List;
 import static com.physphile.forbot.Constants.NEWS_PAGE_ACTIVITY_PATH;
 import static java.lang.Math.max;
 
-public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
+public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder>  {
     public static int mx;
-    public int needToAdd = 0;
     public List<NewsFirebaseItem> newsList = new ArrayList<>();
+    private HashMap<Integer, Integer> news = new HashMap<>();
     private Context context;
-    public HashMap<Integer, Integer> news = new HashMap<>();
+    private OnNewsClick onNewsClick;
+
+    public interface OnNewsClick {
+        void onNewsClick (int position);
+    }
 
     public static void setMx(int mx) {
         NewsAdapter.mx = mx;
     }
 
-    public NewsAdapter(Context _context) {
-        this.context = _context;
+    public NewsAdapter(Context context) {
+        this.context = context;
+        this.onNewsClick = (OnNewsClick) context;
     }
 
     @NonNull
@@ -48,21 +54,15 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     }
 
     public void addItem(NewsFirebaseItem item) {
-        Log.e ("kek", "flag " + needToAdd);
-        if (needToAdd == 0 || news.containsKey(item.getNumber())) return;
-        Log.e ("kek", "add");
-        Log.e ("kek", "size " + newsList.size ());
-        Log.e ("kek", "num " + item.getNumber());
-        Log.e ("kek", "text " + item.getText());
-        mx = max(item.getNumber(), mx);
-
+        if (news.containsKey(item.getNumber())) return;
         news.put (item.getNumber(), 1);
         newsList.add(item);
         notifyItemChanged(getItemCount() - 1);
     }
 
     public void clearItems() {
-        newsList.clear();
+        newsList.clear ();
+        news.clear ();
         notifyDataSetChanged();
     }
 
@@ -84,7 +84,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         intent.putExtra("newsAuthor", newsList.get(position).getAuthor());
         intent.putExtra("newsTitleImageUri", newsList.get(position).getUri());
         intent.putExtra("newsNumber", newsList.get(position).getNumber().toString());
-        context.startActivity(intent);
+        ((Activity) context).startActivityForResult(intent,1);
     }
 
     public class NewsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -119,7 +119,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         public void onClick(View v) {
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
-                itemClick(position);
+                onNewsClick.onNewsClick (position);
             }
         }
 

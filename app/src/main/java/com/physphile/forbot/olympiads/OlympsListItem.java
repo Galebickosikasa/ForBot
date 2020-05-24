@@ -24,6 +24,18 @@ class OlympsListItem {
         this.dayOfMonth = dayOfMonth;
     }
 
+    public Integer getYear() {
+        return year;
+    }
+
+    public Integer getMonth() {
+        return month;
+    }
+
+    public Integer getDayOfMonth() {
+        return dayOfMonth;
+    }
+
     public Integer getNum() {
         return num;
     }
