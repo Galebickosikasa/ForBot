@@ -1,11 +1,13 @@
 package com.physphile.forbot.news
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.widget.CheckBox
@@ -91,7 +93,8 @@ class NewsCreateActivity : BaseSwipeActivity() {
         ast!!.setOnCheckedChangeListener { buttonView, isChecked -> mask = mask xor (1 shl 7) }
 
         //инициализация переменных
-        num = NewsAdapter.mx + 1
+        val sp = getSharedPreferences("MxValue", Context.MODE_PRIVATE)
+        num = sp.getInt("mx", 0) + 1
         storage = FirebaseStorage.getInstance()
         database = FirebaseDatabase.getInstance()
 
