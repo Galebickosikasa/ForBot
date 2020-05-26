@@ -22,7 +22,7 @@ import com.physphile.forbot.Constants
 import com.physphile.forbot.R
 import java.util.*
 
-class NewsPage : BaseSwipeActivity() {
+class NewsPage: BaseSwipeActivity() {
     private var user: FirebaseUser? = null
     private var database: FirebaseDatabase? = null
     private var storage: FirebaseStorage? = null
@@ -90,9 +90,10 @@ class NewsPage : BaseSwipeActivity() {
         Glide.with(this).load(intent.getStringExtra("newsTitleImageUri")).into(newsTitleImage)
     }
 
-    override fun getLayoutId(): Int {
-        return R.layout.activity_news_page
-    }
+    override val layoutId: Int
+        get() {
+            return R.layout.activity_news_page
+        }
 
     override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {}
 }

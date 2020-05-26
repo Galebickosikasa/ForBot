@@ -1,6 +1,7 @@
 package com.physphile.forbot.news
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,6 +30,7 @@ class NewsAdapter(context: Context) : RecyclerView.Adapter<NewsViewHolder>() {
 
     fun addItem(item: NewsFirebaseItem) {
         if (news.containsKey(item.number)) return
+//        Log.e ("kek", "add ${item.number}")
         news[item.number!!] = 1
         newsList.add(item)
         notifyItemChanged(itemCount - 1)

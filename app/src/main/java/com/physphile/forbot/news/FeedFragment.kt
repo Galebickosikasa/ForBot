@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import androidx.viewpager.widget.ViewPager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
@@ -46,6 +46,8 @@ class FeedFragment : Fragment() {
     private var msk = 0 // маска предметов
     private var sp: SharedPreferences? = null
     private var spMxValue: SharedPreferences? = null
+    private var oldestLocalMessageTime : Double? = null
+    private var list : MutableList <NewsFirebaseItem> = ArrayList ()
     private val onMenuItemClickListener = Toolbar.OnMenuItemClickListener { item ->
         when (item.itemId) {
             R.id.profile -> if (FirebaseAuth.getInstance().currentUser != null) {
@@ -122,6 +124,19 @@ class FeedFragment : Fragment() {
         mSwipeRefreshLayout!!.setOnRefreshListener { news }
         mSwipeRefreshLayout!!.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.CYAN)
         toolbar.setOnMenuItemClickListener(onMenuItemClickListener)
+        newsList?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                val layoutManager = LinearLayoutManager::class.java.cast(recyclerView.layoutManager)
+                val lastVisible = layoutManager!!.findLastVisibleItemPosition()
+//                Log.e ("kek", "last ${adapter!!.newsList[lastVisible].number}")
+                if (adapter!!.newsList[lastVisible].number == oldestLocalMessageTime?.toInt ()) {
+                    oldestLocalMessageTime = (adapter!!.newsList[lastVisible].number!! - 1).toDouble()
+                    getNext5()
+                }
+            }
+
+        })
 
         //остальные методы
         adapter = NewsAdapter(requireContext())
@@ -171,8 +186,6 @@ class FeedFragment : Fragment() {
     private fun initRecyclerView() {
         newsList = v!!.findViewById(R.id.NewsList)
         val linearLayoutManager = LinearLayoutManager(context)
-        linearLayoutManager.reverseLayout = true
-        linearLayoutManager.stackFromEnd = true
         newsList!!.layoutManager = linearLayoutManager
     }
 
@@ -185,29 +198,47 @@ class FeedFragment : Fragment() {
         e.apply()
     }
 
+    private fun getNext5 () {
+//        Log.e ("kek", "${oldestLocalMessageTime}")
+        val ref = database!!.getReference(Constants.DATABASE_NEWS_PATH).limitToLast(5).endAt(oldestLocalMessageTime!!).orderByChild("number")
+        ref.addChildEventListener (object : ChildEventListener {
+            override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+                val item = dataSnapshot.getValue(NewsFirebaseItem::class.java)
+                if (item != null) {
+                    setMxValue(item.number)
+                    mSwipeRefreshLayout!!.isRefreshing = false
+                    if (msk == 0) {
+                        list.add(item)
+                    } else if (item.mask!! and msk != 0) {
+                        list.add(item)
+                    }
+                    if (oldestLocalMessageTime!!.toInt () > item.number!!) oldestLocalMessageTime = item.number!!.toDouble()
+//                    Log.e ("kek", "num ${item.number}")
+                }
+            }
+
+            override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {}
+            override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
+            override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {}
+            override fun onCancelled(databaseError: DatabaseError) {}
+        })
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onCancelled(p0: DatabaseError) {}
+            override fun onDataChange(p0: DataSnapshot) {
+                if (list.isEmpty()) return
+                oldestLocalMessageTime = list[0].number!!.toDouble()
+                list.reverse()
+                for (x in list) adapter?.addItem (x)
+                list.clear ()
+            }
+        })
+    }
+
     private val news: Unit
         get() {
             adapter!!.clearItems()
-            val ref = database!!.getReference(Constants.DATABASE_NEWS_PATH)
-            ref.addChildEventListener(object : ChildEventListener {
-                override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
-                    val item = dataSnapshot.getValue(NewsFirebaseItem::class.java)
-                    if (item != null) {
-                        setMxValue(item.number)
-                        mSwipeRefreshLayout!!.isRefreshing = false
-                        if (msk == 0) {
-                            adapter!!.addItem(item)
-                        } else if (item.mask!! and msk != 0) {
-                            adapter!!.addItem(item)
-                        }
-                    }
-                }
-
-                override fun onChildChanged(dataSnapshot: DataSnapshot, s: String?) {}
-                override fun onChildRemoved(dataSnapshot: DataSnapshot) {}
-                override fun onChildMoved(dataSnapshot: DataSnapshot, s: String?) {}
-                override fun onCancelled(databaseError: DatabaseError) {}
-            })
+            oldestLocalMessageTime = 4e18
+            getNext5()
         }
 
     companion object {
@@ -217,3 +248,4 @@ class FeedFragment : Fragment() {
         }
     }
 }
+

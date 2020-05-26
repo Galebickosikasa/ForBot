@@ -32,7 +32,7 @@ import com.theartofdev.edmodo.cropper.CropImageView
 import java.io.IOException
 import java.util.*
 
-class NewsCreateActivity : BaseSwipeActivity() {
+class NewsCreateActivity: BaseSwipeActivity() {
     private var storage: FirebaseStorage? = null
     private var storageReference: StorageReference? = null
     private var NewsTitleImage: ImageView? = null
@@ -116,9 +116,10 @@ class NewsCreateActivity : BaseSwipeActivity() {
         toolbar!!.setOnMenuItemClickListener(ClassHelper(this, supportFragmentManager).onMenuItemClickListener)
     }
 
-    override fun getLayoutId(): Int {
-        return R.layout.activity_news_create
-    }
+    override val layoutId: Int
+        get() {
+            return R.layout.activity_news_create
+        }
 
     private fun getBtn(): CircularProgressImageButton {
         btn = CircularProgressImageButton(this)

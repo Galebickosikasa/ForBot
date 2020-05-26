@@ -135,6 +135,13 @@ public class CalendarFragment extends Fragment {
         YEAR = calendar.get(Calendar.YEAR);
         MONTH = calendar.get(Calendar.MONTH);
         DAYOFMONTH = calendar.get(Calendar.DATE);
+        OlympsList.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+            }
+        });
 
         getOlymps();
         return v;
