@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -49,7 +50,7 @@ class FeedFragment : Fragment() {
     private var oldestLocalMessageTime: Double? = null
     private var list: MutableList<NewsFirebaseItem> = ArrayList()
     private lateinit var toolbar: MaterialToolbar
-
+    private var needToUpd : Int = 0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         //инициализация фрагмента
@@ -64,7 +65,6 @@ class FeedFragment : Fragment() {
         chem = v.findViewById(R.id.chemistryCheck) // 5
         his = v.findViewById(R.id.historyCheck) // 6
         ast = v.findViewById(R.id.astronomyCheck) // 7
-
 
         //инициализация переменных
         storage = FirebaseStorage.getInstance()
@@ -141,8 +141,8 @@ class FeedFragment : Fragment() {
             super.onScrollStateChanged(recyclerView, newState)
             val layoutManager = LinearLayoutManager::class.java.cast(recyclerView.layoutManager)
             val lastVisible = layoutManager!!.findLastVisibleItemPosition()
-            if (adapter.newsList[lastVisible].number == oldestLocalMessageTime?.toInt()) {
-                oldestLocalMessageTime = (adapter.newsList[lastVisible].number!! - 1).toDouble()
+            if (adapter.newsList[lastVisible].number == needToUpd) {
+                Log.e ("kek", "next upd")
                 getNext5()
             }
         }
@@ -175,7 +175,7 @@ class FeedFragment : Fragment() {
     }
 
     private fun getNext5() {
-        val ref = database.getReference(Constants.DATABASE_NEWS_PATH).limitToLast(5).endAt(oldestLocalMessageTime!!).orderByChild("number")
+        val ref = database.getReference(Constants.DATABASE_NEWS_PATH).limitToLast(10).endAt(oldestLocalMessageTime!!).orderByChild("number")
         ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                 val item = dataSnapshot.getValue(NewsFirebaseItem::class.java)
@@ -187,7 +187,6 @@ class FeedFragment : Fragment() {
                     } else if (item.mask!! and msk != 0) {
                         list.add(item)
                     }
-                    if (oldestLocalMessageTime!!.toInt() > item.number!!) oldestLocalMessageTime = item.number!!.toDouble()
                 }
             }
 
@@ -200,7 +199,9 @@ class FeedFragment : Fragment() {
             override fun onCancelled(p0: DatabaseError) {}
             override fun onDataChange(p0: DataSnapshot) {
                 if (list.isEmpty()) return
-                oldestLocalMessageTime = list[0].number!!.toDouble()
+                oldestLocalMessageTime = list[0].number!!.toDouble() - 1
+                val s = list.size
+                needToUpd = list[s / 2].number!!
                 list.reverse()
                 for (x in list) adapter.addItem(x)
                 list.clear()
@@ -246,19 +247,38 @@ class FeedFragment : Fragment() {
     private fun getNews() {
         adapter.clearItems()
         oldestLocalMessageTime = 4e18
-//        var cc: Long = 0
-//        database.getReference(Constants.DATABASE_NEWS_PATH).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onCancelled(p0: DatabaseError) {
-//            }
-//
-//            override fun onDataChange(p0: DataSnapshot) {
-//                cc = p0.childrenCount
-//
-//            }
-//
-//        })
+        if (msk == 0) {
+            val linearLayoutManager = LinearLayoutManager(context)
+            linearLayoutManager.reverseLayout = false
+            linearLayoutManager.stackFromEnd = false
+            newsList.layoutManager = linearLayoutManager
+            getNext5()
+        }
+        else {
+            adapter.clearItems()
+            val linearLayoutManager = LinearLayoutManager(context)
+            linearLayoutManager.reverseLayout = true
+            linearLayoutManager.stackFromEnd = true
+            newsList.layoutManager = linearLayoutManager
+            val ref = database.getReference(Constants.DATABASE_NEWS_PATH)
+            ref.addChildEventListener(object : ChildEventListener {
+                override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
+                    val item = dataSnapshot.getValue(NewsFirebaseItem::class.java)
+                    if (item != null) {
+                        setMxValue(item.number)
+                        mSwipeRefreshLayout.isRefreshing = false
+                        if (item.mask!! and msk != 0) {
+                            adapter.addItem(item)
+                        }
+                    }
+                }
 
-        getNext5()
+                override fun onCancelled(p0: DatabaseError) {}
+                override fun onChildMoved(p0: DataSnapshot, p1: String?) {}
+                override fun onChildChanged(p0: DataSnapshot, p1: String?) {}
+                override fun onChildRemoved(p0: DataSnapshot) {}
+            })
+        }
     }
 
     companion object {

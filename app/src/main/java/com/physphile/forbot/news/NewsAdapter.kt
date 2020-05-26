@@ -30,7 +30,7 @@ class NewsAdapter(context: Context) : RecyclerView.Adapter<NewsViewHolder>() {
 
     fun addItem(item: NewsFirebaseItem) {
         if (news.containsKey(item.number)) return
-//        Log.e ("kek", "add ${item.number}")
+        Log.e ("kek", "add ${item.number}")
         news[item.number!!] = 1
         newsList.add(item)
         notifyItemChanged(itemCount - 1)
