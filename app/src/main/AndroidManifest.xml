@@ -16,7 +16,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".olympiads.OlympCreateActivity">
             <intent-filter>
-                <action android:name="com.physphile.forbot.olympiads.OlympCreateActvity" />
+                <action android:name="com.physphile.forbot.olympiads.OlympCreateActivity" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

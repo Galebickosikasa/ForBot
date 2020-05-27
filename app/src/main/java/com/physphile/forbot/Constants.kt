@@ -18,7 +18,7 @@ object Constants {
     const val STORAGE_AVATARS_PATH = "avatars/"
     const val FRAGMENT_DIALOG_PROFILE_TAG = "ProfileDialogFragment"
     const val NEWS_CREATE_ACTIVITY_PATH = "com.physphile.forbot.news.NewsCreateActivity"
-    const val OLYMPS_CREATE_ACTIVITY_PATH = "com.physphile.forbot.olympiads.OlympCreateActvity"
+    const val OLYMPS_CREATE_ACTIVITY_PATH = "com.physphile.forbot.olympiads.OlympCreateActivity"
     const val AUTH_ACTIVITY_PATH = "com.physphile.forbot.profile.AuthActivity"
     const val ACCOUNT_SETTINGS_ACTIVITY_PATH = "com.physphile.forbot.profile.AccountSettingsActivity"
     const val NEWS_PAGE_ACTIVITY_PATH = "com.physphile.forbot.news.NewsPage"

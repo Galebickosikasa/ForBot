@@ -1,9 +1,6 @@
 package com.physphile.forbot.olympiads;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,8 +16,6 @@ import com.physphile.forbot.R;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import static com.physphile.forbot.Constants.OLYMP_PAGE_ACTIVITY_PATH;
 
 public class OlympsAdapter extends RecyclerView.Adapter<OlympsAdapter.OlympsViewHolder> {
     List<OlympsListItem> olympsList = new ArrayList<>();
