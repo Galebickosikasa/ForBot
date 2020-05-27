@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,7 +47,7 @@ class FeedFragment : Fragment() {
     private var msk = 0 // маска предметов
     private lateinit var sp: SharedPreferences
     private lateinit var spMxValue: SharedPreferences
-    private var oldestLocalMessageTime: Double? = null
+    private var oldestLocalMessageTime = 4e18
     private var list: MutableList<NewsFirebaseItem> = ArrayList()
     private lateinit var toolbar: MaterialToolbar
     private var needToUpd : Int = 0
@@ -141,7 +142,6 @@ class FeedFragment : Fragment() {
             val layoutManager = LinearLayoutManager::class.java.cast(recyclerView.layoutManager)
             val lastVisible = layoutManager!!.findLastVisibleItemPosition()
             if (adapter.newsList[lastVisible].number == needToUpd) {
-//                Log.e ("kek", "next upd")
                 getNext5()
             }
         }
@@ -155,6 +155,7 @@ class FeedFragment : Fragment() {
         intent.putExtra("newsAuthor", adapter.newsList[position].author)
         intent.putExtra("newsTitleImageUri", adapter.newsList[position].uri)
         intent.putExtra("newsNumber", "" + adapter.newsList[position].number)
+        intent.putExtra("newsMask", adapter.newsList[position].mask)
         startActivityForResult(intent, 1)
     }
 
@@ -174,7 +175,7 @@ class FeedFragment : Fragment() {
     }
 
     private fun getNext5() {
-        val ref = database.getReference(Constants.DATABASE_NEWS_PATH).limitToLast(10).endAt(oldestLocalMessageTime!!).orderByChild("number")
+        val ref = database.getReference(Constants.DATABASE_NEWS_PATH).limitToLast(10).endAt(oldestLocalMessageTime).orderByChild("number")
         ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                 val item = dataSnapshot.getValue(NewsFirebaseItem::class.java)

@@ -53,6 +53,7 @@ class CalendarFragment : Fragment() {
         calendarView = v.findViewById(R.id.calendar)
         val toolbar: Toolbar = v.findViewById(R.id.calendarToolbar)
         auth = FirebaseAuth.getInstance()
+
         FirebaseDatabase.getInstance().getReference("/admins").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 admins = dataSnapshot.value as HashMap<*, *>
@@ -70,6 +71,7 @@ class CalendarFragment : Fragment() {
 
             override fun onCancelled(databaseError: DatabaseError) {}
         })
+
         toolbar.setOnMenuItemClickListener { item ->
             when (item.itemId) {
                 R.id.editOlymp -> startActivityForResult(Intent(OLYMPS_CREATE_ACTIVITY_PATH), 1)
@@ -86,6 +88,7 @@ class CalendarFragment : Fragment() {
             }
             false
         }
+
         OlympsList.layoutManager = LinearLayoutManager(context)
         olympsAdapter = OlympsAdapter(context)
         OlympsList.adapter = olympsAdapter
@@ -111,6 +114,9 @@ class CalendarFragment : Fragment() {
         intent.putExtra("olympUri", olympsAdapter.olympsList[pos].getUri())
         intent.putExtra("olympPath", olympsAdapter.olympsList[pos].path)
         intent.putExtra("olympNum", olympsAdapter.olympsList[pos].getNum().toString())
+        intent.putExtra("olympYear", olympsAdapter.olympsList[pos].getYear())
+        intent.putExtra("olympMonth", olympsAdapter.olympsList[pos].getMonth())
+        intent.putExtra("olympDay", olympsAdapter.olympsList[pos].getDayOfMonth())
         startActivityForResult(intent, 2)
     }
 

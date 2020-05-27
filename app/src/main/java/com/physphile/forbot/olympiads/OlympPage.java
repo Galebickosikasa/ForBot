@@ -3,8 +3,9 @@ package com.physphile.forbot.olympiads;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -27,11 +29,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.physphile.forbot.BaseSwipeActivity;
 import com.physphile.forbot.R;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.HashMap;
 
-import static com.physphile.forbot.Constants.ARTEM_ADMIN_UID;
-import static com.physphile.forbot.Constants.GLEB_ADMIN_ID;
-import static com.physphile.forbot.Constants.PAVEL_ST_ADMIN_ID;
+import static com.physphile.forbot.Constants.OLYMPS_CREATE_ACTIVITY_PATH;
 import static com.physphile.forbot.Constants.STORAGE_OLYMP_IMAGE_PATH;
 
 public class OlympPage extends BaseSwipeActivity {
@@ -39,6 +41,8 @@ public class OlympPage extends BaseSwipeActivity {
     private Intent intent;
     private FirebaseAuth auth;
     private SharedPreferences sp;
+    private ImageView olympTitleImage;
+    private Toolbar toolbar;
     FirebaseDatabase database;
     FirebaseStorage storage;
     private HashMap<String, String> admins;
@@ -48,13 +52,35 @@ public class OlympPage extends BaseSwipeActivity {
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.editOlymp:
+                    Intent intent = new Intent(OLYMPS_CREATE_ACTIVITY_PATH);
+                    intent.putExtra("Edit", true);
+                    intent.putExtra("Title", getIntent().getStringExtra("olympName"));
+                    intent.putExtra("Text", getIntent().getStringExtra("olympText"));
+                    intent.putExtra("Date", getIntent().getStringExtra("olympDate"));
+                    intent.putExtra("Level", getIntent().getStringExtra("olympLevel"));
+                    intent.putExtra("Num", getIntent().getStringExtra("olympNum"));
+                    intent.putExtra("Path", getIntent().getStringExtra("olympPath"));
+                    intent.putExtra("Year", getIntent().getIntExtra("olympYear", 0));
+                    intent.putExtra("Month", getIntent().getIntExtra("olympMonth", 0));
+                    intent.putExtra("Day", getIntent().getIntExtra("olympDay", 0));
+                    Bitmap bmp = ((BitmapDrawable) olympTitleImage.getDrawable()).getBitmap();
+                    String filename = "bitmap.png";
+                    try {
+                        FileOutputStream stream = openFileOutput(filename, Context.MODE_PRIVATE);
+                        bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                        stream.close ();
+                        intent.putExtra("Bitmap", filename);
+                        startActivityForResult(intent, 2);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     break;
                 case R.id.removeOlymp:
                     SharedPreferences.Editor e = sp.edit();
                     e.putBoolean("RemovedOlymp", true);
                     e.apply();
-                    String num = intent.getStringExtra("olympNum");
-                    String path = intent.getStringExtra("olympPath");
+                    String num = getIntent().getStringExtra("olympNum");
+                    String path = getIntent().getStringExtra("olympPath");
                     database.getReference(path).removeValue();
                     storage.getReference(STORAGE_OLYMP_IMAGE_PATH + num).delete();
                     OlympPage.super.finish();
@@ -65,6 +91,27 @@ public class OlympPage extends BaseSwipeActivity {
     };
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2) {
+            SharedPreferences sp1 = getSharedPreferences("Done", Context.MODE_PRIVATE);
+            boolean f = sp1.getBoolean("Done", false);
+            if (f) {
+                SharedPreferences.Editor e = sp.edit();
+                e.putBoolean("RemovedOlymp", true);
+                e.apply();
+                String num = getIntent().getStringExtra("olympNum");
+                String path = getIntent().getStringExtra("olympPath");
+                database.getReference(path).removeValue();
+                OlympPage.super.finish();
+            }
+            SharedPreferences.Editor e = sp1.edit();
+            e.putBoolean("Done", false);
+            e.apply();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_olymp_page);
@@ -73,9 +120,9 @@ public class OlympPage extends BaseSwipeActivity {
         storage = FirebaseStorage.getInstance();
         sp = getSharedPreferences("FlagToRemove", Context.MODE_PRIVATE);
 
-        final Toolbar toolbar = findViewById(R.id.olympToolbar);
+        toolbar = findViewById(R.id.olympToolbar);
         TextView olympText = findViewById(R.id.olympText);
-        ImageView olympTitleImage = findViewById(R.id.olympTitleImage);
+        olympTitleImage = findViewById(R.id.olympTitleImage);
         TextView olympName = findViewById(R.id.olympName);
         TextView olympDate = findViewById(R.id.olympDate);
         TextView olympLevel = findViewById(R.id.olympLevel);

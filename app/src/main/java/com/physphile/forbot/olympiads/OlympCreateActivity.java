@@ -2,11 +2,15 @@ package com.physphile.forbot.olympiads;
 
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -26,6 +30,7 @@ import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.snackbar.Snackbar;
@@ -43,6 +48,8 @@ import com.physphile.forbot.R;
 import com.theartofdev.edmodo.cropper.CropImage;
 import com.theartofdev.edmodo.cropper.CropImageView;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Random;
@@ -66,7 +73,7 @@ public class OlympCreateActivity extends BaseSwipeActivity implements DatePicker
     private Toolbar toolbar;
     private Button dateBtn;
     private TextView visualDate;
-    private Integer num, YEAR, MONTH, DAYOFMONTH;
+    private Integer num, YEAR, MONTH, DAYOFMONTH, baseYear = -1, baseMonth = -1, baseDay = -1;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -124,6 +131,37 @@ public class OlympCreateActivity extends BaseSwipeActivity implements DatePicker
         toolbar.setOnMenuItemClickListener(new ClassHelper(this,
                 getSupportFragmentManager()).onMenuItemClickListener);
 
+        boolean flag = getIntent().getBooleanExtra("Edit", false);
+        if (flag) {
+            olympTitle.setText(getIntent().getStringExtra("Title"));
+            olympText.setText(getIntent().getStringExtra("Text"));
+            date = getIntent().getStringExtra("Date");
+            level = getIntent().getStringExtra("Level");
+            num = Integer.parseInt(getIntent().getStringExtra("Num"));
+            YEAR = baseYear = getIntent().getIntExtra("Year", 0);
+            MONTH = baseMonth = getIntent().getIntExtra("Month", 0);
+            DAYOFMONTH = baseDay = getIntent().getIntExtra("Day", 0);
+            date = makeDate(YEAR, MONTH + 1, DAYOFMONTH);
+            path = makePath(YEAR, MONTH, DAYOFMONTH);
+            visualDate.setText(date);
+            spinner.setSelection(Integer.parseInt(level) - 1);
+            String filename = getIntent().getStringExtra("Bitmap");
+            try {
+                FileInputStream In = openFileInput(filename);
+                Bitmap bmp = BitmapFactory.decodeStream(In);
+                In.close ();
+
+                olympTitleImage.setImageBitmap(bmp);
+                btn.setImageResource(R.drawable.ic_done_black_24dp);
+                btn.setClickable(true);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
     }
 
     @Override
@@ -156,6 +194,12 @@ public class OlympCreateActivity extends BaseSwipeActivity implements DatePicker
                     break;
                 case R.id.olympDoneBtn:
                     if (!olympText.getText().toString().equals("") && !olympTitle.getText().toString().equals("") && !date.equals("")) {
+                        if (!(YEAR == baseYear && MONTH == baseMonth && DAYOFMONTH == baseDay)) {
+                            SharedPreferences sp = getSharedPreferences("Done", Context.MODE_PRIVATE);
+                            SharedPreferences.Editor e = sp.edit();
+                            e.putBoolean("Done", true);
+                            e.apply();
+                        }
                         putOlympFirebase();
                         finish();
                     } else {
