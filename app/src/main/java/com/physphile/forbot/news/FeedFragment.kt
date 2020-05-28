@@ -141,7 +141,7 @@ class FeedFragment : Fragment() {
             super.onScrollStateChanged(recyclerView, newState)
             val layoutManager = LinearLayoutManager::class.java.cast(recyclerView.layoutManager)
             val lastVisible = layoutManager!!.findLastVisibleItemPosition()
-            if (adapter.newsList[lastVisible].number == needToUpd) {
+            if (adapter.newsList[lastVisible].number!! >= needToUpd) {
                 getNext5()
             }
         }
@@ -175,7 +175,7 @@ class FeedFragment : Fragment() {
     }
 
     private fun getNext5() {
-        val ref = database.getReference(Constants.DATABASE_NEWS_PATH).limitToLast(10).endAt(oldestLocalMessageTime).orderByChild("number")
+        val ref = database.getReference(Constants.DATABASE_NEWS_PATH).limitToFirst(10).startAt(oldestLocalMessageTime).orderByChild("coolDate")
         ref.addChildEventListener(object : ChildEventListener {
             override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                 val item = dataSnapshot.getValue(NewsFirebaseItem::class.java)
@@ -199,10 +199,10 @@ class FeedFragment : Fragment() {
             override fun onCancelled(p0: DatabaseError) {}
             override fun onDataChange(p0: DataSnapshot) {
                 if (list.isEmpty()) return
-                oldestLocalMessageTime = list[0].number!!.toDouble() - 1
+                oldestLocalMessageTime = list[list.size - 1].coolDate.toDouble() + 1
                 val s = list.size
                 needToUpd = list[s / 2].number!!
-                list.reverse()
+//                list.reverse()
                 for (x in list) adapter.addItem(x)
                 list.clear()
             }
@@ -245,8 +245,9 @@ class FeedFragment : Fragment() {
     }
 
     private fun getNews() {
+        Log.e ("kek", "UPD")
         adapter.clearItems()
-        oldestLocalMessageTime = 4e18
+        oldestLocalMessageTime = -4e18
         if (msk == 0) {
             val linearLayoutManager = LinearLayoutManager(context)
             linearLayoutManager.reverseLayout = false

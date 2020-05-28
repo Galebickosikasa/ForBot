@@ -4,7 +4,13 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.physphile.forbot.news.NewsFirebaseItem;
 
 import org.jsoup.Jsoup;
@@ -14,6 +20,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
@@ -21,8 +28,9 @@ import static com.physphile.forbot.Constants.MIPT_IMAGE_URI;
 
 public class Parser {
     Context context;
+    HashMap<String, Long> secret_keys;
 
-    public List<NewsFirebaseItem> parseMIPT () throws IOException {
+    private List<NewsFirebaseItem> parseMIPT () throws IOException {
         Document doc1 = Jsoup.connect("https://olymp.mipt.ru").get();
         Elements href = doc1.getElementsByAttributeValue("class", "news-item");
         final List<NewsFirebaseItem> newsList = new ArrayList<>();
@@ -40,19 +48,25 @@ public class Parser {
                 String text = Content.first().text();
                 SharedPreferences sp = context.getSharedPreferences("MxValue", Context.MODE_PRIVATE);
                 int num = sp.getInt("mx", 0) + 1;
-                newsList.add (new NewsFirebaseItem (title, MIPT_IMAGE_URI, text, "", date, num, 0));
-                Log.e ("kek", "upd");
-                sp.edit().putInt("mx", num + 1).apply();
+//                Log.e ("kek", "get");
+                NewsFirebaseItem item = new NewsFirebaseItem(title, MIPT_IMAGE_URI, text, "", date, num, 0);
+                if (secret_keys.containsKey("MIPT") && item.getCoolDate() == secret_keys.get("MIPT")) break;
+                else if (!secret_keys.containsKey("MIPT") || secret_keys.get("MIPT") > item.getCoolDate()) {
+                    FirebaseDatabase.getInstance().getReference("/Secret_keys/MIPT").setValue(item.getCoolDate());
+                    secret_keys.put ("MIPT", item.getCoolDate());
+                }
+                newsList.add (item);
+//                Log.e ("kek", "upd");
+                sp.edit().putInt("mx", num).apply();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            System.out.println(uri);
         }
         return newsList;
     }
 
-    public List<NewsFirebaseItem> parseAll () {
+    private void parseAll () {
         final List<NewsFirebaseItem> kek = new ArrayList<>();
         final Thread t = new Thread(new Runnable() {
             @Override
@@ -70,11 +84,21 @@ public class Parser {
             }
         });
         t.start();
-        return kek;
     }
 
-    public void addToFirebase () throws IOException {
-        List<NewsFirebaseItem> kek = parseAll();
+    public void addToFirebase () {
+        FirebaseDatabase.getInstance().getReference("/Secret_keys").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                secret_keys = (HashMap<String, Long>) dataSnapshot.getValue();
+                parseAll();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
     }
 

@@ -1,6 +1,7 @@
 package com.physphile.forbot
 
 import android.os.Bundle
+import android.util.Log
 import android.util.SparseArray
 import android.view.WindowManager
 import android.widget.CompoundButton
@@ -55,6 +56,10 @@ class MainActivity : BaseSwipeActivity(), OnNewsClick, OnOlympsClick {
         viewPager.adapter = bottomBarAdapter
         val w = window
         w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+
+        Log.e ("kek", "news")
+        val parser = Parser(this)
+        parser.addToFirebase()
     }
 
     override val layoutId: Int
@@ -79,12 +84,6 @@ class MainActivity : BaseSwipeActivity(), OnNewsClick, OnOlympsClick {
         val ft = supportFragmentManager.beginTransaction()
         ft.replace(R.id.nav_host_fragment, f)
         ft.commit()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        val parser = Parser(this)
-        parser.addToFirebase()
     }
 
     override fun isSupportSwipeBack(): Boolean {

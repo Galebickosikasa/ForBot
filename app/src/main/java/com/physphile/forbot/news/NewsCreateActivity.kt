@@ -211,9 +211,9 @@ class NewsCreateActivity: BaseSwipeActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 storage.getReference(Constants.STORAGE_NEWS_IMAGE_PATH + num)
                         .downloadUrl.addOnSuccessListener { uri ->
-                            val nfi = NewsFirebaseItem(title,
+                            val nfi = NewsFirebaseItem(title!!,
                                     uri.toString(),
-                                    text,
+                                    text!!,
                                     user,
                                     date,
                                     num, mask
