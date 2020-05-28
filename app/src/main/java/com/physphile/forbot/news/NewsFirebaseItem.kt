@@ -21,4 +21,6 @@ class NewsFirebaseItem {
         this.mask = mask
     }
 
+
+
 }

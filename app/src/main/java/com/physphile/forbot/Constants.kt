@@ -23,4 +23,6 @@ object Constants {
     const val ACCOUNT_SETTINGS_ACTIVITY_PATH = "com.physphile.forbot.profile.AccountSettingsActivity"
     const val NEWS_PAGE_ACTIVITY_PATH = "com.physphile.forbot.news.NewsPage"
     const val OLYMP_PAGE_ACTIVITY_PATH = "com.physphile.forbot.olympiads.OlympPage"
+    const val MIPT_IMAGE_URI = "https://firebasestorage.googleapis.com/v0/b/forbot-20468.appspot.com/o/olympsDefaultImages%2FMIPT.jpg?alt=media&token=53f05130-8cd3-46d5-910b-a312a0b21303"
+
 }

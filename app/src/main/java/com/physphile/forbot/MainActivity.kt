@@ -81,6 +81,12 @@ class MainActivity : BaseSwipeActivity(), OnNewsClick, OnOlympsClick {
         ft.commit()
     }
 
+    override fun onStart() {
+        super.onStart()
+        val parser = Parser(this)
+        parser.addToFirebase()
+    }
+
     override fun isSupportSwipeBack(): Boolean {
         return false
     }
