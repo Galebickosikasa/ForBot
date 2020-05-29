@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
+import static com.physphile.forbot.Constants.KURCH_IMAGE_URI;
+import static com.physphile.forbot.Constants.LOG_NAME;
 import static com.physphile.forbot.Constants.MIPT_IMAGE_URI;
 import static com.physphile.forbot.Constants.MOSH_INF_IMAGE_URI;
 import static com.physphile.forbot.Constants.MOSH_PHYS_IMAGE_URI;
@@ -49,28 +51,23 @@ public class Parser {
 
                 String fullText = doc.select("div.mainblock").text();
                 String mainText = leaveMainKURCH(fullText);
-                Log.e("LOG_TAG", mainText);
 
-//                Elements Content = doc.getElementsByAttributeValue("class", "news-content");
-//                String text = Content.first().text();
+                SharedPreferences sp = context.getSharedPreferences("MxValue", Context.MODE_PRIVATE);
+                int num = sp.getInt("mx", 0) + 1;
 
-//                SharedPreferences sp = context.getSharedPreferences("MxValue", Context.MODE_PRIVATE);
-//                int num = sp.getInt("mx", 0) + 1;
-//
-//                NewsFirebaseItem item = new NewsFirebaseItem(title, MIPT_IMAGE_URI, text, "", date, num, 3);
-//
-//                if (secret_keys.containsKey("MIPT")){
-//                    if (item.getCoolDate() == secret_keys.get("MIPT")) break;
-//                }
-//
-//
-//                else if (!secret_keys.containsKey("MIPT") || secret_keys.get("MIPT") > item.getCoolDate()) {
-//                    FirebaseDatabase.getInstance().getReference("/Secret_keys/MIPT").setValue(item.getCoolDate());
-//                    secret_keys.put ("MIPT", item.getCoolDate());
-//                }
-//                newsList.add (item);
-//
-//                sp.edit().putInt("mx", num).apply();
+                NewsFirebaseItem item = new NewsFirebaseItem(title, KURCH_IMAGE_URI, mainText, "", date, num, 3);
+
+                if (secret_keys.containsKey("KURCH")) {
+                    if (item.getCoolDate() == secret_keys.get("KURCH")) break;
+                } else if (!secret_keys.containsKey("KURCH") || secret_keys.get("KURCH") > item.getCoolDate()) {
+                    FirebaseDatabase.getInstance().getReference("/Secret_keys/KURCH").setValue(item.getCoolDate());
+                    secret_keys.put("KURCH", item.getCoolDate());
+                }
+                Log.e("LOG_NAME", "здесь");
+                newsList.add(item);
+                Log.e("LOG_NAME", item.toString());
+
+                sp.edit().putInt("mx", num).apply();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -81,18 +78,20 @@ public class Parser {
 
     private String leaveMainKURCH(String s) {
 
-        StringBuilder block = new StringBuilder();
+        String block = "";
         while (true) {
             while (s.charAt(0) != ' ') {
-                block.append(s.charAt(0));
+                block += (s.charAt(0));
                 s = s.substring(1);
             }
             if (block.length() == 10) {
                 if ((block.charAt(2) == '.') && (block.charAt(5) == '.')) {
+                    s = s.substring(1);
                     break;
                 }
             }
-            block.delete(0, block.length());
+            s = s.substring(1);
+            block = "";
         }
         return s;
     }
@@ -140,7 +139,7 @@ public class Parser {
                     secret_keys.put("MIPT", item.getCoolDate());
                 }
                 newsList.add(item);
-
+                Log.e(LOG_NAME, item.toString());
                 sp.edit().putInt("mx", num).apply();
             } catch (IOException e) {
                 e.printStackTrace();

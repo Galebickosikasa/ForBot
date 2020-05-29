@@ -1,7 +1,6 @@
 package com.physphile.forbot
 
 import android.os.Bundle
-import android.util.Log
 import android.util.SparseArray
 import android.view.WindowManager
 import android.widget.CompoundButton
@@ -67,7 +66,7 @@ class MainActivity : BaseSwipeActivity(), OnNewsClick, OnOlympsClick {
         context.init(null, arrayOf<X509TrustManager>(NullX509TrustManager()), SecureRandom())
         HttpsURLConnection.setDefaultSSLSocketFactory(context.socketFactory)
 
-        Log.e ("kek", "news")
+
         val parser = Parser(this)
         parser.addToFirebase()
     }
