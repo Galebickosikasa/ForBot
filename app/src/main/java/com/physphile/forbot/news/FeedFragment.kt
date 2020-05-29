@@ -141,7 +141,7 @@ class FeedFragment : Fragment() {
             super.onScrollStateChanged(recyclerView, newState)
             val layoutManager = LinearLayoutManager::class.java.cast(recyclerView.layoutManager)
             val lastVisible = layoutManager!!.findLastVisibleItemPosition()
-            if (adapter.newsList[lastVisible].number!! >= needToUpd) {
+            if (adapter.newsList[lastVisible].coolDate >= needToUpd) {
                 getNext5()
             }
         }
@@ -201,7 +201,7 @@ class FeedFragment : Fragment() {
                 if (list.isEmpty()) return
                 oldestLocalMessageTime = list[list.size - 1].coolDate.toDouble() + 1
                 val s = list.size
-                needToUpd = list[s / 2].number!!
+                needToUpd = list[s / 2].coolDate.toInt()
 //                list.reverse()
                 for (x in list) adapter.addItem(x)
                 list.clear()
@@ -258,10 +258,10 @@ class FeedFragment : Fragment() {
         else {
             adapter.clearItems()
             val linearLayoutManager = LinearLayoutManager(context)
-            linearLayoutManager.reverseLayout = true
-            linearLayoutManager.stackFromEnd = true
+//            linearLayoutManager.reverseLayout = true
+//            linearLayoutManager.stackFromEnd = true
             newsList.layoutManager = linearLayoutManager
-            val ref = database.getReference(Constants.DATABASE_NEWS_PATH)
+            val ref = database.getReference(Constants.DATABASE_NEWS_PATH).orderByChild("coolDate")
             ref.addChildEventListener(object : ChildEventListener {
                 override fun onChildAdded(dataSnapshot: DataSnapshot, s: String?) {
                     val item = dataSnapshot.getValue(NewsFirebaseItem::class.java)
