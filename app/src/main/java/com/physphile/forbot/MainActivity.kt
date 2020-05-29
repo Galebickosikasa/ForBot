@@ -13,6 +13,11 @@ import com.physphile.forbot.news.FeedFragment.Companion.newInstance
 import com.physphile.forbot.news.NewsAdapter.OnNewsClick
 import com.physphile.forbot.olympiads.CalendarFragment
 import com.physphile.forbot.olympiads.OlympsAdapter.OnOlympsClick
+import java.security.SecureRandom
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
+
 
 class MainActivity : BaseSwipeActivity(), OnNewsClick, OnOlympsClick {
     private lateinit var feedFragment: FeedFragment
@@ -56,6 +61,11 @@ class MainActivity : BaseSwipeActivity(), OnNewsClick, OnOlympsClick {
         viewPager.adapter = bottomBarAdapter
         val w = window
         w.setFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS, WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS)
+
+        HttpsURLConnection.setDefaultHostnameVerifier(NullHostNameVerifier())
+        val context: SSLContext = SSLContext.getInstance("TLS")
+        context.init(null, arrayOf<X509TrustManager>(NullX509TrustManager()), SecureRandom())
+        HttpsURLConnection.setDefaultSSLSocketFactory(context.socketFactory)
 
         Log.e ("kek", "news")
         val parser = Parser(this)

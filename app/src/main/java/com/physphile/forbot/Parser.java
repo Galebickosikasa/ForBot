@@ -27,15 +27,15 @@ import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
 import static com.physphile.forbot.Constants.MIPT_IMAGE_URI;
 
 public class Parser {
-    Context context;
-    HashMap<String, Long> secret_keys;
+    private Context context;
+    private HashMap<String, Long> secret_keys;
 
     private List<NewsFirebaseItem> parseMIPT () throws IOException {
         Document doc1 = Jsoup.connect("https://olymp.mipt.ru").get();
         Elements href = doc1.getElementsByAttributeValue("class", "news-item");
         final List<NewsFirebaseItem> newsList = new ArrayList<>();
 
-        for (Element  hrefElem: href) {
+        for (Element hrefElem: href) {
             Element element = hrefElem.child(0);
             String uri = element.attr("href");
             try {
@@ -61,9 +61,30 @@ public class Parser {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
         return newsList;
+    }
+
+    private void parseMOSH_INF () throws IOException {
+        Document doc1 = Jsoup.connect("http://mos-inf.olimpiada.ru").get ();
+        Elements href = doc1.getElementsByAttributeValue("class", "data_news");
+        final List<NewsFirebaseItem> newsList = new ArrayList<>();
+
+        for (Element hrefElem: href) {
+            Log.e ("kek", "kek");
+            Element element = hrefElem.child(1);
+            String title = element.text();
+            String  uri = element.attr("href");
+            Log.e ("kek", "uri " + uri);
+            Document doc = Jsoup.connect("http://mos-inf.olimpiada.ru" + uri).get ();
+            String date = doc.getElementsByAttributeValue("class", "data_news").last().text();
+
+
+            // help
+//            String next = doc.getElementsByAttributeValue("class", "mainblock").val();
+//            String text;
+//            Log.e ("kek", "text " + next);
+        }
     }
 
     private void parseAll () {
@@ -74,8 +95,10 @@ public class Parser {
                 List<NewsFirebaseItem> a = null;
                 try {
                     a = parseMIPT();
+                    parseMOSH_INF();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Log.e ("kek", "fail " + e.toString());
                 }
                 for (NewsFirebaseItem x: a) {
                     FirebaseDatabase.getInstance().getReference(DATABASE_NEWS_PATH + x.getNumber()).setValue(x);
