@@ -1,7 +1,5 @@
 package com.physphile.forbot.news
 
-import android.util.Log
-
 class NewsFirebaseItem {
     var title: String? = null
     var uri: String? = null
@@ -14,7 +12,7 @@ class NewsFirebaseItem {
 
     constructor() {}
 
-    private fun getLastNum (t: String?): Int {
+    private fun getLastNum(t: String?): Int {
         var s = t
         var ans = ""
         while (!s!!.isEmpty() && s[s.length - 1] != '.') {
@@ -22,16 +20,16 @@ class NewsFirebaseItem {
             s = s.dropLast(1)
         }
         ans = ans.reversed()
-        return ans.toInt ()
+        return ans.toInt()
     }
 
-    private fun makeCoolDate () {
+    private fun makeCoolDate() {
         var t = date
         val a = getLastNum(t)
         while (t!![t.length - 1] != '.') t = t.dropLast(1)
         t = t.dropLast(1)
         val b = getLastNum(t)
-        while (t!![t.length - 1] != '.')t = t.dropLast(1)
+        while (t!![t.length - 1] != '.') t = t.dropLast(1)
         t = t.dropLast(1)
         val c = getLastNum(t)
         coolDate = -(c + b * 32 + a * 366).toLong()
