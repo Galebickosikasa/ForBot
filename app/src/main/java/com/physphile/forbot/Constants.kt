@@ -24,5 +24,6 @@ object Constants {
     const val NEWS_PAGE_ACTIVITY_PATH = "com.physphile.forbot.news.NewsPage"
     const val OLYMP_PAGE_ACTIVITY_PATH = "com.physphile.forbot.olympiads.OlympPage"
     const val MIPT_IMAGE_URI = "https://firebasestorage.googleapis.com/v0/b/forbot-20468.appspot.com/o/olympsDefaultImages%2FMIPT.jpg?alt=media&token=53f05130-8cd3-46d5-910b-a312a0b21303"
+    const val MOSH_INF_IMAGE_URI = "https://firebasestorage.googleapis.com/v0/b/forbot-20468.appspot.com/o/olympsDefaultImages%2Fmosh_inf.png?alt=media&token=3c7535ec-8654-49dd-abf6-645b97dbf8d9"
 
 }
