@@ -82,18 +82,21 @@ public class Parser {
 
         Element element = href.first().child(1);
         String uri = element.attr("href");
+        Log.e("LOG_TAG", uri);
 
-        int N = getNum(uri);
+        int N = getNumFromUri(uri);
 
         uri = "news/";
 
         for (int k = 0; k < 50; ++k) {
-            Document doc = Jsoup.connect("http://mosphys.olimpiada.ru/" + uri + (N - k)).get ();
+            Document doc = Jsoup.connect("http://mosphys.olimpiada.ru/" + uri + (N - k)).get();
             Elements Title = doc.getElementsByClass("headlineM");
 
             String title = Title.first().ownText();
-
-            String date = doc.getElementsByAttributeValue("class", "data_news").last().text();
+            Log.e("LOG_TAG", title);
+            String date = doc.getElementsByAttributeValue("class", "data_news").first().text();
+            date = getDateFromElement(date);
+            Log.e("LOG_TAG", date);
             Elements next = doc.select("div.mainblock");
             String[] t = next.text().split(" ");
 
@@ -115,13 +118,13 @@ public class Parser {
             SharedPreferences sp = context.getSharedPreferences("MxValue", Context.MODE_PRIVATE);
             int num = sp.getInt("mx", 0) + 1;
 
-            NewsFirebaseItem item = new NewsFirebaseItem(title, MOSH_PHYS_IMAGE_URI, text, "", date, num, 16);
+            NewsFirebaseItem item = new NewsFirebaseItem(title, MOSH_PHYS_IMAGE_URI, text, "", date, num, 1);
             if (secret_keys.containsKey("MOSH_PHYS") && item.getCoolDate() == secret_keys.get("MOSH_PHYS")) break;
             else if (!secret_keys.containsKey("MOSH_PHYS") || secret_keys.get("MOSH_PHYS") > item.getCoolDate()) {
                 FirebaseDatabase.getInstance().getReference("/Secret_keys/MOSH_PHYS").setValue(item.getCoolDate());
-                secret_keys.put ("MOSH_PHYS", item.getCoolDate());
+                secret_keys.put("MOSH_PHYS", item.getCoolDate());
             }
-            newsList.add (item);
+            newsList.add(item);
 
             sp.edit().putInt("mx", num).apply();
         }
@@ -129,7 +132,19 @@ public class Parser {
 
     }
 
-    private int getNum (String s) {
+    private String getDateFromElement(String s) {
+        StringBuilder ret = new StringBuilder();
+        for (int i = 0; i < s.length(); ++i) {
+            if (s.charAt(i) == ' ') {
+                break;
+            } else {
+                ret.append(s.charAt(i));
+            }
+        }
+        return ret.toString();
+    }
+
+    private int getNumFromUri(String s) {
         StringBuilder ans = new StringBuilder();
         while (s.charAt(s.length() - 1) != '/') {
             ans.append(s.charAt(s.length() - 1));
@@ -139,7 +154,7 @@ public class Parser {
         return Integer.parseInt(ans.toString());
     }
 
-    private List<NewsFirebaseItem> parseMOSH_INF () throws IOException {
+    private List<NewsFirebaseItem> parseMOSH_INF() throws IOException {
         Document doc1 = Jsoup.connect("http://mos-inf.olimpiada.ru").get ();
         Elements href = doc1.getElementsByAttributeValue("class", "data_news");
         final List<NewsFirebaseItem> newsList = new ArrayList<>();
@@ -147,7 +162,7 @@ public class Parser {
         Element element = href.first().child(1);
         String uri = element.attr("href");
 
-        int N = getNum(uri);
+        int N = getNumFromUri(uri);
 
         uri = "news/";
 
