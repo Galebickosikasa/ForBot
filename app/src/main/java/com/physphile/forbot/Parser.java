@@ -136,46 +136,32 @@ public class Parser {
         return s;
     }
 
-    private List<NewsFirebaseItem> parseMIPT() throws IOException {
+    public List<NewsFirebaseItem> parseMIPT () throws IOException {
         Document doc1 = Jsoup.connect("https://olymp.mipt.ru").get();
         Elements href = doc1.getElementsByAttributeValue("class", "news-item");
         final List<NewsFirebaseItem> newsList = new ArrayList<>();
-        boolean flag = true;
 
-        for (Element hrefElem: href) {
+        for (Element  hrefElem: href) {
             Element element = hrefElem.child(0);
             String uri = element.attr("href");
             try {
-                Document doc = Jsoup.connect("https://olymp.mipt.ru" + uri).get();
-
+                Document doc = Jsoup.connect("https://olymp.mipt.ru" + uri).get ();
                 Elements Date = doc.getElementsByAttributeValue("class", "news-date");
                 String date = Date.first().getElementsByTag("span").text();
-
                 Elements Title = doc.getElementsByAttributeValue("class", "news-title");
                 String title = Title.first().text();
-
                 Elements Content = doc.getElementsByAttributeValue("class", "news-content");
                 String text = Content.first().text();
-
                 SharedPreferences sp = context.getSharedPreferences("MxValue", Context.MODE_PRIVATE);
                 int num = sp.getInt("mx", 0) + 1;
-
-                NewsFirebaseItem item = new NewsFirebaseItem(title, MIPT_IMAGE_URI, text, "", date, num, 3);
-
-                if (secret_keys.containsKey("MIPT")){
-                    if (getKey(item) == secret_keys.get("MIPT")) break;
-                }
-                else if (!secret_keys.containsKey("MIPT") || flag) {
-                    FirebaseDatabase.getInstance().getReference("/Secret_keys/MIPT").setValue(getKey(item));
-                    secret_keys.put ("MIPT", getKey(item));
-                    flag = false;
-                }
-                newsList.add (item);
-
-                sp.edit().putInt("mx", num).apply();
+                newsList.add (new NewsFirebaseItem (title, MIPT_IMAGE_URI, text, "", date, num, 0));
+                Log.e ("kek", "upd");
+                sp.edit().putInt("mx", num + 1).apply();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            System.out.println(uri);
         }
         return newsList;
     }
