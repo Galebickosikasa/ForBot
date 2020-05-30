@@ -10,7 +10,7 @@ class NewsFirebaseItem {
     var mask: Int? = null
     var coolDate: Long = 0
 
-    constructor() {}
+    constructor()
 
     private fun getLastNum(t: String?): Int {
         var s = t
@@ -44,6 +44,10 @@ class NewsFirebaseItem {
         this.number = number
         this.mask = mask
         makeCoolDate()
+    }
+
+    override fun toString(): String {
+        return "title: $title \n date: $date"
     }
 
 }

@@ -61,7 +61,81 @@ public class Parser {
     private Long ns = 97L;
     private Long mod = 1148822869L;
 
-    private List<NewsFirebaseItem> parseMIPT () throws IOException {
+    private List<NewsFirebaseItem> parseKURCH() throws IOException {
+        Document doc1 = Jsoup.connect("http://olimpiadakurchatov.ru/").get();
+        Elements href = doc1.getElementsByAttributeValue("class", "data_news");
+        final List<NewsFirebaseItem> newsList = new ArrayList<>();
+        for (Element hrefElem : href) {
+            Element element = hrefElem.child(1);
+            String uri = element.attr("href");
+
+            try {
+                Document doc = Jsoup.connect("http://olimpiadakurchatov.ru/" + uri).get();
+
+                String date = doc.getElementsByAttributeValue("class", "data_news").text();
+
+                String title = doc.getElementsByAttributeValue("class", "headlineM").first().text();
+                title = removeExcessKURCH(title);
+
+                String fullText = doc.select("div.mainblock").text();
+                String mainText = leaveMainKURCH(fullText);
+
+                SharedPreferences sp = context.getSharedPreferences("MxValue", Context.MODE_PRIVATE);
+                int num = sp.getInt("mx", 0) + 1;
+
+                NewsFirebaseItem item = new NewsFirebaseItem(title, KURCH_IMAGE_URI, mainText, "", date, num, 3);
+
+                if (secret_keys.containsKey("KURCH")) {
+                    if (item.getCoolDate() == secret_keys.get("KURCH")) break;
+                } else if (!secret_keys.containsKey("KURCH") || secret_keys.get("KURCH") > item.getCoolDate()) {
+                    FirebaseDatabase.getInstance().getReference("/Secret_keys/KURCH").setValue(item.getCoolDate());
+                    secret_keys.put("KURCH", item.getCoolDate());
+                }
+                Log.e("LOG_NAME", "здесь");
+                newsList.add(item);
+                Log.e("LOG_NAME", item.toString());
+
+                sp.edit().putInt("mx", num).apply();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+        return newsList;
+    }
+
+    private String leaveMainKURCH(String s) {
+
+        String block = "";
+        while (true) {
+            while (s.charAt(0) != ' ') {
+                block += (s.charAt(0));
+                s = s.substring(1);
+            }
+            if (block.length() == 10) {
+                if ((block.charAt(2) == '.') && (block.charAt(5) == '.')) {
+                    s = s.substring(1);
+                    break;
+                }
+            }
+            s = s.substring(1);
+            block = "";
+        }
+        return s;
+    }
+
+    private String removeExcessKURCH(String s) {
+        while (s.charAt(s.length() - 1) != '|') {
+            s = s.substring(0, s.length() - 1);
+        }
+        s = s.substring(0, s.length() - 2);
+        if (s.charAt(s.length() - 1) == '.') {
+            s = s.substring(0, s.length() - 1);
+        }
+        return s;
+    }
+
+    private List<NewsFirebaseItem> parseMIPT() throws IOException {
         Document doc1 = Jsoup.connect("https://olymp.mipt.ru").get();
         Elements href = doc1.getElementsByAttributeValue("class", "news-item");
         final List<NewsFirebaseItem> newsList = new ArrayList<>();
@@ -302,10 +376,8 @@ public class Parser {
                     list.addAll(parseMIPT());
                     list.addAll(parseMOSH_INF());
                     list.addAll(parseMOSH_PHYS());
-                    parseVP();
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Log.e ("kek", e.toString());
                 }
                 for (NewsFirebaseItem x: list){
                     FirebaseDatabase.getInstance().getReference(DATABASE_NEWS_PATH + x.getNumber()).setValue(x);
