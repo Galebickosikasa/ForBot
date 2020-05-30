@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.physphile.forbot.Constants.DATABASE_NEWS_PATH;
+import static com.physphile.forbot.Constants.KURCH_IMAGE_URI;
 import static com.physphile.forbot.Constants.MIPT_IMAGE_URI;
 import static com.physphile.forbot.Constants.MOSH_INF_IMAGE_URI;
 import static com.physphile.forbot.Constants.MOSH_PHYS_IMAGE_URI;
