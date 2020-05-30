@@ -154,8 +154,17 @@ public class Parser {
                 String text = Content.first().text();
                 SharedPreferences sp = context.getSharedPreferences("MxValue", Context.MODE_PRIVATE);
                 int num = sp.getInt("mx", 0) + 1;
+
+//                Log.e ("kek", "get");
+                NewsFirebaseItem item = new NewsFirebaseItem(title, MIPT_IMAGE_URI, text, "", date, num, 0);
+                if (secret_keys.containsKey("MIPT") && item.getCoolDate() == secret_keys.get("MIPT")) break;
+                else if (!secret_keys.containsKey("MIPT") || secret_keys.get("MIPT") > item.getCoolDate()) {
+                    FirebaseDatabase.getInstance().getReference("/Secret_keys/MIPT").setValue(item.getCoolDate());
+                    secret_keys.put ("MIPT", item.getCoolDate());
+                }
+                newsList.add (item);
                 newsList.add (new NewsFirebaseItem (title, MIPT_IMAGE_URI, text, "", date, num, 0));
-                Log.e ("kek", "upd");
+//                Log.e ("kek", "upd");
                 sp.edit().putInt("mx", num + 1).apply();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -363,6 +372,7 @@ public class Parser {
                     list.addAll(parseMIPT());
                     list.addAll(parseMOSH_INF());
                     list.addAll(parseMOSH_PHYS());
+                    list.addAll(parseKURCH());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
